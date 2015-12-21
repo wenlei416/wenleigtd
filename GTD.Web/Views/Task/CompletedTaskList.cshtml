@@ -1,0 +1,53 @@
+﻿@using GTD.Util
+@model GTD.ViewModels.TasklistVM
+
+@{
+    //ViewBag.Title = "Index";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<br/>
+@foreach (var p in Model.tl.Keys)
+{
+    <h3 class="sortgroup">@p</h3>
+    <ul class="tasklist">
+        @foreach (var item in Model.tl[p].ToList())
+        {
+            <li>
+                <div class="pri @item.CssForPriority()"></div>
+
+                <div class="process">
+                    @*<div class="closeat @item.CssForOutCloseDateTime()">
+                        @item.RemainderTimeString()
+                    </div>*@
+
+                    @Html.ActionLink("未完成", "Complete", new { id = item.TaskId })
+                    @Html.ActionLink("删除", "Delete", new { id = item.TaskId })
+                </div>
+
+                <div class="title">
+                    <div class="startat">
+                        &nbsp;
+                    </div>
+
+                    @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+
+                    <div class="context">
+                        @if (item.Context != null)
+                        {
+                            @:@@@item.Context.ContextName
+                    }
+                    </div>
+
+                    <div class="project">
+                        @if (item.Pro != null)
+                        {
+                            @:#@item.Pro.ProjectName
+                    }
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}

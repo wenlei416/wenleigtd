@@ -1,0 +1,38 @@
+﻿@model GTD.Models.Context
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Context</legend>
+
+        @Html.HiddenFor(model => model.ContextId)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ContextName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ContextName)
+            @Html.ValidationMessageFor(model => model.ContextName)
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

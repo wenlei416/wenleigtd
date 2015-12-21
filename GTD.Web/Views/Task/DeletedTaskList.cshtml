@@ -1,0 +1,61 @@
+﻿@model IEnumerable<GTD.Models.Task>
+
+@{
+    //ViewBag.Title = "Index";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<ul class="tasklist">
+    @foreach (var item in Model)
+    {
+        <li>
+            <div class="pri">
+                @if (item.Priority != null)
+                {
+                    @item.Priority.ToString()
+                }
+            </div>
+
+            <div class="process">
+                @Html.ActionLink("恢复", "Delete", new { id = item.TaskId })
+            </div>
+
+            <div class="title">
+                <div class="startat">
+                    <div class="completeat">
+                        @if (item.CompleteDateTime != null)
+                        {
+                            @item.CompleteDateTime.Value.ToShortDateString()
+                        }
+                    </div>
+                </div>
+
+                @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+
+                <div class="context">
+                    @if (item.Context != null)
+                    {
+                        @item.Context.ContextName
+                    }
+                </div>
+
+                <div class="project">
+                    @if (item.Pro != null)
+                    {
+                        @item.Pro.ProjectName;
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+@*<div class="sort">
+    <ul>
+        <li>@Html.ActionLink("按优先级排序", "ListTask", "Task", new { da = ViewBag.Title, sortorder = "priority" }, "")</li>
+        <li>@Html.ActionLink("按项目排序", "ListTask", "Task", new { da = ViewBag.Title, sortorder = "project" }, "")</li>
+        <li>@Html.ActionLink("按开始日期排序", "ListTask", "Task", new { da = ViewBag.Title, sortorder = "startat" }, "")</li>
+        <li>@Html.ActionLink("按结束日期排序", "ListTask", "Task", new { da = ViewBag.Title, sortorder = "closeat" }, "")</li>
+        <li>@Html.ActionLink("按场景排序", "ListTask", "Task", new { da = ViewBag.Title, sortorder = "context" }, "")</li>
+    </ul>
+</div>*@

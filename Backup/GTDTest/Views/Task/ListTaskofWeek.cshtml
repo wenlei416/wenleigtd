@@ -1,0 +1,94 @@
+﻿@using GTDTest.Util
+@model GTDTest.ViewModels.TaskWeekly
+
+@{
+    ViewBag.Title = "本周情况";
+}
+<p>
+    @Html.ActionLink("创建任务", "Create")
+</p>
+
+<h3>未完成任务</h3>
+<ul class="tasklist">
+    @foreach (var item in Model.WeeklyToDoTasks)
+    {
+        <li>
+            <div class="pri @item.CssForPriority()"></div>
+
+            <div class="process">
+                <div class="closeat @item.CssForOutCloseDateTime()">
+                    @item.RemainderTimeString()
+                </div>
+
+                @Html.ActionLink("完成", "Complete", new { id = item.TaskId })
+                @Html.ActionLink("删除", "Delete", new { id = item.TaskId })
+                @Html.ActionLink("创建子任务", "Create", "SubTask", new { id = item.TaskId }, "")
+            </div>
+
+            <div class="title">
+                <div class="startat">
+                    @if (item.StartDateTime != null)
+                    {
+                        @item.StartDateTime.Value.ToShortDateString()
+                    }
+                </div>
+
+                @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+
+                <div class="context">
+                    @if (item.Context != null)
+                    {
+                        @:@@@item.Context.ContextName
+                    }
+                </div>
+
+                <div class="project">
+                    @if (item.Pro != null)
+                    {
+                        @:#@item.Pro.ProjectName
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+<h3>已完成任务</h3>
+<ul class="tasklist">
+    @foreach (var item in Model.WeeklyCompletedTask)
+    {
+        <li>
+            <div class="pri @item.CssForPriority()"></div>
+
+            <div class="process">
+                @Html.ActionLink("未完成", "Complete", new { id = item.TaskId })
+                @Html.ActionLink("删除", "Delete", new { id = item.TaskId })
+            </div>
+
+            <div class="title">
+                <div class="startat">
+                    @if (item.CompleteDateTime != null)
+                    {
+                        @item.CompleteDateTime.Value.ToShortDateString()
+                    }
+                </div>
+
+                @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+
+                <div class="context">
+                    @if (item.Context != null)
+                    {
+                        @:@@@item.Context.ContextName
+                    }
+                </div>
+
+                <div class="project">
+                    @if (item.Pro != null)
+                    {
+                        @:#@item.Pro.ProjectName
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>

@@ -1,0 +1,120 @@
+﻿@using GTDTest.Models
+@model GTDTest.Models.Task
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Task</legend>
+        @*----------标题----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Headline)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Headline)
+            @Html.ValidationMessageFor(model => model.Headline)
+        </div>
+
+        @*----------描述----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+        
+        @*----------开始日期----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.StartDateTime)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.StartDateTime)
+            @Html.ValidationMessageFor(model => model.StartDateTime)
+        </div>
+
+        @*----------结束日期----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CloseDateTime)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CloseDateTime)
+            @Html.ValidationMessageFor(model => model.CloseDateTime)
+        </div>        
+        
+        @*----------属性----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DateAttribute)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("DateAttribute", null, string.Empty, new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.DateAttribute)
+        </div>
+
+        @*----------优先级----------*@        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Priority)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("Priority", null, null, new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.Priority)
+        </div>
+        
+        @*----------项目----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Pro)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("ProjectID", null, string.Empty, new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.Pro)
+        </div>
+        
+        @*----------情景----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Context)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("ContextId", null, string.Empty, new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.Context)
+        </div>
+
+        @*----------后续任务----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.NextTask_TaskId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("NextTask_TaskId", null, string.Empty, new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.NextTask_TaskId)
+        </div>
+        
+        @*----------前置任务----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PreviousTask_TaskId)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("PreviousTask_TaskId", null, string.Empty, new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.PreviousTask_TaskId)
+
+
+        </div>
+        <p>
+            <input type="submit" value="创建" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("返回列表", "ListTask", "Task", new { da = DateAttribute.今日待办.ToString(), sortorder = "priority" }, "")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

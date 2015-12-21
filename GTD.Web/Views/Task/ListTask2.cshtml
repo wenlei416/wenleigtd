@@ -1,0 +1,69 @@
+﻿@using GTD.Util
+@model GTD.ViewModels.TasklistVM
+
+
+@{
+    //ViewBag.Title = "Index";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("创建任务", "Create")
+</p>
+@foreach (var p in Model.tl.Keys)
+{
+    <h3 class="sortgroup">@p</h3>
+    <ul class="tasklist">
+        @foreach (var item in Model.tl[p].ToList())
+        {
+            <li>
+                <div class="pri @item.CssForPriority()"></div>
+
+                <div class="process">
+                    <div class="closeat @item.CssForOutCloseDateTime()">
+                        @item.RemainderTimeString()
+                    </div>
+
+                    @Html.ActionLink("完成", "Complete", new { id = item.TaskId })
+                    @Html.ActionLink("删除", "Delete", new { id = item.TaskId })
+                    @Html.ActionLink("创建子任务", "Create", "SubTask", new { id = item.TaskId }, "")
+                </div>
+
+                <div class="title">
+                    <div class="startat">
+                        @if (item.StartDateTime != null)
+                        {
+                            @item.StartDateTime.Value.ToShortDateString()
+                        }
+                    </div>
+
+                    @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+
+                    <div class="context">
+                        @if (item.Context != null)
+                        {
+                            @:@@@item.Context.ContextName
+                    }
+                    </div>
+
+                    <div class="project">
+                        @if (item.Pro != null)
+                        {
+                            @:#@item.Pro.ProjectName
+                    }
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+<div class="sort">
+    <ul>
+        <li>@Html.ActionLink("按优先级排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "priority" }, "")</li>
+        <li>@Html.ActionLink("按项目排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "project" }, "")</li>
+        <li>@Html.ActionLink("按开始日期排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "startat" }, "")</li>
+        <li>@Html.ActionLink("按结束日期排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "closeat" }, "")</li>
+        <li>@Html.ActionLink("按场景排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "context" }, "")</li>
+    </ul>
+</div>

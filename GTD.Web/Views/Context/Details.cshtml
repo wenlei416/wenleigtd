@@ -1,0 +1,22 @@
+﻿@model GTD.Models.Context
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Context</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ContextName)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ContextName)
+    </div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ContextId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
