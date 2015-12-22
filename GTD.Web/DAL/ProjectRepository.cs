@@ -12,7 +12,6 @@ namespace GTD.DAL
         public Project GetById(int projectId)
         {
             return Get(p => p.ProjectId == projectId);
-            throw new NotImplementedException();
         }
     }
 }
