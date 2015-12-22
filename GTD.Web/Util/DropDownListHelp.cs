@@ -35,7 +35,7 @@ namespace GTD.Util
 
         public static SelectList PopulateTaskDropDownList(GTDContext db, int? selectTask = null)
         {
-            var taskQuery = from t in db.Tasks where t.IsComplete==false orderby t.TaskId select t;
+            var taskQuery = from t in db.Tasks where t.IsComplete==false && t.IsDeleted==false orderby t.TaskId select t;
             return new SelectList(taskQuery, "TaskID", "Headline", selectTask);
         }
 

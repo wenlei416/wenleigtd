@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using GTD.Models;
 
-namespace GTD.Services.Abstract
+namespace GTD.DAL.Abstract
 {
-    public interface IProjectServices
+    public interface IProjectrepository:IRepository<Project>
     {
-        Project GetProjectById(int id);
+        Project GetById(int projectId);
     }
 }

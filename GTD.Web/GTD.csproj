@@ -183,9 +183,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CommentController.cs" />
+    <Compile Include="DAL\Abstract\IProjectrepository.cs" />
     <Compile Include="DAL\Abstract\IRepository.cs" />
     <Compile Include="DAL\Abstract\ITaskRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
+    <Compile Include="DAL\ProjectRepository.cs" />
     <Compile Include="DAL\TaskRepository.cs" />
     <Compile Include="Filters\TaskCount.cs" />
     <Compile Include="Migrations\201505151224591_addnexttask.cs" />

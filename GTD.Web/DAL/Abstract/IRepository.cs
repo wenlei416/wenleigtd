@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace GTD.DAL.Abstract
 {
-    interface IRepository<TEntity> : IDisposable  where TEntity : class
+    public interface IRepository<TEntity> : IDisposable  where TEntity : class
     {
         void Create(TEntity instance);
         void Update(TEntity instance);

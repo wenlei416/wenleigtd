@@ -13,18 +13,20 @@ namespace GTD.Controllers
     {
         private readonly GTDContext _db = new GTDContext();
         private readonly ITaskServices _taskServices = new TaskServices();
+        private readonly IProjectServices _projectServices=new ProjectServices();
 
 
         // GET: /Project/
         public ActionResult Index()
         {
             return View(_db.Projects.ToList());
+
         }
 
         // GET: /Project/Details/5
         public ActionResult Details(int id = 0)
         {
-            Project project = _db.Projects.Find(id);
+            Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id));
 
             if (project == null)
             {
@@ -70,7 +72,7 @@ namespace GTD.Controllers
         // GET: /Project/Edit/5
         public ActionResult Edit(int id = 0)
         {
-            Project project = _db.Projects.Find(id);
+            Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
             if (project == null)
             {
                 return HttpNotFound();
@@ -97,7 +99,7 @@ namespace GTD.Controllers
         // GET: /Project/Delete/5
         public ActionResult Delete(int id = 0)
         {
-            Project project = _db.Projects.Find(id);
+            Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
             if (project == null)
             {
                 return HttpNotFound();
@@ -111,7 +113,7 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Project project = _db.Projects.Find(id);
+            Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
             _db.Projects.Remove(project);
             _db.SaveChanges();
             return RedirectToAction("Index");
