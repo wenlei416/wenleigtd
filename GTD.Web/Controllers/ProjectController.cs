@@ -13,20 +13,20 @@ namespace GTD.Controllers
     {
         private readonly GTDContext _db = new GTDContext();
         private readonly ITaskServices _taskServices = new TaskServices();
-        private readonly IProjectServices _projectServices=new ProjectServices();
+        private readonly IProjectServices _projectServices = new ProjectServices();
 
 
         // GET: /Project/
         public ActionResult Index()
         {
-            return View(_db.Projects.ToList());
+            return View(_projectServices.GetAllProjects());
 
         }
 
         // GET: /Project/Details/5
         public ActionResult Details(int id = 0)
         {
-            Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id));
+            Project project = _projectServices.GetProjectById(id);
 
             if (project == null)
             {
@@ -60,8 +60,7 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Projects.Add(project);
-                _db.SaveChanges();
+                _projectServices.CreateProject(project);
                 return RedirectToAction("Index");
             }
 
@@ -88,8 +87,7 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Entry(project).State = EntityState.Modified;
-                _db.SaveChanges();
+                _projectServices.UpdateProject(project);
                 return RedirectToAction("Index");
             }
             return View(project);
@@ -114,21 +112,24 @@ namespace GTD.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
-            _db.Projects.Remove(project);
-            _db.SaveChanges();
+            _projectServices.DeleteProjectByLogic(project);
             return RedirectToAction("Index");
         }
 
         // GET: /Project/Complete/5
-        public ActionResult Complete(int id)
+        [HttpPost]
+        public string Complete(int id)
         {
-            return RedirectToAction("Index");
-        }
+            //检查是否还有未完成的任务
+            //如果有就XXX
+            //如果没有就改变状态，返回值
+            Project project = _projectServices.GetProjectById(id);
 
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
+            var allTaskCompleted = project.Tasks.Any(t => t.IsComplete == false);
+
+            project.IsComplete = !project.IsComplete;
+            _projectServices.UpdateProject(project);
+            return project.IsComplete ? "已完成" : "进行中";
         }
     }
 }

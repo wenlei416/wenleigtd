@@ -18,5 +18,26 @@ namespace GTD.Services
         {
             return _projectrepository.GetById(id);
         }
+
+        public void CreateProject(Project project)
+        {
+            _projectrepository.Create(project);
+        }
+
+        public IEnumerable<Project> GetAllProjects()
+        {
+           return _projectrepository.GetAll();
+        }
+
+        public void UpdateProject(Project project)
+        {
+            _projectrepository.Update(project);
+        }
+
+        public void DeleteProjectByLogic(Project project)
+        {
+            project.IsDeleted = true;
+            _projectrepository.Update(project);
+        }
     }
 }

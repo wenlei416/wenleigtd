@@ -13,8 +13,7 @@ namespace GTD.DAL.Abstract
         void UpdateTask(Task task);
         void Save();
         GTDContext GetContext();
-        IEnumerable<Task> GetWorkingTasks();
-
+        //IEnumerable<Task> GetWorkingTasks();
         //Task GetPreviousTasksById(int taskId);
     }
 }

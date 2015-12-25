@@ -20,7 +20,7 @@ namespace GTD.Services
             {
                 //根据业务规则，只有明日待办或者日程有可能变成今日待办，其他状态要过来，需要主动设置
                 case "今日待办":
-                    tasks = _taskRepository.GetWorkingTasks()
+                    tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
                         .Where(
                             t =>
                                 (t.DateAttribute == DateAttribute.日程 || t.DateAttribute == DateAttribute.明日待办)
@@ -30,7 +30,7 @@ namespace GTD.Services
 
                     break;
                 case "明日待办":
-                    tasks = _taskRepository.GetWorkingTasks()
+                    tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
                         .Where(
                             t =>
                                 (t.DateAttribute != dateAttribute && t.StartDateTime != null && t.StartDateTime == tomorrow));
@@ -38,7 +38,7 @@ namespace GTD.Services
 
                     break;
                 case "日程":
-                    tasks = _taskRepository.GetWorkingTasks()
+                    tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
                         .Where(
                             t =>
                                 (t.DateAttribute != dateAttribute && t.StartDateTime != null && t.StartDateTime > tomorrow));
@@ -46,7 +46,7 @@ namespace GTD.Services
 
                     break;
             }
-            return _taskRepository.GetWorkingTasks().Where(t=>t.DateAttribute==dateAttribute);
+            return GetInProgressTasks().Where(t => t.DateAttribute == dateAttribute);//_taskRepository.GetWorkingTasks().Where(t=>t.DateAttribute==dateAttribute);
         }
 
         public void AddTask(Task task)
@@ -125,5 +125,6 @@ namespace GTD.Services
             }
             _taskRepository.Save();
         }
+
     }
 }

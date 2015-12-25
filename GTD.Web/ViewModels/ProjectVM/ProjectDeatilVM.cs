@@ -15,5 +15,12 @@ namespace GTD.ViewModels.ProjectVM
 
         //项目下已经完成的任务
         public IEnumerable<Task> CompletedTasks { get; set; }
+
+        public string ProjectStaute
+        {
+            get {
+                return !Project.IsComplete ? "进行中" : "已完成";
+            }
+        }
     }
 }

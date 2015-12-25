@@ -41,10 +41,7 @@ namespace GTD.DAL
             return _context.Tasks.ToList();
         }
 
-        public IEnumerable<Task> GetWorkingTasks()
-        {
-            return _context.Tasks.Where(i => i.IsComplete == false && i.IsDeleted == false);
-        }
+
 
         public Task GetTaskById(int? taskId)
         {
@@ -76,6 +73,9 @@ namespace GTD.DAL
         {
             return _context;
         }
-
+        //public IEnumerable<Task> GetWorkingTasks()
+        //{
+        //    return _context.Tasks.Where(i => i.IsComplete == false && i.IsDeleted == false);
+        //}
     }
 }

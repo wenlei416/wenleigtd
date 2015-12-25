@@ -10,5 +10,13 @@ namespace GTD.Services.Abstract
     public interface IProjectServices
     {
         Project GetProjectById(int id);
+        void CreateProject(Project project);
+        IEnumerable<Project> GetAllProjects();
+        void UpdateProject(Project project);
+        void DeleteProjectByLogic(Project project);
+
+
     }
+
+
 }
