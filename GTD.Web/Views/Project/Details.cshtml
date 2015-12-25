@@ -15,6 +15,7 @@
 </fieldset>
 
 <h3>未完成任务</h3>
+<div id="errormsg" style="display:none" class="field-validation-error">还有未完成任务</div>
 <ul class="tasklist">
     @foreach (var item in Model.ToDoTasks)
     {
@@ -39,7 +40,7 @@
                     }
                 </div>
 
-                @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+                @Html.ActionLink(item.Headline, "Details","Task", new { id = item.TaskId }, new { @class = "link-title" })
 
                 <div class="context">
                     @if (item.Context != null)
@@ -67,7 +68,7 @@
             <div class="pri @item.CssForPriority()"></div>
 
             <div class="process">
-                @Html.ActionLink("未完成", "Complete", new { id = item.TaskId })
+                @Html.ActionLink("未完成", "Complete","Task", new { id = item.TaskId },"")
                 @Html.ActionLink("删除", "Delete", new { id = item.TaskId })
             </div>
 
@@ -79,7 +80,7 @@
                     }
                 </div>
 
-                @Html.ActionLink(item.Headline, "Details", new { id = item.TaskId }, new { @class = "link-title" })
+                @Html.ActionLink(item.Headline, "Details", "Task", new { id = item.TaskId }, new { @class = "link-title" })
 
                 <div class="context">
                     @if (item.Context != null)
@@ -118,9 +119,13 @@
                 type: 'post',
                 cache: false,
                 async: true,
-                datetype:Text,
+                datetype:JSON,
                 success: function (data) {
-                    $("#statue").text(data);
+                    if (data===true) {
+                        $("#statue").text("已完成");
+                    } else {
+                        $("#errormsg").css("display", "block");
+                    }
                 }
             });
         }

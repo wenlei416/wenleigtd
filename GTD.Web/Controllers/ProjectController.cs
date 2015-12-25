@@ -118,18 +118,20 @@ namespace GTD.Controllers
 
         // GET: /Project/Complete/5
         [HttpPost]
-        public string Complete(int id)
+        public JsonResult Complete(int id)
         {
             //检查是否还有未完成的任务
             //如果有就XXX
             //如果没有就改变状态，返回值
             Project project = _projectServices.GetProjectById(id);
 
-            var allTaskCompleted = project.Tasks.Any(t => t.IsComplete == false);
-
-            project.IsComplete = !project.IsComplete;
-            _projectServices.UpdateProject(project);
-            return project.IsComplete ? "已完成" : "进行中";
+            var allTaskCompleted = project.Tasks.Where(t=>t.IsDeleted==false).All(t => t.IsComplete == true);
+            if (allTaskCompleted)
+            {
+                project.IsComplete = !project.IsComplete;
+                _projectServices.UpdateProject(project);
+            }
+            return Json(allTaskCompleted);
         }
     }
 }
