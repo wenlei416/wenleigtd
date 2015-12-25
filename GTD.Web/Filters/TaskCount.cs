@@ -35,7 +35,7 @@ namespace GTD.Filters
             foreach (DateAttribute da in Enum.GetValues(typeof(DateAttribute)))
             {
                 DateAttribute da1 = da;
-                tc.Add(da1.ToString(), taskRepository.GetTasks().Where(t =>t.DateAttribute == da1).Where(t => t.IsDeleted == false && t.IsComplete == false).Count());
+                tc.Add(da1.ToString(), taskRepository.GetAll().Where(t => t.DateAttribute == da1).Count(t => t.IsDeleted == false && t.IsComplete == false));
             }
             return tc;
         }

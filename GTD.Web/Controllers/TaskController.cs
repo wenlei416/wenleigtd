@@ -14,21 +14,19 @@ namespace GTD.Controllers
 {
     public class TaskController : Controller
     {
-        private readonly ITaskRepository _taskRepository;
         private readonly ITaskServices _taskServices;
 
         public TaskController()
         {
-            _taskRepository = new TaskRepository(new GTDContext());
             _taskServices = new TaskServices();
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskRepository.GetContext());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskRepository.GetContext());
+            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskServices.GetContext());
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskServices.GetContext());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskRepository.GetContext());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskRepository.GetContext());
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext());
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext());
         }
 
         // GET: /Task/
@@ -40,7 +38,8 @@ namespace GTD.Controllers
         // GET: /Task/Details/5
         public ActionResult Details(int id = 0)
         {
-            Task task = _taskRepository.GetTaskById(id);
+            //todo 显示任务detail的时候，可以展示出已经删除的项目
+            Task task = _taskServices.GetTaskById(id);
             if (task == null)
             {
                 return HttpNotFound();
@@ -80,18 +79,20 @@ namespace GTD.Controllers
         // GET: /Task/Edit/5
         public ActionResult Edit(int id = 0)
         {
-            Task task = _taskRepository.GetTaskById(id);
+            //todo 编辑已完成任务时，可以选到删除的project，在创建dropdownlist的时候控制selectitem，需要做一个判断
+
+            Task task = _taskServices.GetTaskById(id);
             if (task == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskRepository.GetContext(), task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskRepository.GetContext(),
+            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskServices.GetContext(), task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskServices.GetContext(),
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskRepository.GetContext(), task.NextTask_TaskId ?? new int());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskRepository.GetContext(), task.PreviousTask_TaskId ?? new int());
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.NextTask_TaskId ?? new int());
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.PreviousTask_TaskId ?? new int());
 
 
             return View(task);
@@ -104,19 +105,17 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                //task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
-                //_taskRepository.UpdateTask(task);
-                //_taskRepository.Save(); 
-                _taskServices.ModifyTask(task);
+
+                _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskRepository.GetContext(), task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskRepository.GetContext(),
+            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskServices.GetContext(), task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskServices.GetContext(),
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskRepository.GetContext(), task.NextTask_TaskId ?? new int());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskRepository.GetContext(), task.PreviousTask_TaskId ?? new int());
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.NextTask_TaskId ?? new int());
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.PreviousTask_TaskId ?? new int());
 
             return View(task);
         }
@@ -124,14 +123,13 @@ namespace GTD.Controllers
         // GET: /Task/Delete/5
         public ActionResult Delete(int id = 0)
         {
-            Task task = _taskRepository.GetTaskById(id);
+            Task task = _taskServices.GetTaskById(id);
             if (task == null)
             {
                 return HttpNotFound();
             }
             var tempda = task.DateAttribute;
-            _taskRepository.DeleteTask(task.TaskId);
-            _taskRepository.Save();
+            _taskServices.DeleteTask(task.TaskId);
             return RedirectToAction("ListTask", new { da = tempda.ToString() });
         }
 
@@ -140,188 +138,69 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Task task = _taskRepository.GetTaskById(id);
+            Task task = _taskServices.GetTaskById(id);
             var tempda = task.DateAttribute;
-            _taskRepository.DeleteTask(task.TaskId);
-            _taskRepository.Save();
+            _taskServices.DeleteTask(task.TaskId);
             return RedirectToAction("ListTask", new { da = tempda.ToString() });
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            //db.Dispose();
-            _taskRepository.Dispose();
-            base.Dispose(disposing);
-        }
 
         // GET: /Task/Complete/5
         public ActionResult Complete(int id)
         {
-            //需要抽出来放services
+            //todo 重新打开已完成任务时，无法关联到已删除项目
+            //todo 需要抽出来放services
             var sort = ViewBag.SortOrder;
-            Task task = _taskRepository.GetTaskById(id);
+            Task task = _taskServices.GetTaskById(id);
             if (task == null)
             {
                 return HttpNotFound();
             }
             task.IsComplete = !task.IsComplete;
             task.CompleteDateTime = DateTime.Today;
-            _taskRepository.UpdateTask(task);
+            _taskServices.UpdateTask(task);
 
             //如果后续任务没有明确的日程，设为今日待办
             if (task.NextTask_TaskId != null)
             {
-                var nextTask = _taskRepository.GetTasks().Single(t => t.TaskId == task.NextTask_TaskId);
+                var nextTask = _taskServices.GetAll().Single(t => t.TaskId == task.NextTask_TaskId);
                 if (nextTask != null && nextTask.StartDateTime == null)
                 {
                     nextTask.StartDateTime = DateTime.Today;
                     nextTask.DateAttribute = DateAttribute.今日待办;
-                    _taskRepository.UpdateTask(nextTask);
+                    _taskServices.UpdateTask(nextTask);
                 }
             }
             //前置任务为这个任务的其他任务，如果没有明确的日程，设为今日待办
-            var previousTasks = _taskRepository.GetTasks().Where(t => t.PreviousTask_TaskId == task.TaskId);
+            var previousTasks = _taskServices.GetAll().Where(t => t.PreviousTask_TaskId == task.TaskId);
             foreach (var t in previousTasks)
             {
                 if (t.StartDateTime == null)
                 {
                     t.StartDateTime = DateTime.Today;
                     t.DateAttribute = DateAttribute.今日待办;
-                    _taskRepository.UpdateTask(t);
                 }
             }
-
-            _taskRepository.Save();
+            _taskServices.BatchUpdateTask(previousTasks);
             return RedirectToAction("ListTask", new { da = task.DateAttribute, sortOrder = sort });
         }
 
         // GET: /Task/ListTask/da/sortOrder
         public ActionResult ListTask(string da = "收集箱", string sortOrder = "priority")
         {
-
             var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
             ViewBag.Da = dateAttribute;
             ViewBag.SortOrder = sortOrder;
             ViewBag.countSJX = 1;
 
-            //收集箱：DateAttribute是收集箱的任务
-            //今日待办：DateAttribute是今日待办，StartDateTime在今天及今天之前，不包括DateAttribute为将来也许和等待的，需要更新DateAttribute
-            //下一步行动：DateAttribute是下一步行动
-            //明日待办：StartDateTime是明天的，需要更新DateAttribute
-            //日程：StartDateTime是明天之后的
-            //将来也许：DateAttribute是将来也许
-            //等待：DateAttribute是等待
-            //先找到所有符合da条件的task，然后把da更新一遍
-            //UpdateDateAttribute((IQueryable<Task>) _taskServices.GetTasksWithRealDa(dateAttribute), dateAttribute);
-            
-            //switch (da)
-            //{
-            //    //根据业务规则，只有明日待办或者日程有可能变成今日待办，其他状态要过来，需要主动设置
-            //    case "今日待办":
-            //        {
-            //            //tasks =
-            //            // _taskRepository.GetContext().Tasks.Include(t => t.Pro)
-            //            //     .Where(
-            //            //         t => (t.IsComplete == false && (t.DateAttribute == dateAttribute || (t.StartDateTime != null && t.StartDateTime <= DateTime.Today))));
-            //            IQueryable<Task> tasks = (IQueryable<Task>)_taskRepository.GetWorkingTasks()
-            //                .Where(
-            //                    t =>
-            //                        (t.DateAttribute == DateAttribute.日程 || t.DateAttribute == DateAttribute.明日待办) 
-            //                        && 
-            //                        (t.StartDateTime != null && t.StartDateTime <= DateTime.Today));
-            //            UpdateDateAttribute(tasks, DateAttribute.今日待办);
-            //        }
-            //        break;
-            //    case "明日待办":
-            //        {
-            //            var tomorrow = DateTime.Today.AddDays(1);
-            //            IQueryable<Task> tasks = (IQueryable<Task>)_taskRepository.GetWorkingTasks()
-            //                 .Where(
-            //                     t => (t.DateAttribute != dateAttribute && t.StartDateTime != null && t.StartDateTime == tomorrow));
-            //            UpdateDateAttribute(tasks, DateAttribute.明日待办);
-            //        }
-            //        break;
-            //    case "日程":
-            //        {
-            //            var tomorrow = DateTime.Today.AddDays(1);
-            //            IQueryable<Task> tasks = (IQueryable<Task>)_taskRepository.GetWorkingTasks()
-            //                    .Where(
-            //                        t => (t.DateAttribute != dateAttribute && t.StartDateTime != null && t.StartDateTime > tomorrow));
-            //            UpdateDateAttribute(tasks, DateAttribute.日程);
-            //        }
-            //        break;
-            //}
-
             //重新把需要的task选择出来
             var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i=>i.TaskId).ToList();
-                //_taskRepository.GetWorkingTasks()
-                //    .Where(i => i.DateAttribute == dateAttribute)
-                //    .OrderByDescending(i => i.TaskId);
 
             ViewBag.Title = da + "  （" + workingtasks.Count() + "）";
             var viewmodel = new TasklistVM(workingtasks, sortOrder);
             return View("ListTask2", viewmodel);
         }
 
-        //根据输入的其他属性，判断DateAttribute应该是什么
-        //业务规则如下：
-        //开始时间：无             项目：无     收集箱
-        //开始时间：今天           项目：任意   今日待办
-        //开始时间：无             项目：有    下一步行动
-        //开始时间：明天           项目：任意   明日待办
-        //开始时间：今天/明天以外   项目：任意   日程
-        //开始时间：无             项目：任意   需要主动设置 将来也许
-        //开始时间：无             项目：任意   需要主动设置 等待
-        /// <summary>
-        ///创建任务的时判断DateAttribute
-        /// </summary>
-        /// <param name="star"></param>
-        /// <param name="att"></param>
-        /// <param name="projectid"></param>
-        /// <returns></returns>
-        private DateAttribute? SetDateAttribute(DateTime? star, DateAttribute? att, int? projectid)
-        {
-            var goalAtt = att;
-            if (star != null)
-            {
-                if (Convert.ToDateTime(star).DayOfYear <= DateTime.Now.DayOfYear)
-                    return DateAttribute.今日待办;
-                else if (Convert.ToDateTime(star).DayOfYear == DateTime.Now.DayOfYear + 1)
-                    return DateAttribute.明日待办;
-                else
-                    return DateAttribute.日程;
-            }
-            else if (projectid != null)
-            {
-                return DateAttribute.下一步行动;
-            }
-            else if (goalAtt == DateAttribute.将来也许
-                    || goalAtt == DateAttribute.等待
-                    || goalAtt == DateAttribute.收集箱)
-                return goalAtt;
-            else
-                return DateAttribute.收集箱;
-
-            /*
-                        return goalAtt;
-            */
-        }
-
-        /// <summary>
-        /// 根据今天的情况更新DateAttribute
-        /// </summary>
-        /// <param name="tasks"></param>
-        /// <param name="da"></param>
-        private void UpdateDateAttribute(IQueryable<Task> tasks, DateAttribute da)
-        {
-            foreach (var task in tasks)
-            {
-                task.DateAttribute = da;
-                _taskRepository.UpdateTask(task);
-
-            }
-            _taskRepository.Save();
-        }
 
         /// <summary>
         /// 显示已经完成的任务列表
@@ -330,7 +209,7 @@ namespace GTD.Controllers
         // Get: /Task/CompletedTask
         public ActionResult CompletedTask()
         {
-            var tasks = _taskRepository.GetTasks().Where(i => i.IsComplete && i.IsDeleted == false).OrderByDescending(i => i.TaskId);
+            var tasks = _taskServices.GetAll().Where(i => i.IsComplete && i.IsDeleted == false).OrderByDescending(i => i.TaskId);
             ViewBag.Title = "已完成任务";
             var viewmodel = new TasklistVM(tasks, "CompleteDateTime");
             return View("CompletedTaskList", viewmodel);
@@ -340,7 +219,7 @@ namespace GTD.Controllers
         public ActionResult DeletedTask()
         {
             ViewBag.Title = "已删除任务";
-            var tasks = _taskRepository.GetTasks().Where(i => i.IsDeleted).OrderByDescending(i => i.TaskId);
+            var tasks = _taskServices.GetAll().Where(i => i.IsDeleted).OrderByDescending(i => i.TaskId);
             return View("DeletedTaskList", tasks.ToList());
         }
 
@@ -360,13 +239,13 @@ namespace GTD.Controllers
             DateTime lastDayOfWeek = day.AddDays(6 - Convert.ToInt16(day.DayOfWeek));
             var viewmodel = new TaskWeekly()
             {
-                WeeklyToDoTasks = from t in _taskRepository.GetTasks()
+                WeeklyToDoTasks = from t in _taskServices.GetAll()
                                   where (t.IsComplete == false && t.IsDeleted == false)
                                   where ((t.StartDateTime != null && t.StartDateTime <= lastDayOfWeek) || (t.CloseDateTime != null && t.CloseDateTime <= lastDayOfWeek))
                                   orderby (t.Priority.HasValue) descending, t.Priority
                                   select t
                                   ,
-                WeeklyCompletedTask = from t in _taskRepository.GetTasks()
+                WeeklyCompletedTask = from t in _taskServices.GetAll()
                                       where (t.IsComplete && t.IsDeleted == false && t.CompleteDateTime >= firstDayOfWeek && t.CompleteDateTime <= lastDayOfWeek)
                                       orderby t.CompleteDateTime descending
                                       select t

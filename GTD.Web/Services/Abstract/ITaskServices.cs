@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GTD.DAL;
 using GTD.Models;
 
 namespace GTD.Services.Abstract
@@ -14,7 +15,7 @@ namespace GTD.Services.Abstract
         /// <returns></returns>
         IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute);
         void AddTask(Task task);
-        void ModifyTask(Task task);
+        void UpdateTask(Task task);
 
         /// <summary>
         /// 获取所有已完成的任务（不包括已经删除的）
@@ -27,5 +28,16 @@ namespace GTD.Services.Abstract
         /// </summary>
         /// <returns></returns>
         IEnumerable<Task> GetInProgressTasks();
+
+        Task GetTaskById(int? taskId);
+
+        void DeleteTask(int taskId);
+        IEnumerable<Task> GetAll();
+
+        void BatchUpdateTask(IEnumerable<Task> tasks);
+
+        GTDContext GetContext();
+
+
     }
 }

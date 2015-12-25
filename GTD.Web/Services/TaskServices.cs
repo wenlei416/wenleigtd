@@ -10,7 +10,18 @@ namespace GTD.Services
 {
     public class TaskServices : ITaskServices
     {
-        private readonly ITaskRepository _taskRepository = new TaskRepository(new GTDContext());
+        private readonly ITaskRepository _taskRepository;
+
+        public TaskServices()
+        {
+            _taskRepository = new TaskRepository(new GTDContext());
+        }
+
+        public TaskServices(ITaskRepository taskRepository)
+        {
+            _taskRepository = taskRepository;
+        }
+
 
         public IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute)
         {
@@ -52,25 +63,23 @@ namespace GTD.Services
         public void AddTask(Task task)
         {
             task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
-            _taskRepository.InsertTask(task);
-            _taskRepository.Save();
+            _taskRepository.Create(task);
         }
 
-        public void ModifyTask(Task task)
+        public void UpdateTask(Task task)
         {
             task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
-            _taskRepository.UpdateTask(task);
-            _taskRepository.Save(); 
+            _taskRepository.Update(task);
         }
 
         public IEnumerable<Task> GetCompletedTasks()
         {
-            return _taskRepository.GetTasks().Where(t => t.IsComplete == true && t.IsDeleted == false);
+            return _taskRepository.GetAll().Where(t => t.IsComplete == true && t.IsDeleted == false);
         }
 
         public IEnumerable<Task> GetInProgressTasks()
         {
-            return _taskRepository.GetTasks().Where(t => t.IsComplete == false && t.IsDeleted == false);
+            return _taskRepository.GetAll().Where(t => t.IsComplete == false && t.IsDeleted == false);
         }
 
         /// <summary>
@@ -121,9 +130,33 @@ namespace GTD.Services
             foreach (var task in tasks)
             {
                 task.DateAttribute = da;
-                _taskRepository.UpdateTask(task);
             }
-            _taskRepository.Save();
+            _taskRepository.BatchUpdateTask(tasks);
+        }
+
+        public Task GetTaskById(int? taskId)
+        {
+            return _taskRepository.GetTaskById(taskId);
+        }
+
+        public void DeleteTask(int taskId)
+        {
+            _taskRepository.DeleteTask(taskId);
+        }
+
+        public IEnumerable<Task> GetAll()
+        {
+            return _taskRepository.GetAll();
+        }
+
+        public void BatchUpdateTask(IEnumerable<Task> tasks)
+        {
+            _taskRepository.BatchUpdateTask(tasks);
+        }
+
+        public GTDContext GetContext()
+        {
+            return _taskRepository.GetContext();
         }
 
     }

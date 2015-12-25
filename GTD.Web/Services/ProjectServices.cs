@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using GTD.DAL;
@@ -9,7 +10,7 @@ using GTD.Services.Abstract;
 
 namespace GTD.Services
 {
-    public class ProjectServices:IProjectServices
+    public class ProjectServices : IProjectServices
     {
         private readonly IProjectrepository _projectrepository = new ProjectRepository();
 
@@ -24,9 +25,13 @@ namespace GTD.Services
             _projectrepository.Create(project);
         }
 
+        /// <summary>
+        /// 查找所有Projects，无论状态
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Project> GetAllProjects()
         {
-           return _projectrepository.GetAll();
+            return _projectrepository.GetAll();
         }
 
         public void UpdateProject(Project project)
@@ -38,6 +43,15 @@ namespace GTD.Services
         {
             project.IsDeleted = true;
             _projectrepository.Update(project);
+        }
+
+        /// <summary>
+        /// 所有正在做的需求（未完成，未删除）
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Project> GetAllInprogressProjects()
+        {
+            return _projectrepository.GetAll().Where(p => p.IsComplete == false && p.IsDeleted == false);
         }
     }
 }

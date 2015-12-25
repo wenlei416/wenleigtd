@@ -19,7 +19,7 @@ namespace GTD.Controllers
         // GET: /Project/
         public ActionResult Index()
         {
-            return View(_projectServices.GetAllProjects());
+            return View(_projectServices.GetAllInprogressProjects());
 
         }
 
@@ -112,20 +112,33 @@ namespace GTD.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
+            var tasks = project.Tasks.Where(t => t.IsComplete == false);
+            foreach (var t in tasks)
+            {
+                t.ProjectID = null;
+                _taskServices.UpdateTask(t);
+            }
             _projectServices.DeleteProjectByLogic(project);
             return RedirectToAction("Index");
         }
 
-        // GET: /Project/Complete/5
+        // Post: /Project/Complete/5
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">ProjectID</param>
+        /// <returns>true，表示全部都完成了；false表示有未完成的</returns>
         [HttpPost]
         public JsonResult Complete(int id)
         {
+            //todo:应该用model state的方式来验证model
             //检查是否还有未完成的任务
-            //如果有就XXX
-            //如果没有就改变状态，返回值
+            //如果有就提示有Task未完成
+            //如果没有就改变状态返回值
             Project project = _projectServices.GetProjectById(id);
 
             var allTaskCompleted = project.Tasks.Where(t=>t.IsDeleted==false).All(t => t.IsComplete == true);
+            
             if (allTaskCompleted)
             {
                 project.IsComplete = !project.IsComplete;
