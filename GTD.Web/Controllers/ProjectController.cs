@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using GTD.DAL;
 using GTD.Models;
@@ -11,7 +10,6 @@ namespace GTD.Controllers
 {
     public class ProjectController : Controller
     {
-        private readonly GTDContext _db = new GTDContext();
         private readonly ITaskServices _taskServices = new TaskServices();
         private readonly IProjectServices _projectServices = new ProjectServices();
 

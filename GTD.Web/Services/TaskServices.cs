@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using GTD.DAL;
 using GTD.DAL.Abstract;
@@ -74,12 +75,12 @@ namespace GTD.Services
 
         public IEnumerable<Task> GetCompletedTasks()
         {
-            return _taskRepository.GetAll().Where(t => t.IsComplete == true && t.IsDeleted == false);
+            return _taskRepository.GetAll().Include(t=>t.Pro).Where(t => t.IsComplete == true && t.IsDeleted == false);
         }
 
         public IEnumerable<Task> GetInProgressTasks()
         {
-            return _taskRepository.GetAll().Where(t => t.IsComplete == false && t.IsDeleted == false);
+            return _taskRepository.GetAll().Include(t=>t.Pro).Where(t => t.IsComplete == false && t.IsDeleted == false);
         }
 
         /// <summary>
