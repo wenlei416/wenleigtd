@@ -17,6 +17,12 @@
         <th>
             @Html.DisplayNameFor(model => model.Task.Headline)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsComplete)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsDeleted)
+        </th>
         <th></th>
     </tr>
 
@@ -27,6 +33,12 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Task.Headline)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsComplete)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsDeleted)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.SubTaskId }) |

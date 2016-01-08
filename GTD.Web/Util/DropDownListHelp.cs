@@ -3,21 +3,23 @@ using System.Linq;
 using System.Web.Mvc;
 using GTD.DAL;
 using GTD.Models;
+using GTD.Services;
+using GTD.Services.Abstract;
 
 namespace GTD.Util
 {
     public static class DropDownListHelp
     {
-        public static SelectList PopulateProjectsDropDownList(GTDContext db,int? selectProject = null)
+        public static SelectList PopulateProjectsDropDownList(IProjectServices projectServices,int? selectProject = null)
         {
-            var projectsQuery = from p in db.Projects orderby p.ProjectName select p;
-            return  new SelectList(projectsQuery, "ProjectID", "ProjectName", selectProject);
+
+            return new SelectList(projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", selectProject);
         }
 
-        public static SelectList PopulateContextsDropDownList(GTDContext db,int? selectContext = null)
+        public static SelectList PopulateContextsDropDownList(ContextServices contextServices,int? selectContext = null)
         {
-            var contextQuery = from c in db.Contexts orderby c.ContextId select c;
-            return new SelectList(contextQuery, "ContextId", "ContextName", selectContext);
+
+            return new SelectList(contextServices.GetContext(), "ContextId", "ContextName", selectContext);
         }
 
         public static SelectList PopulatePrioritysDropDownList(string selectPriority = "中")
@@ -33,10 +35,10 @@ namespace GTD.Util
             return new SelectList(dateAttributeQuery, "ID", "Name", selectDateAttribute);
         }
 
-        public static SelectList PopulateTaskDropDownList(GTDContext db, int? selectTask = null)
+        public static SelectList PopulateTaskDropDownList(ITaskServices taskServices, int? selectTask = null)
         {
-            var taskQuery = from t in db.Tasks where t.IsComplete==false && t.IsDeleted==false orderby t.TaskId select t;
-            return new SelectList(taskQuery, "TaskID", "Headline", selectTask);
+            var task = taskServices.GetInProgressTasks();//from t in db.Tasks where t.IsComplete==false && t.IsDeleted==false orderby t.TaskId select t;
+            return new SelectList(task, "TaskID", "Headline", selectTask);
         }
 
     }

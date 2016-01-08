@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Data.Entity;
+using System.Data.Objects;
 using System.Linq;
 using System.Linq.Expressions;
 using GTD.DAL.Abstract;
@@ -8,7 +10,20 @@ namespace GTD.DAL
 {
     public class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private GTDContext _context = new GTDContext();
+        private GTDContext Context { get; set; }
+
+        public GenericRepository(): this(new GTDContext())
+        {
+        }
+
+        public GenericRepository(GTDContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException("context");
+            }
+            Context = context;
+        }
 
         public void Create(TEntity instance)
         {
@@ -18,7 +33,7 @@ namespace GTD.DAL
             }
             else
             {
-                _context.Set<TEntity>().Add(instance);
+                Context.Set<TEntity>().Add(instance);
                 SaveChanges();
             }
         }
@@ -31,7 +46,7 @@ namespace GTD.DAL
             }
             else
             {
-                _context.Entry(instance).State = EntityState.Modified;
+                Context.Entry(instance).State = EntityState.Modified;
                 SaveChanges();
             }
         }
@@ -44,32 +59,32 @@ namespace GTD.DAL
             }
             else
             {
-                _context.Entry(instance).State = EntityState.Deleted;
+                Context.Entry(instance).State = EntityState.Deleted;
                 SaveChanges();
             }
         }
 
         public TEntity Get(Expression<Func<TEntity, bool>> predicate)
         {
-            return _context.Set<TEntity>().FirstOrDefault(predicate);
+            return Context.Set<TEntity>().FirstOrDefault(predicate);
         }
 
         public IQueryable<TEntity> GetAll()
         {
-            return _context.Set<TEntity>().AsQueryable();
+            return Context.Set<TEntity>().AsQueryable();
         }
 
         public void SaveChanges()
         {
-            _context.SaveChanges();
+            Context.SaveChanges();
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
-            if (_context == null) return;
-            _context.Dispose();
-            _context = null;
+            if (Context == null) return;
+            Context.Dispose();
+            Context = null;
         }
 
         public void Dispose()

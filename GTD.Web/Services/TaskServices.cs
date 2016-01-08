@@ -12,17 +12,19 @@ namespace GTD.Services
     public class TaskServices : ITaskServices
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly IProjectServices _projectServices;
 
         public TaskServices()
         {
-            _taskRepository = new TaskRepository(new GTDContext());
+            _projectServices = new ProjectServices();
+            _taskRepository = new TaskRepository();
         }
 
-        public TaskServices(ITaskRepository taskRepository)
+        public TaskServices(ITaskRepository taskRepository, IProjectServices projectServices)
         {
             _taskRepository = taskRepository;
+            _projectServices = projectServices;
         }
-
 
         public IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute)
         {
@@ -155,9 +157,49 @@ namespace GTD.Services
             _taskRepository.BatchUpdateTask(tasks);
         }
 
-        public GTDContext GetContext()
+        //public GTDContext GetContext()
+        //{
+        //    return _taskRepository.GetContext();
+        //}
+
+        public void CompleteTask(Task task)
         {
-            return _taskRepository.GetContext();
+            task.IsComplete = !task.IsComplete;
+            task.CompleteDateTime = DateTime.Today;
+            //如果关联的项目已经删除，断开关系
+            if (task.ProjectID != null)
+            {
+                var p = _projectServices.GetProjectById((int) task.ProjectID);
+                if (p.IsDeleted)
+                {
+                    task.ProjectID = null;
+                }
+            }
+            UpdateTask(task);
+
+            //如果后续任务没有明确的日程，设为今日待办
+            if (task.NextTask_TaskId != null)
+            {
+                var nextTask = GetAll().Single(t => t.TaskId == task.NextTask_TaskId);
+                if (nextTask != null && nextTask.StartDateTime == null)
+                {
+                    nextTask.StartDateTime = DateTime.Today;
+                    nextTask.DateAttribute = DateAttribute.今日待办;
+                    UpdateTask(nextTask);
+                }
+            }
+            //前置任务为这个任务的其他任务，如果没有明确的日程，设为今日待办
+            var previousTasks = GetAll().Where(t => t.PreviousTask_TaskId == task.TaskId);
+            var enumerablepreviousTasks = previousTasks as Task[] ?? previousTasks.ToArray();
+            foreach (var t in enumerablepreviousTasks)
+            {
+                if (t.StartDateTime == null)
+                {
+                    t.StartDateTime = DateTime.Today;
+                    t.DateAttribute = DateAttribute.今日待办;
+                }
+            }
+            BatchUpdateTask(enumerablepreviousTasks);
         }
 
     }

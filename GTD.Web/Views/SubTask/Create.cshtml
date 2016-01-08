@@ -6,8 +6,7 @@
 
 <h2>Create</h2>
 
-@using (Html.BeginForm())
-{
+@using (Html.BeginForm()) {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
 
@@ -21,12 +20,29 @@
             @Html.EditorFor(model => model.SubTaskName)
             @Html.ValidationMessageFor(model => model.SubTaskName)
         </div>
+
         <div class="editor-label">
-            @Html.LabelFor(model => model.Task)
+            @Html.LabelFor(model => model.TaskId, "Task")
         </div>
         <div class="editor-field">
-            @Html.DisplayFor(model => model.Task.Headline)
-            @Html.HiddenFor(model => model.TaskId)
+            @Html.DropDownList("TaskId", String.Empty)
+            @Html.ValidationMessageFor(model => model.TaskId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsComplete)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsComplete)
+            @Html.ValidationMessageFor(model => model.IsComplete)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsDeleted)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsDeleted)
+            @Html.ValidationMessageFor(model => model.IsDeleted)
         </div>
 
         <p>

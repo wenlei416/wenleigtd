@@ -1,8 +1,12 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.Models;
+using GTD.DAL;
 
 namespace GTD.Controllers
 {
@@ -15,16 +19,30 @@ namespace GTD.Controllers
 
         public ActionResult Index()
         {
-            return View(db.SubTasks.ToList());
+            var subtasks = db.SubTasks.Include(s => s.Task);
+            return View(subtasks.ToList());
+        }
+
+        //
+        // GET: /SubTask/Details/5
+
+        public ActionResult Details(int id = 0)
+        {
+            SubTask subtask = db.SubTasks.Find(id);
+            if (subtask == null)
+            {
+                return HttpNotFound();
+            }
+            return View(subtask);
         }
 
         //
         // GET: /SubTask/Create
 
-        public ActionResult Create(int id)
+        public ActionResult Create()
         {
-            SubTask newSubtask = new SubTask() { TaskId = id, Task = db.Tasks.Find(id) };
-            return View(newSubtask);
+            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline");
+            return View();
         }
 
         //
@@ -38,9 +56,10 @@ namespace GTD.Controllers
             {
                 db.SubTasks.Add(subtask);
                 db.SaveChanges();
-                return RedirectToAction("Details", "Task", new {id = subtask.TaskId});
+                return RedirectToAction("Index");
             }
 
+            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", subtask.TaskId);
             return View(subtask);
         }
 
@@ -54,6 +73,7 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", subtask.TaskId);
             return View(subtask);
         }
 
@@ -70,6 +90,7 @@ namespace GTD.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", subtask.TaskId);
             return View(subtask);
         }
 
@@ -105,17 +126,16 @@ namespace GTD.Controllers
             base.Dispose(disposing);
         }
 
-        public ActionResult Complete(int id=0)
+        public ActionResult Complete(int id)
         {
-            SubTask subtask = db.SubTasks.Find(id);
-            if (subtask == null)
+            var sub = db.SubTasks.FirstOrDefault(s=>s.SubTaskId==id);
+            if (sub != null)
             {
-                return HttpNotFound();
+                sub.IsComplete = !sub.IsComplete;
+                db.Entry(sub).State = EntityState.Modified;
+                db.SaveChanges();
             }
-            subtask.IsComplete = !subtask.IsComplete;
-            db.SaveChanges();
-
-            return RedirectToAction("Details","Task",new {id=subtask.TaskId}); 
+            return RedirectToAction("Details", "Task", new { id = sub.TaskId });
         }
     }
 }

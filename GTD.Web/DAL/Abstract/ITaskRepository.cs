@@ -8,9 +8,6 @@ namespace GTD.DAL.Abstract
     {
         Task GetTaskById(int? taskId);
         void DeleteTask(int taskId);
-        void UpdateTask(Task task);
-        GTDContext GetContext();
-
         void BatchUpdateTask(IEnumerable<Task> tasks);
 
         //IEnumerable<Task> GetWorkingTasks();

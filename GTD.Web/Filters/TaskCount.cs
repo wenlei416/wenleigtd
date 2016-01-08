@@ -29,7 +29,7 @@ namespace GTD.Filters
         {
             //tc记录各个dateattribute的任务数，显示在导航中
             //每次必须建新的taskrepository,否则会出现数据库更新了，但是Repository不变的情况
-            this.taskRepository = new TaskRepository(new GTDContext());
+            this.taskRepository = new TaskRepository();
             var tc = new Dictionary<string, int>();
 
             foreach (DateAttribute da in Enum.GetValues(typeof(DateAttribute)))

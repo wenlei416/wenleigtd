@@ -36,7 +36,10 @@ namespace GTD.Services.Abstract
 
         void BatchUpdateTask(IEnumerable<Task> tasks);
 
-        GTDContext GetContext();
+        //GTDContext GetContext();
+
+        void CompleteTask(Task task);
+
 
 
     }

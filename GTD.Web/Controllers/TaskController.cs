@@ -15,18 +15,23 @@ namespace GTD.Controllers
     public class TaskController : Controller
     {
         private readonly ITaskServices _taskServices;
+        private readonly IProjectServices _projectServices;
+        private readonly ContextServices _contextServices;
 
         public TaskController()
         {
             _taskServices = new TaskServices();
+            _projectServices = new ProjectServices();
+            _contextServices=new ContextServices();
+
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskServices.GetContext());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskServices.GetContext());
+            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext());
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices);
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices);
         }
 
         // GET: /Task/
@@ -86,13 +91,13 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskServices.GetContext(), task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskServices.GetContext(),
+            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.NextTask_TaskId ?? new int());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.PreviousTask_TaskId ?? new int());
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.PreviousTask_TaskId ?? new int());
 
 
             return View(task);
@@ -109,13 +114,13 @@ namespace GTD.Controllers
                 _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_taskServices.GetContext(), task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_taskServices.GetContext(),
+            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.NextTask_TaskId ?? new int());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices.GetContext(), task.PreviousTask_TaskId ?? new int());
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.PreviousTask_TaskId ?? new int());
 
             return View(task);
         }
@@ -148,40 +153,13 @@ namespace GTD.Controllers
         // GET: /Task/Complete/5
         public ActionResult Complete(int id)
         {
-            //todo 重新打开已完成任务时，无法关联到已删除项目
-            //todo 需要抽出来放services
             var sort = ViewBag.SortOrder;
             Task task = _taskServices.GetTaskById(id);
             if (task == null)
             {
                 return HttpNotFound();
             }
-            task.IsComplete = !task.IsComplete;
-            task.CompleteDateTime = DateTime.Today;
-            _taskServices.UpdateTask(task);
-
-            //如果后续任务没有明确的日程，设为今日待办
-            if (task.NextTask_TaskId != null)
-            {
-                var nextTask = _taskServices.GetAll().Single(t => t.TaskId == task.NextTask_TaskId);
-                if (nextTask != null && nextTask.StartDateTime == null)
-                {
-                    nextTask.StartDateTime = DateTime.Today;
-                    nextTask.DateAttribute = DateAttribute.今日待办;
-                    _taskServices.UpdateTask(nextTask);
-                }
-            }
-            //前置任务为这个任务的其他任务，如果没有明确的日程，设为今日待办
-            var previousTasks = _taskServices.GetAll().Where(t => t.PreviousTask_TaskId == task.TaskId);
-            foreach (var t in previousTasks)
-            {
-                if (t.StartDateTime == null)
-                {
-                    t.StartDateTime = DateTime.Today;
-                    t.DateAttribute = DateAttribute.今日待办;
-                }
-            }
-            _taskServices.BatchUpdateTask(previousTasks);
+            _taskServices.CompleteTask(task);
             return RedirectToAction("ListTask", new { da = task.DateAttribute, sortOrder = sort });
         }
 

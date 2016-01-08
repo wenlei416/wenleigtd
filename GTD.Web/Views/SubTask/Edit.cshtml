@@ -23,6 +23,30 @@
             @Html.ValidationMessageFor(model => model.SubTaskName)
         </div>
 
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TaskId, "Task")
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("TaskId", String.Empty)
+            @Html.ValidationMessageFor(model => model.TaskId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsComplete)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsComplete)
+            @Html.ValidationMessageFor(model => model.IsComplete)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsDeleted)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsDeleted)
+            @Html.ValidationMessageFor(model => model.IsDeleted)
+        </div>
+
         <p>
             <input type="submit" value="Save" />
         </p>
