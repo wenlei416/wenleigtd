@@ -12,7 +12,18 @@ namespace GTD.Services
 {
     public class ProjectServices : IProjectServices
     {
-        private readonly IProjectrepository _projectrepository = new ProjectRepository();
+        private readonly IProjectrepository _projectrepository;
+
+        public ProjectServices()
+        {
+            _projectrepository= new ProjectRepository();
+        }
+
+        public ProjectServices(IProjectrepository projectrepository)
+        {
+            _projectrepository = projectrepository;
+        }
+
 
         public Project GetProjectById(int id)
         {
