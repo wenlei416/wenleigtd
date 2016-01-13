@@ -1,0 +1,19 @@
+﻿@model string
+
+@{
+    ViewBag.Title = "批量新建任务";
+}
+<h2>批量新建任务</h2>
+@using (Html.BeginForm())
+{
+
+    <div class="editor-label">
+        批量录入
+    </div>
+    <div class="editor-field">
+        <textarea class="text-box multi-line" id="taskTexts" name="taskTexts"></textarea>
+    </div>
+    <p>
+        <input type="submit" value="创建" />
+    </p>
+}

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using GTD.DAL;
 using GTD.DAL.Abstract;
 using GTD.Models;
@@ -22,7 +23,7 @@ namespace GTD.Controllers
         {
             _taskServices = new TaskServices();
             _projectServices = new ProjectServices();
-            _contextServices=new ContextServices();
+            _contextServices = new ContextServices();
 
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
@@ -172,7 +173,7 @@ namespace GTD.Controllers
             ViewBag.countSJX = 1;
 
             //重新把需要的task选择出来
-            var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i=>i.TaskId).ToList();
+            var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
 
             ViewBag.Title = da + "  （" + workingtasks.Count() + "）";
             var viewmodel = new TasklistVM(workingtasks, sortOrder);
@@ -232,6 +233,29 @@ namespace GTD.Controllers
 
             };
             return View(viewmodel);
+        }
+
+        public ActionResult BatchCreate()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult BatchCreate(string taskTexts)
+        {
+            //先判空
+            if (taskTexts == null || taskTexts.IsEmpty()) return View();
+
+            //文本不为空，但是没有合格的task
+            var tasks = _taskServices.SplitTextToTasks(taskTexts);
+            if (tasks == null) return View();
+
+            //有合格的task
+            foreach (var t in tasks)
+            {
+                _taskServices.AddTask(t);
+            }
+            return RedirectToAction("ListTask", new { da = "收集箱" });
         }
     }
 }

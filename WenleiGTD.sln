@@ -5,7 +5,12 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTD", "GTD.Web\GTD.csproj", "{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTD.UT", "GTD.UT\GTD.UT.csproj", "{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99ED9BDF-6F8A-476A-A0F9-8C83D1033A9A}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +22,6 @@ Global
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

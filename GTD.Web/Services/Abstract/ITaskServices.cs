@@ -40,7 +40,7 @@ namespace GTD.Services.Abstract
 
         void CompleteTask(Task task);
 
-
+        IEnumerable<Task> SplitTextToTasks(string taskText);
 
     }
 }

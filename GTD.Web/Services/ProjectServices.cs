@@ -14,7 +14,6 @@ namespace GTD.Services
     {
         private readonly IProjectrepository _projectrepository = new ProjectRepository();
 
-
         public Project GetProjectById(int id)
         {
             return _projectrepository.GetById(id);
@@ -52,6 +51,12 @@ namespace GTD.Services
         public IEnumerable<Project> GetAllInprogressProjects()
         {
             return _projectrepository.GetAll().Where(p => p.IsComplete == false && p.IsDeleted == false);
+        }
+
+        public int? IsExistByName(string projectName)
+        {
+            var pro = _projectrepository.Get(p => p.ProjectName == projectName);
+            return pro == null ? (int?) null : _projectrepository.Get(p => p.ProjectName == projectName).ProjectId;
         }
     }
 }
