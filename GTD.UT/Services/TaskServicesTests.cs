@@ -8,13 +8,14 @@ using GTD.Services.Abstract;
 using Moq;
 
 
+
 namespace GTD.UT.Services
 {
     [TestClass()]
     public class TaskServicesTests
     {
 
-        [TestMethod()]
+        //[TestMethod()]
         public void GetTaskByIdTest()
         {
             //准备
@@ -38,6 +39,43 @@ namespace GTD.UT.Services
 
             ////判断
             //Assert.AreEqual(result.Headline, "第一个任务");
+        }
+
+        //[TestMethod()]
+        public void SplitTextToTasksTest()
+        {
+            //准备
+            //动作
+            //判断
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void GetTaskNameFromTextTest()
+        {
+            //准备
+            string text1 = "#测试项目 测试任务1";//项目在开头，任务在中间
+            string text2 = "测试任务1 #测试项目";//项目在中间，任务在开头
+            string text3 = "测试任务1";//没有项目，只有任务
+            string text4 = "";//空字符串
+            string text5 = "#测试项目"; //只有项目，没有任务
+
+
+            TaskServices taskServices = new TaskServices();
+            //动作
+            var taskname1 = taskServices.GetTaskNameFromText(text1);
+            var taskname2 = taskServices.GetTaskNameFromText(text2);
+            var taskname3 = taskServices.GetTaskNameFromText(text3);
+            var taskname4 = taskServices.GetTaskNameFromText(text4);
+            var taskname5 = taskServices.GetTaskNameFromText(text5);
+
+            //判断
+            Assert.AreEqual(taskname1, "测试任务1");
+            Assert.AreEqual(taskname2, "测试任务1");
+            Assert.AreEqual(taskname3, "测试任务1");
+            Assert.AreEqual(taskname4, null);
+            Assert.AreEqual(taskname5, null);
+
         }
     }
 }

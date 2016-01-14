@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -159,11 +158,6 @@ namespace GTD.Services
             _taskRepository.BatchUpdateTask(tasks);
         }
 
-        //public GTDContext GetContext()
-        //{
-        //    return _taskRepository.GetContext();
-        //}
-
         public void CompleteTask(Task task)
         {
             task.IsComplete = !task.IsComplete;
@@ -204,13 +198,20 @@ namespace GTD.Services
             BatchUpdateTask(enumerablepreviousTasks);
         }
 
+        /// <summary>
+        /// 将批量输入的文本，拆分成多个task
+        /// 业务规则
+        /// 每行一个task
+        /// #引导项目，如果项目不存在，不新增。
+        /// </summary>
+        /// <param name="taskText"></param>
+        /// <returns></returns>
         public IEnumerable<Task> SplitTextToTasks(string taskText)
         {
             //拆分成若干行
             List<Task> tasks = new List<Task>();
             string headline, project = null;
             IEnumerable<string> taskTexts = taskText.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
             foreach (string t in taskTexts)
             {
                 var t1 = t.Trim();
@@ -228,7 +229,6 @@ namespace GTD.Services
                     headline = t1.Substring(i + 1).Trim();
                     if (!string.IsNullOrEmpty(project) && !string.IsNullOrEmpty(headline))
                     {
-                        //TODO 判断项目是否存在，存在直接用，不存在也不创建
                         Task task = new Task { Headline = headline, ProjectID = _projectServices.IsExistByName(project) };
                         tasks.Add(task);
                         continue;
@@ -236,7 +236,7 @@ namespace GTD.Services
 
                 }
 
-                //其他内容开头，空格#到紧接的空格，作为项目名称。项目名称之前的内容作为任务名称，项目名称之后的内容废弃。
+                //其他内容开头：空格#到紧接的空格，作为项目名称。项目名称之前的内容作为任务名称，项目名称之后的内容废弃。
                 if (t1.IndexOf(" #", StringComparison.Ordinal) > 0)
                 {
                     int projectstart = t1.IndexOf(" #", StringComparison.Ordinal);
@@ -244,14 +244,13 @@ namespace GTD.Services
                     headline = t1.Substring(0, projectstart).Trim();
                     if (!string.IsNullOrEmpty(project) && !string.IsNullOrEmpty(headline))
                     {
-                        //TODO 判断项目是否存在
                         Task task = new Task { Headline = headline, ProjectID = _projectServices.IsExistByName(project) };
                         tasks.Add(task);
                         continue;
                     }
                 }
 
-                //没有#的，所有内容作为task
+                //没有#的：所有内容作为task
                 if (t1.IndexOf("#", StringComparison.Ordinal) < 0)
                 {
                     if (!string.IsNullOrEmpty(t1))
@@ -265,6 +264,66 @@ namespace GTD.Services
             }
 
             return tasks;
+        }
+
+        //输入文本，返回项目名称
+        public string GetTaskNameFromText(string tasktext)
+        {
+            string taskname = null;
+            var t1 = tasktext.Trim();
+            if (t1.IsEmpty()) return null; ;
+
+            //开头是#：#到第一个空格作为项目名称，空格后所有内容作为项目标题（不去中间空格）
+            if (t1.IndexOf("#", StringComparison.Ordinal) == 0)
+            {
+                int i = t1.IndexOf(" ", StringComparison.Ordinal);
+                if (i>0)
+                {
+                    taskname = t1.Substring(i + 1).Trim();
+                }
+            }
+
+            //其他内容开头：空格#到紧接的空格，作为项目名称。项目名称之前的内容作为任务名称，项目名称之后的内容废弃。
+            if (t1.IndexOf(" #", StringComparison.Ordinal) > 0)
+            {
+                var i = t1.IndexOf(" #", StringComparison.Ordinal);
+                taskname = t1.Substring(0, i).Trim();
+            }
+
+            //没有#的：所有内容作为task
+            if (t1.IndexOf("#", StringComparison.Ordinal) < 0)
+            {
+                taskname = t1;
+            }
+            return taskname;
+        }
+
+        public string GetProjectNameFromText(string tasktext)
+        {
+            string projectname = null;
+            var t1 = tasktext.Trim();
+            if (t1.IsEmpty()) return null; ;
+
+            //开头是#：#到第一个空格作为项目名称
+            if (t1.IndexOf("#", StringComparison.Ordinal) == 0)
+            {
+                //用第一个空格的位置来确定项目名称
+                var i = t1.IndexOf(" ", StringComparison.Ordinal);
+                projectname = t1.Substring(1, i - 1).Trim();
+            }
+
+            //其他内容开头：空格#到紧接的空格作为项目名称
+            if (t1.IndexOf(" #", StringComparison.Ordinal) > 0)
+            {
+                int projectstart = t1.IndexOf(" #", StringComparison.Ordinal);
+                projectname = t1.Substring(projectstart + 2, t1.Length - projectstart - 2).Trim();
+            }
+
+            //没有#的：没有project
+            if (t1.IndexOf("#", StringComparison.Ordinal) < 0)
+            {
+            }
+            return projectname;
         }
     }
 }
