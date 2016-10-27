@@ -38,7 +38,7 @@ namespace GTD.Controllers
 
         public ActionResult Create()
         {
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline");
+            ViewBag.TaskId = new SelectList(db.Tasks.Where(i=>i.IsComplete==false&&i.IsDeleted==false), "TaskId", "Headline");
             return View();
         }
 
