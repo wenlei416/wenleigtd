@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Objects;
@@ -49,6 +50,22 @@ namespace GTD.DAL
                 Context.Entry(instance).State = EntityState.Modified;
                 SaveChanges();
             }
+        }
+
+        public void Updates(IEnumerable<TEntity> instances)
+        {
+            foreach (var instance in instances)
+            {
+                if (instance == null)
+                {
+                    throw new ArgumentNullException("instance");
+                }
+                else
+                {
+                    Context.Entry(instance).State = EntityState.Modified;
+                }
+            }
+            SaveChanges();
         }
 
         public void Delete(TEntity instance)

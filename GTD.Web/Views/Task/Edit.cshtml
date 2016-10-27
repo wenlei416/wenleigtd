@@ -2,10 +2,10 @@
 @model GTD.Models.Task
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = @Model.Headline;
 }
 
-<h2>Edit</h2>
+<h2>编辑</h2>
 
 @using (Html.BeginForm())
 {

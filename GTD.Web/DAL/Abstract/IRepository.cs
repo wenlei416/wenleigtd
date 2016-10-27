@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -12,5 +13,6 @@ namespace GTD.DAL.Abstract
         TEntity Get(Expression<Func<TEntity, bool>> predicate);
         IQueryable<TEntity> GetAll();
         void SaveChanges();
+        void Updates(IEnumerable<TEntity> instances);
     }
 }

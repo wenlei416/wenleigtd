@@ -34,7 +34,7 @@ namespace GTD.Services.Abstract
         void DeleteTask(int taskId);
         IEnumerable<Task> GetAll();
 
-        void BatchUpdateTask(IEnumerable<Task> tasks);
+        //void BatchUpdateTask(IEnumerable<Task> tasks);
 
         //GTDContext GetContext();
 

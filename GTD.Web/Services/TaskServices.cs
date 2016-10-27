@@ -142,6 +142,7 @@ namespace GTD.Services
                 task.DateAttribute = da;
             }
             _taskRepository.BatchUpdateTask(tasks);
+            //_taskRepository.Updates(tasks);
         }
 
         public Task GetTaskById(int? taskId)
@@ -159,10 +160,10 @@ namespace GTD.Services
             return _taskRepository.GetAll();
         }
 
-        public void BatchUpdateTask(IEnumerable<Task> tasks)
-        {
-            _taskRepository.BatchUpdateTask(tasks);
-        }
+        //public void BatchUpdateTask(IEnumerable<Task> tasks)
+        //{
+        //    _taskRepository.BatchUpdateTask(tasks);
+        //}
 
         public void CompleteTask(Task task)
         {
@@ -201,7 +202,8 @@ namespace GTD.Services
                     t.DateAttribute = DateAttribute.今日待办;
                 }
             }
-            BatchUpdateTask(enumerablepreviousTasks);
+            _taskRepository.BatchUpdateTask(enumerablepreviousTasks);
+            //BatchUpdateTask(enumerablepreviousTasks);
         }
 
         /// <summary>

@@ -22,13 +22,9 @@ namespace GTD.DAL
             Update(task);
         }
 
-
         public void BatchUpdateTask(IEnumerable<Task> tasks)
         {
-            foreach (var t in tasks)
-            {
-                Update(t);
-            }
+            Updates(tasks);
         }
         
     }
