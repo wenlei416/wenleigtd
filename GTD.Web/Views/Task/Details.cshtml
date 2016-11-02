@@ -66,6 +66,53 @@
             }
         </div>
     </li>
+
+    <li class="pomodoroTime">
+        <div class="progress" style="width: 566px;height: 25px;">
+            <div id="bar"class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+            </div>
+        </div>
+        <button id="startWorkButton" class="btn btn-primary">开始工作</button>
+        <button id="startRestButton" class="btn btn-warning">开始休息</button>
+        <button id="stopButton" class="btn btn-danger disabled">停止</button>
+    </li>
+
 </ul>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var
+                workTime,
+                timer,
+                startTime,
+                stopTime;
+
+            $('#startWorkButton').click(function() {
+                workTime = 10 * 1000;
+                startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
+                stopTime = startTime + workTime;
+                updateProgress();
+                timer = setInterval(updateProgress, 1000);
+            });
+
+
+            var updateProgress = function() {
+                var now = +new Date();
+                var remainTime = Math.round((stopTime - now) / 1000);
+                if (remainTime >= 0) {
+                    var progress = remainTime / (workTime / 1000);
+                    $('#bar').width (progress * 100 + "%");
+                    if (remainTime === 0) {
+                        clearTimeout(timer);
+                        alert("时间到");
+                    }
+                }
+            }
+
+        });
+    </script>
+}
+
+
 
 
