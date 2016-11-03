@@ -119,6 +119,7 @@
             }
 
             $('#startWorkButton').click(function () {
+                $('#bar').removeClass("progress-bar-success").addClass("progress-bar-info");
                 workTime = 25 * 60 * 1000;
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
                 stopTime = startTime + workTime;
@@ -127,6 +128,7 @@
             });
 
             $('#startRestButton').click(function () {
+                $('#bar').removeClass("progress-bar-info").addClass("progress-bar-success");
                 workTime = 5 * 1000;
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
                 stopTime = startTime + workTime;
