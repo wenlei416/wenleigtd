@@ -67,12 +67,13 @@
         </div>
     </li>
 
-    
-    <li><br/>
+
+    <li>
+        <br />
     </li>
     <li class="pomodoroTime">
         <div class="progress" style="width: 566px;height: 25px;">
-            <div id="bar"class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+            <div id="bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
             </div>
         </div>
         <button id="startWorkButton" class="btn btn-primary">开始工作</button>
@@ -81,9 +82,11 @@
     </li>
 
 </ul>
+
 @section Scripts {
+    <script src="~/Scripts/layer/layer.js" type="text/javascript"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var
                 workTime,
                 timer,
@@ -98,13 +101,25 @@
                     $('#bar').width(progress * 100 + "%");
                     if (remainTime === 0) {
                         clearTimeout(timer);
-                        alert("时间到");
+                        //alert("时间到");
+                        layer.open({
+                            type: 1,
+                            title: false,
+                            closeBtn: 0, //不显示关闭按钮
+                            shade: [0],
+                            area: ['340px', '215px'],
+                            offset: 'rb', //右下角弹出
+                            //time: 2000, //2秒后自动关闭
+                            shift: 2,
+                            shadeClose: true,
+                            content: '时间到'//iframe的url，no代表不显示滚动条
+                        });
                     }
                 }
             }
 
-            $('#startWorkButton').click(function() {
-                workTime = 25*60 * 1000;
+            $('#startWorkButton').click(function () {
+                workTime = 25 * 60 * 1000;
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
                 stopTime = startTime + workTime;
                 updateProgress();
@@ -112,7 +127,7 @@
             });
 
             $('#startRestButton').click(function () {
-                workTime = 5 * 60 * 1000;
+                workTime = 5 * 1000;
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
                 stopTime = startTime + workTime;
                 updateProgress();
