@@ -1,6 +1,7 @@
 ﻿@model GTD.Models.Pomodoro
 
 @Html.HiddenFor(model => model.TaskId)
+
 <div class="progress" style="width: 566px;height: 25px;">
     <div id="bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
     </div>
@@ -14,10 +15,13 @@
 <script>
     $(document).ready(function () {
         var isTiming = false,
-            workTime,
-            timer,
-            startTime,
-            stopTime;
+            taskId=@Model.TaskId,
+            workTime,   // 番茄时长
+            timer,      // 计时器
+            isCompleted,// 是否正常完成
+            isWorking,  // 工作or休息时间
+            startTime,  // 开始计时的时间，格式是总秒数
+            stopTime;   // 结束计时的时间，格式是总秒数
         $('#stopButton').attr("disabled", true);
 
         var updateProgress = function () {
@@ -32,6 +36,7 @@
                     $('#startWorkButton').attr("disabled", false);
                     $('#startRestButton').attr("disabled", false);
                     $('#stopButton').attr("disabled", true);
+                    isCompleted = true;
 
                     clearTimeout(timer);
                     //展示右下角的提示框
@@ -51,13 +56,13 @@
                     $.ajax({
                         url: '@Url.Action("AddPomodoro", "Pomodoroes")',
                         data:
-                           { //PomodoroId:,
-                                IsCompletedPomodoro: false,
-                                StarDateTime: "2016-10-12 18:00:01",
-                                EnDateTime: "2016-10-12 18:00:02",
-                                IsWorkingTime: false,
-                                TaskId: 7
-                            },
+                           {
+                               IsCompletedPomodoro: isCompleted,
+                               StarDateTime: timeStamp2String(startTime),
+                               EnDateTime: timeStamp2String(stopTime),
+                               IsWorkingTime: isWorking,
+                               TaskId: taskId
+                           },
                         type: 'post',
                         cache: false,
                         async: true,
@@ -66,12 +71,10 @@
                             console.log(data);
                             //这里需要把新增的pomodoro写到页面上
                         },
-                        error:function() {
+                        error: function () {
                             console.log("lost");
                         }
                     });
-
-
                 }
             }
         }
@@ -79,6 +82,7 @@
         $('#startWorkButton').click(function () {
             if (!isTiming) {
                 isTiming = true;
+                isWorking = true;
                 $('#startWorkButton').attr("disabled", true);
                 $('#startRestButton').attr("disabled", true);
                 $('#stopButton').attr("disabled", false);
@@ -86,6 +90,9 @@
                 $('#bar').removeClass("progress-bar-success").addClass("progress-bar-info");
                 workTime = 25 * 1000;//番茄时间定死为25分钟， 以后考虑变成配置
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
+
+                console.log(timeStamp2String(startTime));
+
                 stopTime = startTime + workTime;
                 updateProgress();
                 timer = setInterval(updateProgress, 1000);
@@ -95,6 +102,7 @@
         $('#startRestButton').click(function () {
             if (!isTiming) {
                 isTiming = true;
+                isWorking = false;
                 $('#startWorkButton').attr("disabled", true);
                 $('#startRestButton').attr("disabled", true);
                 $('#stopButton').attr("disabled", false);
@@ -102,6 +110,9 @@
                 $('#bar').removeClass("progress-bar-info").addClass("progress-bar-success");
                 workTime = 2 * 1000;//番茄休息时间定死为5分钟， 以后考虑变成配置
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
+
+                console.log(timeStamp2String(startTime));
+
                 stopTime = startTime + workTime;
                 updateProgress();
                 timer = setInterval(updateProgress, 1000);//一秒钟判断一次
@@ -116,8 +127,42 @@
 
                 clearTimeout(timer);
                 isTiming = false;
+                stopTime = new Date();
+                isCompleted = false;
+                $.ajax({
+                    url: '@Url.Action("AddPomodoro", "Pomodoroes")',
+                    data:
+                       { //PomodoroId:,
+                           IsCompletedPomodoro: isCompleted,
+                           StarDateTime: timeStamp2String(startTime),
+                           EnDateTime: timeStamp2String(stopTime),
+                           IsWorkingTime: isWorking,
+                           TaskId: taskId
+                       },
+                    type: 'post',
+                    cache: false,
+                    async: true,
+                    dataType: 'text',
+                    success: function (data) {
+                        console.log(data);
+                        //这里需要把新增的pomodoro写到页面上
+                    },
+                    error: function () {
+                        console.log("lost");
+                    }
+                });
             }
         });
 
+        function timeStamp2String(time){
+            var datetime = new Date(time);
+            var year = datetime.getFullYear();
+            var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+            var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+            var hour = datetime.getHours()< 10 ? "0" + datetime.getHours() : datetime.getHours();
+            var minute = datetime.getMinutes()< 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+            var second = datetime.getSeconds()< 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
+            return year + "-" + month + "-" + date+" "+hour+":"+minute+":"+second;
+        }
     });
 </script>
