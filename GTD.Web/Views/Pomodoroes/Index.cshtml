@@ -1,0 +1,58 @@
+﻿@model IEnumerable<GTD.Models.Pomodoro>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Task.Headline)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsCompletedPomodoro)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StarDateTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EnDateTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsWorkingTime)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Task.Headline)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsCompletedPomodoro)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StarDateTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EnDateTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsWorkingTime)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.PomodoroId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.PomodoroId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.PomodoroId })
+        </td>
+    </tr>
+}
+
+</table>
