@@ -28,3 +28,6 @@ _ReSharper*/
 *.vssscc
 $tf*/
 .vs
+GTD.Web/Web.config
+GTD.Web/Web.Debug.config
+GTD.Web/Web.Release.config
