@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using GTD.DAL;
+using GTD.DAL.Abstract;
 using GTD.Models;
 using Microsoft.Ajax.Utilities;
 
@@ -14,7 +15,14 @@ namespace GTD.Controllers
 {
     public class PomodoroesController : Controller
     {
+        private IPomodoroRepository pomodoroRepository;
+
         private GTDContext db = new GTDContext();
+
+        public PomodoroesController(IPomodoroRepository pomodoroRepository)
+        {
+            this.pomodoroRepository = pomodoroRepository;
+        }
 
         public string AddPomodoro(Pomodoro pomodoro)
         {
@@ -30,7 +38,7 @@ namespace GTD.Controllers
         // GET: Pomodoroes
         public ActionResult Index()
         {
-            var pomodoroes = db.Pomodoroes.Include(p => p.Task);
+            var pomodoroes = pomodoroRepository.GetAll().Include(p => p.Task);//db.Pomodoroes.Include(p => p.Task);
             return View(pomodoroes.ToList());
         }
 

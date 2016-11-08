@@ -71,40 +71,9 @@
     <li class="pomodoros">
         <div>
             @{
-                Html.RenderPartial("PomodoroPartView", new Pomodoro { TaskId = Model.Task.TaskId });
+                Html.RenderPartial("PomodoroPartView", new Pomodoro { TaskId = Model.Task.TaskId ,Task = Model.Task});
             }
         </div>
-        <ul>
-            <li>
-                IsCompletedPomodoro
-            </li>
-            <li>
-                StarDateTime
-            </li>
-            <li>
-                EndDateTime
-            </li>
-            <li>
-                IsWorkingTime
-            </li>
-
-            @foreach (var item in Model.Task.Pomodoros)
-            {
-
-                <li>
-                    @Html.DisplayFor(modelItem => item.IsCompletedPomodoro)
-                </li>
-                <li>
-                    @Html.DisplayFor(modelItem => item.StarDateTime)
-                </li>
-                <li>
-                    @Html.DisplayFor(modelItem => item.EnDateTime)
-                </li>
-                <li>
-                    @Html.DisplayFor(modelItem => item.IsWorkingTime)
-                </li>
-            }
-        </ul>
     </li>
 
 </ul>
