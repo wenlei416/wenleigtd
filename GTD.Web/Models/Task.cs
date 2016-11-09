@@ -64,6 +64,9 @@ namespace GTD.Models
 
         public virtual ICollection<Comment> Comments { get; set; }
 
+        public virtual ICollection<Pomodoro> Pomodoros { get; set; }
+
+
 
     }
 }
