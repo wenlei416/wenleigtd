@@ -52,6 +52,10 @@
     <Reference Include="Antlr3.Runtime">
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DotNetOpenAuth.AspNet">
       <HintPath>..\packages\DotNetOpenAuth.AspNet.4.3.4.13329\lib\net45-full\DotNetOpenAuth.AspNet.dll</HintPath>
     </Reference>
@@ -91,8 +95,16 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.OAuth.3.2.3\lib\net45\Microsoft.Web.WebPages.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq, Version=4.5.23.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.5.23\lib\net45\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -174,43 +186,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CommentController.cs" />
+    <Compile Include="Controllers\PomodoroesController.cs" />
     <Compile Include="Controllers\SubTaskController.cs" />
+    <Compile Include="DAL\Abstract\IPomodoroRepository.cs" />
     <Compile Include="DAL\Abstract\IProjectrepository.cs" />
     <Compile Include="DAL\Abstract\IRepository.cs" />
     <Compile Include="DAL\Abstract\ITaskRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
+    <Compile Include="DAL\PomodoroRepository.cs" />
     <Compile Include="DAL\ProjectRepository.cs" />
     <Compile Include="DAL\TaskRepository.cs" />
     <Compile Include="Filters\TaskCount.cs" />
-    <Compile Include="Migrations\201505151224591_addnexttask.cs" />
-    <Compile Include="Migrations\201505151224591_addnexttask.Designer.cs">
-      <DependentUpon>201505151224591_addnexttask.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505151309136_addnexttaskid.cs" />
-    <Compile Include="Migrations\201505151309136_addnexttaskid.Designer.cs">
-      <DependentUpon>201505151309136_addnexttaskid.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505260107013_CompleteDateTime.cs" />
-    <Compile Include="Migrations\201505260107013_CompleteDateTime.Designer.cs">
-      <DependentUpon>201505260107013_CompleteDateTime.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505310144207_subtaskcomplete.cs" />
-    <Compile Include="Migrations\201505310144207_subtaskcomplete.Designer.cs">
-      <DependentUpon>201505310144207_subtaskcomplete.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505310203220_taskdeleted.cs" />
-    <Compile Include="Migrations\201505310203220_taskdeleted.Designer.cs">
-      <DependentUpon>201505310203220_taskdeleted.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201505310749545_completesubtask.cs" />
-    <Compile Include="Migrations\201505310749545_completesubtask.Designer.cs">
-      <DependentUpon>201505310749545_completesubtask.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201506020042527_addComment.cs" />
-    <Compile Include="Migrations\201506020042527_addComment.Designer.cs">
-      <DependentUpon>201506020042527_addComment.cs</DependentUpon>
+    <Compile Include="Infrastructure\NinjectControllerFactory.cs" />
+    <Compile Include="Migrations\201611041430552_addPomodoro.cs" />
+    <Compile Include="Migrations\201611041430552_addPomodoro.Designer.cs">
+      <DependentUpon>201611041430552_addPomodoro.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\Pomodoro.cs" />
     <Compile Include="Services\Abstract\IProjectServices.cs" />
     <Compile Include="Services\Abstract\ITaskServices.cs" />
     <Compile Include="Services\ContextServices.cs" />
@@ -381,6 +374,12 @@
     <Content Include="Views\SubTask\Edit.cshtml" />
     <Content Include="Views\SubTask\Delete.cshtml" />
     <Content Include="Views\Task\BatchCreate.cshtml" />
+    <Content Include="Views\Pomodoroes\Create.cshtml" />
+    <Content Include="Views\Pomodoroes\Delete.cshtml" />
+    <Content Include="Views\Pomodoroes\Details.cshtml" />
+    <Content Include="Views\Pomodoroes\Edit.cshtml" />
+    <Content Include="Views\Pomodoroes\Index.cshtml" />
+    <Content Include="Views\Shared\PomodoroPartView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -391,42 +390,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201505151224591_addnexttask.resx">
-      <DependentUpon>201505151224591_addnexttask.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505151309136_addnexttaskid.resx">
-      <DependentUpon>201505151309136_addnexttaskid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505260107013_CompleteDateTime.resx">
-      <DependentUpon>201505260107013_CompleteDateTime.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505310144207_subtaskcomplete.resx">
-      <DependentUpon>201505310144207_subtaskcomplete.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505310203220_taskdeleted.resx">
-      <DependentUpon>201505310203220_taskdeleted.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201505310749545_completesubtask.resx">
-      <DependentUpon>201505310749545_completesubtask.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506020042527_addComment.resx">
-      <DependentUpon>201506020042527_addComment.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
       <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
       <VersionMajor>2</VersionMajor>
       <VersionMinor>8</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="Microsoft.Office.Interop.Outlook">
-      <Guid>{00062FFF-0000-0000-C000-000000000046}</Guid>
-      <VersionMajor>9</VersionMajor>
-      <VersionMinor>6</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>primary</WrapperTool>
       <Isolated>False</Isolated>
@@ -441,6 +408,11 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201611041430552_addPomodoro.resx">
+      <DependentUpon>201611041430552_addPomodoro.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

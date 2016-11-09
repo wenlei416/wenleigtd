@@ -26,6 +26,7 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 *.vssscc
+<<<<<<< HEAD
 $tf*/
 .vs
 GTD.Web/Web.config

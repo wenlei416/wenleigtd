@@ -12,10 +12,12 @@ namespace GTD.DAL
         public DbSet<Goal> Goals { get; set; }
         public DbSet<SubTask> SubTasks { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Pomodoro> Pomodoroes { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
         }
+
     }
 }
