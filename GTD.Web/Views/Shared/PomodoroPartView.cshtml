@@ -130,7 +130,7 @@
                 $('#stopButton').attr("disabled", false);
 
                 $('#bar').removeClass("progress-bar-success").addClass("progress-bar-info");
-                workTime = 25 * 1000;//番茄时间定死为25分钟， 以后考虑变成配置
+                workTime = 60 * 25 * 1000;//番茄时间定死为25分钟， 以后考虑变成配置
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
 
                 console.log(timeStamp2String(startTime));
@@ -150,7 +150,7 @@
                 $('#stopButton').attr("disabled", false);
 
                 $('#bar').removeClass("progress-bar-info").addClass("progress-bar-success");
-                workTime = 2 * 1000;//番茄休息时间定死为5分钟， 以后考虑变成配置
+                workTime = 5 * 60 * 1000;//番茄休息时间定死为5分钟， 以后考虑变成配置
                 startTime = +new Date(); //new Date()获取当前时间，+运算符将值转换成毫秒
 
                 console.log(timeStamp2String(startTime));
