@@ -13,9 +13,15 @@ namespace GTD.Controllers
         private readonly ITaskServices _taskServices ;
         private readonly IProjectServices _projectServices;
 
-        public ProjectController(ITaskServices taskServices)
+        //public ProjectController(ITaskServices taskServices)
+        //{
+        //    _projectServices = new ProjectServices();
+        //    this._taskServices = taskServices;
+        //}
+
+        public ProjectController(ITaskServices taskServices,IProjectServices projectServices)
         {
-            _projectServices = new ProjectServices();
+            this._projectServices = projectServices;
             this._taskServices = taskServices;
         }
 

@@ -32,7 +32,10 @@ namespace GTD.Infrastructure
         private void AddBindings()
         {
             _ninjectKernel.Bind<IPomodoroRepository>().To<PomodoroRepository>();
+            _ninjectKernel.Bind<IProjectrepository>().To<ProjectRepository>();
+
             _ninjectKernel.Bind<ITaskServices>().To<TaskServices>();
+            _ninjectKernel.Bind<IProjectServices>().To<ProjectServices>();
         }
 
         private void AddBindingsFromMock()

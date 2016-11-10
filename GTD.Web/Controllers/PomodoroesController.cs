@@ -16,10 +16,10 @@ namespace GTD.Controllers
 
         //private GTDContext db = new GTDContext();
 
-        public PomodoroesController(IPomodoroRepository pomodoroRepository)
+        public PomodoroesController(IPomodoroRepository pomodoroRepository,ITaskServices taskServices)
         {
             this._pomodoroRepository = pomodoroRepository;
-            this._taskServices = new TaskServices();
+            this._taskServices = taskServices;
         }
 
         public string AddPomodoro(Pomodoro pomodoro)

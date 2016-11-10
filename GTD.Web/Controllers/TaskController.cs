@@ -19,15 +19,17 @@ namespace GTD.Controllers
         private readonly IProjectServices _projectServices;
         private readonly ContextServices _contextServices;
 
-        public TaskController(ITaskServices taskServices)
+        public TaskController(ITaskServices taskServices,IProjectServices projectServices)
         {
             this._taskServices = taskServices;
-            _projectServices = new ProjectServices();
+            _projectServices = projectServices;
             _contextServices = new ContextServices();
 
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
+            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName");
+
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
@@ -92,7 +94,9 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", task.Pro );
+
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");

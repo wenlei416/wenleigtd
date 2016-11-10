@@ -27,11 +27,11 @@ namespace GTD.Services
             _projectServices = projectServices;
         }
 
-        public TaskServices(ITaskRepository taskRepository)
-        {
-            _taskRepository = taskRepository;
-            _projectServices = new ProjectServices(); 
-        }
+        //public TaskServices(ITaskRepository taskRepository)
+        //{
+        //    _taskRepository = taskRepository;
+        //    _projectServices = new ProjectServices(); 
+        //}
 
         public IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute)
         {
