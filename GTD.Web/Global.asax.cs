@@ -22,6 +22,7 @@ namespace GTD
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory());
+            
 
         }
     }

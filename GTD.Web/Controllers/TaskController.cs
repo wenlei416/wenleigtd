@@ -19,9 +19,9 @@ namespace GTD.Controllers
         private readonly IProjectServices _projectServices;
         private readonly ContextServices _contextServices;
 
-        public TaskController()
+        public TaskController(ITaskServices taskServices)
         {
-            _taskServices = new TaskServices();
+            this._taskServices = taskServices;
             _projectServices = new ProjectServices();
             _contextServices = new ContextServices();
 
@@ -31,8 +31,8 @@ namespace GTD.Controllers
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices);
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices);
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(taskServices);
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(taskServices);
         }
 
         // GET: /Task/

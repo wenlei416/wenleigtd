@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using GTD.DAL;
-using GTD.DAL.Abstract;
 using GTD.Models;
 using GTD.Services;
 using GTD.Services.Abstract;

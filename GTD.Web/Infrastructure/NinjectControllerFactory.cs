@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using GTD.DAL;
 using GTD.DAL.Abstract;
 using GTD.Models;
+using GTD.Services;
+using GTD.Services.Abstract;
 using Ninject;
 using Moq;
 
@@ -14,23 +15,24 @@ namespace GTD.Infrastructure
 {
     public class NinjectControllerFactory:DefaultControllerFactory
     {
-        private IKernel ninjectKernel;
+        private readonly IKernel _ninjectKernel;
 
         public NinjectControllerFactory()
         {
-            ninjectKernel =new StandardKernel();
-            //AddBindings();
-            AddBindingsFromMock();
+            _ninjectKernel =new StandardKernel();
+            AddBindings();
+            //AddBindingsFromMock();
         }
 
         protected override IController GetControllerInstance(RequestContext requestContext, Type controllerType)
         {
-            return controllerType == null ? null : (IController) ninjectKernel.Get(controllerType);
+            return controllerType == null ? null : (IController) _ninjectKernel.Get(controllerType);
         }
 
         private void AddBindings()
         {
-            ninjectKernel.Bind<IPomodoroRepository>().To<PomodoroRepository>();
+            _ninjectKernel.Bind<IPomodoroRepository>().To<PomodoroRepository>();
+            _ninjectKernel.Bind<ITaskServices>().To<TaskServices>();
         }
 
         private void AddBindingsFromMock()
@@ -46,7 +48,7 @@ namespace GTD.Infrastructure
 
                 }.AsQueryable()
             );
-            ninjectKernel.Bind<IPomodoroRepository>().ToConstant(pomodoroRepositoryMock.Object);
+            _ninjectKernel.Bind<IPomodoroRepository>().ToConstant(pomodoroRepositoryMock.Object);
 
         }
 

@@ -1,35 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.DAL.Abstract;
 using GTD.Models;
-using Microsoft.Ajax.Utilities;
+using GTD.Services;
+using GTD.Services.Abstract;
 
 namespace GTD.Controllers
 {
     public class PomodoroesController : Controller
     {
-        private IPomodoroRepository pomodoroRepository;
+        private readonly IPomodoroRepository _pomodoroRepository;
+        private readonly ITaskServices _taskServices;
 
-        private GTDContext db = new GTDContext();
+        //private GTDContext db = new GTDContext();
 
         public PomodoroesController(IPomodoroRepository pomodoroRepository)
         {
-            this.pomodoroRepository = pomodoroRepository;
+            this._pomodoroRepository = pomodoroRepository;
+            this._taskServices = new TaskServices();
         }
 
         public string AddPomodoro(Pomodoro pomodoro)
         {
             if (ModelState.IsValid)
             {
-                db.Pomodoroes.Add(pomodoro);
-                db.SaveChanges();
+                //db.Pomodoroes.Add(pomodoro);
+                //db.SaveChanges();
+                _pomodoroRepository.Create(pomodoro);
                 return "success";
             }
             return "fail";
@@ -38,7 +37,7 @@ namespace GTD.Controllers
         // GET: Pomodoroes
         public ActionResult Index()
         {
-            var pomodoroes = pomodoroRepository.GetAll().Include(p => p.Task);//db.Pomodoroes.Include(p => p.Task);
+            var pomodoroes = _pomodoroRepository.GetAll().Include(p => p.Task);//db.Pomodoroes.Include(p => p.Task);
             return View(pomodoroes.ToList());
         }
 
@@ -49,7 +48,7 @@ namespace GTD.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Pomodoro pomodoro = db.Pomodoroes.Find(id);
+            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
             if (pomodoro == null)
             {
                 return HttpNotFound();
@@ -60,7 +59,8 @@ namespace GTD.Controllers
         // GET: Pomodoroes/Create
         public ActionResult Create()
         {
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline");
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline");
+            ViewBag.TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskId", "Headline");
             return View();
         }
 
@@ -73,12 +73,15 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Pomodoroes.Add(pomodoro);
-                db.SaveChanges();
+                //db.Pomodoroes.Add(pomodoro);
+                //db.SaveChanges();
+                _pomodoroRepository.Create(pomodoro);
                 return RedirectToAction("Index");
             }
 
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
+            ViewBag.TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskId", "Headline", pomodoro.TaskId);
+
             return View(pomodoro);
         }
 
@@ -89,12 +92,13 @@ namespace GTD.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Pomodoro pomodoro = db.Pomodoroes.Find(id);
+            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
             if (pomodoro == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
+            ViewBag.TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskId", "Headline", pomodoro.TaskId);
             return View(pomodoro);
         }
 
@@ -107,11 +111,13 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(pomodoro).State = EntityState.Modified;
-                db.SaveChanges();
+                //db.Entry(pomodoro).State = EntityState.Modified;
+                //db.SaveChanges();
+                _pomodoroRepository.Update(pomodoro);
                 return RedirectToAction("Index");
             }
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
+            ViewBag.TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskId", "Headline", pomodoro.TaskId);
             return View(pomodoro);
         }
 
@@ -122,7 +128,7 @@ namespace GTD.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Pomodoro pomodoro = db.Pomodoroes.Find(id);
+            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
             if (pomodoro == null)
             {
                 return HttpNotFound();
@@ -135,19 +141,20 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Pomodoro pomodoro = db.Pomodoroes.Find(id);
-            db.Pomodoroes.Remove(pomodoro);
-            db.SaveChanges();
+            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            //db.Pomodoroes.Remove(pomodoro);
+            _pomodoroRepository.Delete(pomodoro);
+            //db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

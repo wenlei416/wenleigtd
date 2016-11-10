@@ -10,9 +10,14 @@ namespace GTD.Controllers
 {
     public class ProjectController : Controller
     {
-        private readonly ITaskServices _taskServices = new TaskServices();
-        private readonly IProjectServices _projectServices = new ProjectServices();
+        private readonly ITaskServices _taskServices ;
+        private readonly IProjectServices _projectServices;
 
+        public ProjectController(ITaskServices taskServices)
+        {
+            _projectServices = new ProjectServices();
+            this._taskServices = taskServices;
+        }
 
         // GET: /Project/
         public ActionResult Index()
