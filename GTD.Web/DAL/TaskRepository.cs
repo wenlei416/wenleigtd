@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GTD.DAL.Abstract;
 using GTD.Models;
 
@@ -22,6 +23,11 @@ namespace GTD.DAL
         public void BatchUpdateTask(IEnumerable<Task> tasks)
         {
             Updates(tasks);
+        }
+
+        public IQueryable<Task> GetTaskByProjectId(int projectId)
+        {
+            return GetAll().Where(t => t.ProjectID == projectId);
         }
         
     }

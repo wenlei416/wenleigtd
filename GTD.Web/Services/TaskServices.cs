@@ -27,11 +27,13 @@ namespace GTD.Services
             _projectServices = projectServices;
         }
 
-        //public TaskServices(ITaskRepository taskRepository)
-        //{
-        //    _taskRepository = taskRepository;
-        //    _projectServices = new ProjectServices(); 
-        //}
+        //这个是用在单元测试中，是不是间接说明了TaskService不应该依赖其他Service？
+        //但需要的其他功能怎么办
+        public TaskServices(ITaskRepository taskRepository)
+        {
+            _taskRepository = taskRepository;
+            _projectServices = new ProjectServices();
+        }
 
         public IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute)
         {
