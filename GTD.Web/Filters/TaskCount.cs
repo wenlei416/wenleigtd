@@ -12,12 +12,12 @@ namespace GTD.Filters
     {
         //todo 这里应该和service连接，而不是和repo连接
         //private ITaskRepository taskRepository;
-        private ITaskServices _taskServices;
+        private readonly ITaskServices _taskServices;
 
 
-        public TaskCount ()
+        public TaskCount (ITaskServices taskServices)
         {
-            
+            this._taskServices = taskServices;
         }
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
@@ -32,7 +32,7 @@ namespace GTD.Filters
             //tc记录各个dateattribute的任务数，显示在导航中
             //每次必须建新的taskrepository,否则会出现数据库更新了，但是Repository不变的情况
             //this.taskRepository = new TaskRepository();
-            this._taskServices=new TaskServices();
+            //this._taskServices=new TaskServices();
             var tc = new Dictionary<string, int>();
 
             foreach (DateAttribute da in Enum.GetValues(typeof(DateAttribute)))
