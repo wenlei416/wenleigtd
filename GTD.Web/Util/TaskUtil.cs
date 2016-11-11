@@ -49,28 +49,6 @@ namespace GTD.Util
                 }
         }
 
-        public static string NextTask_Headline(this Task task)
-        {
-            
-                if (task.NextTask_TaskId != null)
-                {
-                    var db = new GTDContext();
-                    return db.Tasks.Find(task.NextTask_TaskId) != null ? db.Tasks.Find(task.NextTask_TaskId).Headline : string.Empty;
-                }
-                return null;
-        }
-
-        public static string PreviousTask_Headline(this Task task)
-        {
-            
-                if (task.PreviousTask_TaskId != null)
-                {
-                    var db = new GTDContext();
-                    return db.Tasks.Find(task.PreviousTask_TaskId) != null ? db.Tasks.Find(task.PreviousTask_TaskId).Headline : string.Empty;
-                }
-                return null;
-        }
-
         private static int? RemainderTime(this Task task)
         {
            

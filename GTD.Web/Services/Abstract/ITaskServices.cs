@@ -42,5 +42,9 @@ namespace GTD.Services.Abstract
 
         IEnumerable<Task> SplitTextToTasks(string taskText);
 
+        Task GetNextTaskByTaskId(int taskId);
+        
+        Task GetPreviousTaskByTaskId(int taskId);
+
     }
 }

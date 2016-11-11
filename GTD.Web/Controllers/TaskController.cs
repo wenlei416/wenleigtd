@@ -56,7 +56,10 @@ namespace GTD.Controllers
             {
                 Task = task,
                 CompletedSubTasks = task.SubTasks.Where(s => s.IsComplete).OrderByDescending(s => s.SubTaskId),
-                InprogressSubTasks = task.SubTasks.Where(s => s.IsComplete == false).OrderByDescending(s => s.SubTaskId)
+                InprogressSubTasks = task.SubTasks.Where(s => s.IsComplete == false).OrderByDescending(s => s.SubTaskId),
+                NextTask = _taskServices.GetNextTaskByTaskId(id),
+                PreviousTask = _taskServices.GetPreviousTaskByTaskId(id)
+                
             };
             return View(viewmodel);
         }

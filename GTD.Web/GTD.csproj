@@ -217,6 +217,7 @@
     </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Pomodoro.cs" />
+    <Compile Include="Services\Abstract\IContextServices.cs" />
     <Compile Include="Services\Abstract\IProjectServices.cs" />
     <Compile Include="Services\Abstract\ITaskServices.cs" />
     <Compile Include="Services\ContextServices.cs" />

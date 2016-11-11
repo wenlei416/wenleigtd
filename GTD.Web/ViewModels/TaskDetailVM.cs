@@ -10,5 +10,10 @@ namespace GTD.ViewModels
         public IEnumerable<SubTask> CompletedSubTasks { get; set; }
 
         public IEnumerable<SubTask> InprogressSubTasks { get; set; }
+
+        public Task NextTask { get; set; }
+
+        public Task PreviousTask { get; set; }
+
     }
 }
