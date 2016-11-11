@@ -14,10 +14,10 @@ namespace GTD.Services
     {
         private readonly IProjectrepository _projectrepository;
 
-        public ProjectServices()
-        {
-            _projectrepository= new ProjectRepository();
-        }
+        //public ProjectServices()
+        //{
+        //    _projectrepository= new ProjectRepository();
+        //}
 
         public ProjectServices(IProjectrepository projectrepository)
         {
