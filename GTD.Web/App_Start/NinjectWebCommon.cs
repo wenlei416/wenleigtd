@@ -83,10 +83,13 @@ namespace GTD.App_Start
             kernel.Bind<ISubTaskRepository>().To<SubTaskRepository>();
             kernel.Bind<ITaskRepository>().To<TaskRepository>();
 
-            kernel.Bind<ITaskServices>().To<TaskServices>();
-            kernel.Bind<IProjectServices>().To<ProjectServices>();
-            kernel.Bind<IPomodoroServices>().To<PomodoroServices>();
+            kernel.Bind<ICommentServices>().To<CommentServices>();
             kernel.Bind<IContextServices>().To<ContextServices>();
+            kernel.Bind<IGoalServices>().To<GoalServices>();
+            kernel.Bind<IPomodoroServices>().To<PomodoroServices>();
+            kernel.Bind<IProjectServices>().To<ProjectServices>();
+            kernel.Bind<ISubTaskServices>().To<SubTaskServices>();
+            kernel.Bind<ITaskServices>().To<TaskServices>();
 
         }
 

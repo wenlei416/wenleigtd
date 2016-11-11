@@ -42,4 +42,5 @@ namespace GTD.Services
         {
             _subTaskRepository.Delete(subTask);
         }
+    }
 }
