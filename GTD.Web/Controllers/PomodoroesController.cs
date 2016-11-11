@@ -11,15 +11,17 @@ namespace GTD.Controllers
 {
     public class PomodoroesController : Controller
     {
-        private readonly IPomodoroRepository _pomodoroRepository;
+        //private readonly IPomodoroRepository _pomodoroRepository;
+        private readonly IPomodoroServices _pomodoroServices;
         private readonly ITaskServices _taskServices;
 
         //private GTDContext db = new GTDContext();
 
-        public PomodoroesController(IPomodoroRepository pomodoroRepository,ITaskServices taskServices)
+        public PomodoroesController(ITaskServices taskServices, IPomodoroServices pomodoroServices)
         {
-            this._pomodoroRepository = pomodoroRepository;
+            //this._pomodoroRepository = pomodoroRepository;
             this._taskServices = taskServices;
+            this._pomodoroServices = pomodoroServices;
         }
 
         public string AddPomodoro(Pomodoro pomodoro)
@@ -28,7 +30,8 @@ namespace GTD.Controllers
             {
                 //db.Pomodoroes.Add(pomodoro);
                 //db.SaveChanges();
-                _pomodoroRepository.Create(pomodoro);
+                //_pomodoroRepository.Create(pomodoro);
+                _pomodoroServices.CreatePomodoro(pomodoro);
                 return "success";
             }
             return "fail";
@@ -37,18 +40,18 @@ namespace GTD.Controllers
         // GET: Pomodoroes
         public ActionResult Index()
         {
-            var pomodoroes = _pomodoroRepository.GetAll().Include(p => p.Task);//db.Pomodoroes.Include(p => p.Task);
+            //db.Pomodoroes.Include(p => p.Task);
+            //var pomodoroes = _pomodoroRepository.GetAll().Include(p => p.Task);
+            var pomodoroes = _pomodoroServices.GetAllPomodoroes();
             return View(pomodoroes.ToList());
         }
 
         // GET: Pomodoroes/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id=0)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+
+            //Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            Pomodoro pomodoro = _pomodoroServices.GetPomodoroById(id);
             if (pomodoro == null)
             {
                 return HttpNotFound();
@@ -75,7 +78,8 @@ namespace GTD.Controllers
             {
                 //db.Pomodoroes.Add(pomodoro);
                 //db.SaveChanges();
-                _pomodoroRepository.Create(pomodoro);
+                //_pomodoroRepository.Create(pomodoro);
+                _pomodoroServices.CreatePomodoro(pomodoro);
                 return RedirectToAction("Index");
             }
 
@@ -86,13 +90,14 @@ namespace GTD.Controllers
         }
 
         // GET: Pomodoroes/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id=0)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            //if (id == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+            //Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            var pomodoro = _pomodoroServices.GetPomodoroById(id);
             if (pomodoro == null)
             {
                 return HttpNotFound();
@@ -113,7 +118,8 @@ namespace GTD.Controllers
             {
                 //db.Entry(pomodoro).State = EntityState.Modified;
                 //db.SaveChanges();
-                _pomodoroRepository.Update(pomodoro);
+                //_pomodoroRepository.Update(pomodoro);
+                _pomodoroServices.UpdatePomodoro(pomodoro);
                 return RedirectToAction("Index");
             }
             //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", pomodoro.TaskId);
@@ -122,13 +128,14 @@ namespace GTD.Controllers
         }
 
         // GET: Pomodoroes/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id=0)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            //if (id == null)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
+            //Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            var pomodoro = _pomodoroServices.GetPomodoroById(id);
             if (pomodoro == null)
             {
                 return HttpNotFound();
@@ -141,10 +148,12 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
+            //Pomodoro pomodoro = _pomodoroRepository.GetPomodoroById(id);
             //db.Pomodoroes.Remove(pomodoro);
-            _pomodoroRepository.Delete(pomodoro);
+            //_pomodoroRepository.Delete(pomodoro);
             //db.SaveChanges();
+            var pomodoro = _pomodoroServices.GetPomodoroById(id);
+            _pomodoroServices.DeletePomodoro(pomodoro);
             return RedirectToAction("Index");
         }
 
