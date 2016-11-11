@@ -9,6 +9,10 @@ namespace GTD.Services.Abstract
 {
     public interface IContextServices
     {
-         IEnumerable<Context> GetContext();
+         Context GetContextById(int id);
+         void CreateContext(Context context);
+         IEnumerable<Context> GetAllContexts();
+         void UpdateContext(Context context);
+         void DeleteContext(Context context);
     }
 }

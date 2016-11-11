@@ -74,13 +74,16 @@ namespace GTD.App_Start
         private static void RegisterServices(IKernel kernel)
         {
             kernel.BindFilter<TaskCount>(FilterScope.Global, 1).InRequestScope();
+
             kernel.Bind<IPomodoroRepository>().To<PomodoroRepository>();
             kernel.Bind<IProjectrepository>().To<ProjectRepository>();
             kernel.Bind<ITaskRepository>().To<TaskRepository>();
+            kernel.Bind<IContextRepository>().To<ContextRepository>();
 
             kernel.Bind<ITaskServices>().To<TaskServices>();
             kernel.Bind<IProjectServices>().To<ProjectServices>();
             kernel.Bind<IPomodoroServices>().To<PomodoroServices>();
+            kernel.Bind<IContextServices>().To<ContextServices>();
 
         }
 

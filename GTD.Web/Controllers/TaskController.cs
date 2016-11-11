@@ -17,13 +17,13 @@ namespace GTD.Controllers
     {
         private readonly ITaskServices _taskServices;
         private readonly IProjectServices _projectServices;
-        private readonly ContextServices _contextServices;
+        private readonly IContextServices _contextServices;
 
-        public TaskController(ITaskServices taskServices,IProjectServices projectServices)
+        public TaskController(ITaskServices taskServices, IProjectServices projectServices, IContextServices contextServices)
         {
             this._taskServices = taskServices;
             _projectServices = projectServices;
-            _contextServices = new ContextServices();
+            _contextServices = contextServices;
 
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定

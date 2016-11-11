@@ -201,10 +201,12 @@
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\PomodoroesController.cs" />
     <Compile Include="Controllers\SubTaskController.cs" />
+    <Compile Include="DAL\Abstract\IContextRepository.cs" />
     <Compile Include="DAL\Abstract\IPomodoroRepository.cs" />
     <Compile Include="DAL\Abstract\IProjectrepository.cs" />
     <Compile Include="DAL\Abstract\IRepository.cs" />
     <Compile Include="DAL\Abstract\ITaskRepository.cs" />
+    <Compile Include="DAL\ContextRepository.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\PomodoroRepository.cs" />
     <Compile Include="DAL\ProjectRepository.cs" />

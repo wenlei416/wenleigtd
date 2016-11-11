@@ -1,22 +1,27 @@
-﻿using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.Models;
+using GTD.Services.Abstract;
 
 namespace GTD.Controllers
 {
     public class ContextController : Controller
     {
-        private GTDContext db = new GTDContext();
+        //private GTDContext db = new GTDContext();
+        private readonly IContextServices _contextServices;
+
+        public ContextController(IContextServices contextServices)
+        {
+            this._contextServices = contextServices;
+        }
 
         //
         // GET: /Context/
 
         public ActionResult Index()
         {
-            return View(db.Contexts.ToList());
+            var pomodoroes = _contextServices.GetAllContexts();
+            return View(pomodoroes.ToList());
         }
 
         //
@@ -24,7 +29,7 @@ namespace GTD.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            Context context = db.Contexts.Find(id);
+            Context context = _contextServices.GetContextById(id);// db.Contexts.Find(id);
             if (context == null)
             {
                 return HttpNotFound();
@@ -49,8 +54,9 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Contexts.Add(context);
-                db.SaveChanges();
+                //db.Contexts.Add(context);
+                //db.SaveChanges();
+                _contextServices.CreateContext(context);
                 return RedirectToAction("Index");
             }
 
@@ -62,7 +68,7 @@ namespace GTD.Controllers
 
         public ActionResult Edit(int id = 0)
         {
-            Context context = db.Contexts.Find(id);
+            Context context = _contextServices.GetContextById(id);//db.Contexts.Find(id);
             if (context == null)
             {
                 return HttpNotFound();
@@ -79,8 +85,9 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(context).State = EntityState.Modified;
-                db.SaveChanges();
+                //db.Entry(context).State = EntityState.Modified;
+                //db.SaveChanges();
+                _contextServices.UpdateContext(context);
                 return RedirectToAction("Index");
             }
             return View(context);
@@ -91,7 +98,7 @@ namespace GTD.Controllers
 
         public ActionResult Delete(int id = 0)
         {
-            Context context = db.Contexts.Find(id);
+            Context context = _contextServices.GetContextById(id);//db.Contexts.Find(id);
             if (context == null)
             {
                 return HttpNotFound();
@@ -106,16 +113,17 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Context context = db.Contexts.Find(id);
-            db.Contexts.Remove(context);
-            db.SaveChanges();
+            Context context = _contextServices.GetContextById(id);//db.Contexts.Find(id);
+            //db.Contexts.Remove(context);
+            //db.SaveChanges();
+            _contextServices.DeleteContext(context);
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    db.Dispose();
+        //    base.Dispose(disposing);
+        //}
     }
 }
