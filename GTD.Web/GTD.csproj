@@ -225,13 +225,19 @@
     </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Pomodoro.cs" />
+    <Compile Include="Services\Abstract\ICommentServices.cs" />
     <Compile Include="Services\Abstract\IContextServices.cs" />
+    <Compile Include="Services\Abstract\IGoalServices.cs" />
     <Compile Include="Services\Abstract\IPomodoroServices.cs" />
     <Compile Include="Services\Abstract\IProjectServices.cs" />
+    <Compile Include="Services\Abstract\ISubTaskServices.cs" />
     <Compile Include="Services\Abstract\ITaskServices.cs" />
+    <Compile Include="Services\CommentServices.cs" />
     <Compile Include="Services\ContextServices.cs" />
+    <Compile Include="Services\GoalServices.cs" />
     <Compile Include="Services\PomodoroServices.cs" />
     <Compile Include="Services\ProjectServices.cs" />
+    <Compile Include="Services\SubTaskServices.cs" />
     <Compile Include="Services\TaskServices.cs" />
     <Compile Include="Util\OutlookAppointment.cs" />
     <Compile Include="Util\DropDownListHelp.cs" />

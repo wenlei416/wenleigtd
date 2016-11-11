@@ -23,20 +23,20 @@ namespace GTD.App_Start
     using Ninject;
     using Ninject.Web.Common;
 
-    public static class NinjectWebCommon 
+    public static class NinjectWebCommon
     {
         private static readonly Bootstrapper bootstrapper = new Bootstrapper();
 
         /// <summary>
         /// Starts the application
         /// </summary>
-        public static void Start() 
+        public static void Start()
         {
             DynamicModuleUtility.RegisterModule(typeof(OnePerRequestHttpModule));
             DynamicModuleUtility.RegisterModule(typeof(NinjectHttpModule));
             bootstrapper.Initialize(CreateKernel);
         }
-        
+
         /// <summary>
         /// Stops the application.
         /// </summary>
@@ -44,7 +44,7 @@ namespace GTD.App_Start
         {
             bootstrapper.ShutDown();
         }
-        
+
         /// <summary>
         /// Creates the kernel that will manage your application.
         /// </summary>
@@ -75,10 +75,13 @@ namespace GTD.App_Start
         {
             kernel.BindFilter<TaskCount>(FilterScope.Global, 1).InRequestScope();
 
+            kernel.Bind<ICommentRepository>().To<CommentRepository>();
+            kernel.Bind<IContextRepository>().To<ContextRepository>();
+            kernel.Bind<IGoalRepository>().To<GoalRepository>();
             kernel.Bind<IPomodoroRepository>().To<PomodoroRepository>();
             kernel.Bind<IProjectrepository>().To<ProjectRepository>();
+            kernel.Bind<ISubTaskRepository>().To<SubTaskRepository>();
             kernel.Bind<ITaskRepository>().To<TaskRepository>();
-            kernel.Bind<IContextRepository>().To<ContextRepository>();
 
             kernel.Bind<ITaskServices>().To<TaskServices>();
             kernel.Bind<IProjectServices>().To<ProjectServices>();

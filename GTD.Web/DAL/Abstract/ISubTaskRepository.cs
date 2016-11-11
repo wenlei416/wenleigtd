@@ -2,7 +2,7 @@
 
 namespace GTD.DAL.Abstract
 {
-    interface ISubTaskRepository : IRepository<SubTask>
+    public interface ISubTaskRepository : IRepository<SubTask>
     {
         SubTask GetSubTaskById(int? subTaskId);
     }
