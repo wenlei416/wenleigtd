@@ -1,13 +1,6 @@
-﻿using System;
-using System.Linq;
-using GTD.DAL.Abstract;
-using GTD.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GTD.Services;
-using GTD.Services.Abstract;
-using Moq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GTD.UT.Services
+namespace GTD.UT.Services.Tests
 {
     [TestClass()]
     public class TaskServicesTests

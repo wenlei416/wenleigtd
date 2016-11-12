@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using GTD.DAL;
 using GTD.DAL.Abstract;
 using GTD.Filters;
-using GTD.Models;
 using GTD.Services;
 using GTD.Services.Abstract;
-using Moq;
 using Ninject.Web.Mvc.FilterBindingSyntax;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(GTD.App_Start.NinjectWebCommon), "Start")]
@@ -90,26 +86,6 @@ namespace GTD.App_Start
             kernel.Bind<IProjectServices>().To<ProjectServices>();
             kernel.Bind<ISubTaskServices>().To<SubTaskServices>();
             kernel.Bind<ITaskServices>().To<TaskServices>();
-
         }
-
-        //需要重新设计mock的代码
-        private static void AddBindingsFromMock(IKernel kernel)
-        {
-            Mock<IPomodoroRepository> pomodoroRepositoryMock = new Mock<IPomodoroRepository>();
-            pomodoroRepositoryMock.Setup(p => p.GetAll()).Returns(new List<Pomodoro>
-                {
-                    new Pomodoro{PomodoroId=7,IsCompletedPomodoro=true,StarDateTime=Convert.ToDateTime("2016/11/6 18:25:55"),EnDateTime=Convert.ToDateTime("2016/11/6 18:26:20"),IsWorkingTime=true,TaskId=7},
-                    new Pomodoro{PomodoroId=7,IsCompletedPomodoro=true,StarDateTime=Convert.ToDateTime("2016/11/6 18:25:55"),EnDateTime=Convert.ToDateTime("2016/11/6 18:26:20"),IsWorkingTime=true,TaskId=7},
-                    new Pomodoro{PomodoroId=7,IsCompletedPomodoro=true,StarDateTime=Convert.ToDateTime("2016/11/6 18:25:55"),EnDateTime=Convert.ToDateTime("2016/11/6 18:26:20"),IsWorkingTime=true,TaskId=7},
-                    new Pomodoro{PomodoroId=7,IsCompletedPomodoro=true,StarDateTime=Convert.ToDateTime("2016/11/6 18:25:55"),EnDateTime=Convert.ToDateTime("2016/11/6 18:26:20"),IsWorkingTime=true,TaskId=7},
-                    new Pomodoro{PomodoroId=7,IsCompletedPomodoro=true,StarDateTime=Convert.ToDateTime("2016/11/6 18:25:55"),EnDateTime=Convert.ToDateTime("2016/11/6 18:26:20"),IsWorkingTime=true,TaskId=7}
-
-                }.AsQueryable()
-            );
-            kernel.Bind<IPomodoroRepository>().ToConstant(pomodoroRepositoryMock.Object);
-
-        }
-
     }
 }
