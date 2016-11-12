@@ -1,8 +1,6 @@
-﻿using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.Models;
 using GTD.Services.Abstract;
 
@@ -12,7 +10,7 @@ namespace GTD.Controllers
     {
         //private GTDContext db = new GTDContext();
         private readonly ISubTaskServices _subTaskServices;
-        private ITaskServices _taskServices;
+        private readonly ITaskServices _taskServices;
 
         public SubTaskController(ISubTaskServices subTaskServices, ITaskServices taskServices)
         {
