@@ -1,20 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using GTD.DAL;
+using GTD.DAL.Abstract;
 using GTD.Models;
+using GTD.Services.Abstract;
 
 namespace GTD.Services
 {
-    public class ContextServices
+    public class ContextServices : IContextServices
     {
-        readonly GTDContext _gtdContext = new GTDContext();
-        public IEnumerable<Context> GetContext()
+        private readonly IContextRepository _contextRepository;
+
+        public ContextServices(IContextRepository contextRepository)
         {
+            _contextRepository = contextRepository;
+        }
 
+        public Context GetContextById(int id)
+        {
+            return _contextRepository.GetContextById(id);
+        }
 
-            return _gtdContext.Contexts;
+        public void CreateContext(Context context)
+        {
+            _contextRepository.Create(context);
+        }
+
+        public IEnumerable<Context> GetAllContexts()
+        {
+            return _contextRepository.GetAll();
+        }
+
+        public void UpdateContext(Context context)
+        {
+            _contextRepository.Update(context);
+        }
+
+        public void DeleteContext(Context context)
+        {
+            _contextRepository.Delete(context);
+
         }
     }
 }

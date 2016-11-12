@@ -1,22 +1,29 @@
-﻿using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.Models;
+using GTD.Services.Abstract;
 
 namespace GTD.Controllers
 {
     public class CommentController : Controller
     {
-        private GTDContext db = new GTDContext();
+        //private GTDContext db = new GTDContext();
+        private readonly ICommentServices _commentServices;
+        private readonly ITaskServices _taskServices;
+
+        public CommentController(ICommentServices commentServices, ITaskServices taskServices)
+        {
+            this._commentServices = commentServices;
+            this._taskServices = taskServices;
+        }
 
         //
         // GET: /Comment/
 
         public ActionResult Index()
         {
-            var comments = db.Comments.Include(c => c.Task).OrderByDescending(t=>t.TaskId).ThenByDescending(t=>t.CommentId);
+            //var comments = db.Comments.Include(c => c.Task).OrderByDescending(t=>t.TaskId).ThenByDescending(t=>t.CommentId);
+            var comments = _commentServices.GetAllComments().OrderByDescending(t => t.TaskId).ThenByDescending(t => t.CommentId);
             return View(comments.ToList());
         }
 
@@ -26,7 +33,8 @@ namespace GTD.Controllers
 
         public ActionResult Create()
         {
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline");
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline");
+            ViewBag.TaskId = new SelectList(_taskServices.GetAll(), "TaskId", "Headline");
             return View();
         }
 
@@ -39,12 +47,15 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Comments.Add(comment);
-                db.SaveChanges();
+                //db.Comments.Add(comment);
+                //db.SaveChanges();
+                _commentServices.CreateComment(comment);
                 return RedirectToAction("Details","Task",new{id=comment.TaskId});
             }
 
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", comment.TaskId);
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", comment.TaskId);
+            ViewBag.TaskId = new SelectList(_taskServices.GetAll(), "TaskId", "Headline", comment.TaskId);
+
             return View(comment);
         }
 
@@ -53,12 +64,15 @@ namespace GTD.Controllers
 
         public ActionResult Edit(int id = 0)
         {
-            Comment comment = db.Comments.Find(id);
+            //Comment comment = db.Comments.Find(id);
+            Comment comment = _commentServices.GetCommentById(id);
             if (comment == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", comment.TaskId);
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", comment.TaskId);
+            ViewBag.TaskId = new SelectList(_taskServices.GetAll(), "TaskId", "Headline", comment.TaskId);
+
             return View(comment);
         }
 
@@ -71,11 +85,14 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(comment).State = EntityState.Modified;
-                db.SaveChanges();
+                //db.Entry(comment).State = EntityState.Modified;
+                //db.SaveChanges();
+                _commentServices.UpdateComment(comment);
                 return RedirectToAction("Index");
             }
-            ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", comment.TaskId);
+            //ViewBag.TaskId = new SelectList(db.Tasks, "TaskId", "Headline", comment.TaskId);
+            ViewBag.TaskId = new SelectList(_taskServices.GetAll(), "TaskId", "Headline", comment.TaskId);
+
             return View(comment);
         }
 
@@ -84,7 +101,9 @@ namespace GTD.Controllers
 
         public ActionResult Delete(int id = 0)
         {
-            Comment comment = db.Comments.Find(id);
+            //Comment comment = db.Comments.Find(id);
+            Comment comment = _commentServices.GetCommentById(id);
+
             if (comment == null)
             {
                 return HttpNotFound();
@@ -99,17 +118,20 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Comment comment = db.Comments.Find(id);
-            db.Comments.Remove(comment);
-            db.SaveChanges();
+            //Comment comment = db.Comments.Find(id);
+            Comment comment = _commentServices.GetCommentById(id);
+
+            //db.Comments.Remove(comment);
+            //db.SaveChanges();
+            _commentServices.DeleteComment(comment);
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    db.Dispose();
+        //    base.Dispose(disposing);
+        //}
 
     }
 }

@@ -1,22 +1,27 @@
-﻿using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.Models;
+using GTD.Services.Abstract;
 
 namespace GTD.Controllers
 {
     public class GoalController : Controller
     {
-        private GTDContext db = new GTDContext();
+        //private GTDContext db = new GTDContext();
+        private readonly IGoalServices _goalServices;
+
+        public GoalController(IGoalServices goalServices)
+        {
+            this._goalServices = goalServices;
+        }
 
         //
         // GET: /Goal/
 
         public ActionResult Index()
         {
-            return View(db.Goals.ToList());
+            //return View(db.Goals.ToList());
+            return View(_goalServices.GetAllGoals().ToList());
         }
 
         //
@@ -24,7 +29,8 @@ namespace GTD.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            Goal goal = db.Goals.Find(id);
+            //Goal goal = db.Goals.Find(id);
+            Goal goal = _goalServices.GetGoalById(id);
             if (goal == null)
             {
                 return HttpNotFound();
@@ -49,8 +55,9 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Goals.Add(goal);
-                db.SaveChanges();
+                //db.Goals.Add(goal);
+                //db.SaveChanges();
+                _goalServices.CreateGoal(goal);
                 return RedirectToAction("Index");
             }
 
@@ -62,7 +69,9 @@ namespace GTD.Controllers
 
         public ActionResult Edit(int id = 0)
         {
-            Goal goal = db.Goals.Find(id);
+            //Goal goal = db.Goals.Find(id);
+            Goal goal = _goalServices.GetGoalById(id);
+
             if (goal == null)
             {
                 return HttpNotFound();
@@ -79,8 +88,9 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(goal).State = EntityState.Modified;
-                db.SaveChanges();
+                //db.Entry(goal).State = EntityState.Modified;
+                //db.SaveChanges();
+                _goalServices.UpdateGoal(goal);
                 return RedirectToAction("Index");
             }
             return View(goal);
@@ -91,7 +101,9 @@ namespace GTD.Controllers
 
         public ActionResult Delete(int id = 0)
         {
-            Goal goal = db.Goals.Find(id);
+            //Goal goal = db.Goals.Find(id);
+            Goal goal = _goalServices.GetGoalById(id);
+
             if (goal == null)
             {
                 return HttpNotFound();
@@ -106,16 +118,19 @@ namespace GTD.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Goal goal = db.Goals.Find(id);
-            db.Goals.Remove(goal);
-            db.SaveChanges();
+            //Goal goal = db.Goals.Find(id);
+            Goal goal = _goalServices.GetGoalById(id);
+
+            //db.Goals.Remove(goal);
+            //db.SaveChanges();
+            _goalServices.DeleteGoal(goal);
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    db.Dispose();
+        //    base.Dispose(disposing);
+        //}
     }
 }

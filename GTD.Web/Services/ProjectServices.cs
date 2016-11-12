@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using GTD.DAL;
 using GTD.DAL.Abstract;
 using GTD.Models;
 using GTD.Services.Abstract;
@@ -14,10 +10,10 @@ namespace GTD.Services
     {
         private readonly IProjectrepository _projectrepository;
 
-        public ProjectServices()
-        {
-            _projectrepository= new ProjectRepository();
-        }
+        //public ProjectServices()
+        //{
+        //    _projectrepository= new ProjectRepository();
+        //}
 
         public ProjectServices(IProjectrepository projectrepository)
         {

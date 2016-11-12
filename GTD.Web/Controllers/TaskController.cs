@@ -17,22 +17,24 @@ namespace GTD.Controllers
     {
         private readonly ITaskServices _taskServices;
         private readonly IProjectServices _projectServices;
-        private readonly ContextServices _contextServices;
+        private readonly IContextServices _contextServices;
 
-        public TaskController()
+        public TaskController(ITaskServices taskServices, IProjectServices projectServices, IContextServices contextServices)
         {
-            _taskServices = new TaskServices();
-            _projectServices = new ProjectServices();
-            _contextServices = new ContextServices();
+            this._taskServices = taskServices;
+            _projectServices = projectServices;
+            _contextServices = contextServices;
 
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
+            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName");
+
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices);
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices);
+            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(taskServices);
+            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(taskServices);
         }
 
         // GET: /Task/
@@ -54,7 +56,10 @@ namespace GTD.Controllers
             {
                 Task = task,
                 CompletedSubTasks = task.SubTasks.Where(s => s.IsComplete).OrderByDescending(s => s.SubTaskId),
-                InprogressSubTasks = task.SubTasks.Where(s => s.IsComplete == false).OrderByDescending(s => s.SubTaskId)
+                InprogressSubTasks = task.SubTasks.Where(s => s.IsComplete == false).OrderByDescending(s => s.SubTaskId),
+                NextTask = _taskServices.GetNextTaskByTaskId(id),
+                PreviousTask = _taskServices.GetPreviousTaskByTaskId(id)
+                
             };
             return View(viewmodel);
         }
@@ -92,7 +97,9 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", task.Pro );
+
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");

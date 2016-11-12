@@ -16,10 +16,10 @@ namespace GTD.Util
             return new SelectList(projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", selectProject);
         }
 
-        public static SelectList PopulateContextsDropDownList(ContextServices contextServices,int? selectContext = null)
+        public static SelectList PopulateContextsDropDownList(IContextServices contextServices,int? selectContext = null)
         {
 
-            return new SelectList(contextServices.GetContext(), "ContextId", "ContextName", selectContext);
+            return new SelectList(contextServices.GetAllContexts(), "ContextId", "ContextName", selectContext);
         }
 
         public static SelectList PopulatePrioritysDropDownList(string selectPriority = "中")

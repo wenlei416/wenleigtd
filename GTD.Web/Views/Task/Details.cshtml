@@ -41,8 +41,9 @@
         <div class="add">预留增加子任务</div>
     </li>
     <li class="task-releation">
-        <div>前置任务：@(Model.Task.PreviousTask_Headline() ?? "无")</div>
-        <div>后续任务：@(Model.Task.NextTask_Headline() ?? "无")</div>
+        <div>@*前置任务：@(Model.Task.PreviousTask_Headline() ?? "无")*@</div>
+        <div>前置任务：@(Model.PreviousTask != null ? Model.PreviousTask.Headline : "无")</div>
+        <div>后续任务：@(Model.NextTask!=null?Model.NextTask.Headline:"无")</div>
     </li>
     <li class="task-op">
         <div>@Html.ActionLink("完成", "Complete", "Task", new { id = Model.Task.TaskId }, "")</div>

@@ -21,7 +21,12 @@ namespace GTD
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory());
+            //这个是pro asp.net mvc4上的注入做法，已经老了。新的做法不需要在这里注册ninjectcontrollerfactory，
+            //也不需要ninjectcontrollerfacotry
+            //而是在ninjectwebcommon里面注册各种bind，包括过滤器的
+            //注意，引入了ninject对mvc的支持
+            //ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory());
+            
 
         }
     }
