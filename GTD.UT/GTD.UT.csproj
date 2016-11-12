@@ -72,6 +72,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Services\Tests\CommentServicesTests.cs" />
     <Compile Include="Services\Tests\PomodoroServicesTests.cs" />
     <Compile Include="Services\Tests\TaskServicesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
