@@ -31,7 +31,7 @@
             @Html.EditorFor(model => model.Description)
             @Html.ValidationMessageFor(model => model.Description)
         </div>
-        
+
         @*----------开始日期----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.StartDateTime)
@@ -48,8 +48,8 @@
         <div class="editor-field">
             @Html.EditorFor(model => model.CloseDateTime)
             @Html.ValidationMessageFor(model => model.CloseDateTime)
-        </div>        
-        
+        </div>
+
         @*----------属性----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.DateAttribute)
@@ -59,7 +59,7 @@
             @Html.ValidationMessageFor(model => model.DateAttribute)
         </div>
 
-        @*----------优先级----------*@        
+        @*----------优先级----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.Priority)
         </div>
@@ -67,7 +67,7 @@
             @Html.DropDownList("Priority", null, null, new { @class = "dropdownlist" })
             @Html.ValidationMessageFor(model => model.Priority)
         </div>
-        
+
         @*----------项目----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.Pro)
@@ -76,7 +76,7 @@
             @Html.DropDownList("ProjectID", null, string.Empty, new { @class = "dropdownlist" })
             @Html.ValidationMessageFor(model => model.Pro)
         </div>
-        
+
         @*----------情景----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.Context)
@@ -94,7 +94,7 @@
             @Html.DropDownList("NextTask_TaskId", null, string.Empty, new { @class = "dropdownlist" })
             @Html.ValidationMessageFor(model => model.NextTask_TaskId)
         </div>
-        
+
         @*----------前置任务----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.PreviousTask_TaskId)
@@ -116,5 +116,36 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryval");
+    <script src="/Scripts/moment.js"></script>
+    <script>
+        $(document)
+            .ready(function () {
+                function setDataAttribute(da) {
+                    var datetime;
+                    switch (da) {
+                        case "今日待办":
+                            datetime = moment().format('YYYY-MM-DD');
+                            break;
+                        case "明日待办":
+                            datetime = moment().add(1, 'days').format('YYYY-MM-DD');
+                            break;
+                        default:
+                    }
+                    $('#@Html.IdFor(model => model.StartDateTime)').val(datetime);
+                    $('#@Html.IdFor(model => model.CloseDateTime)').val(datetime);
+
+                };
+
+                function setStartDateTime(date) {
+                    $('#@Html.IdFor(model => model.DateAttribute)').val("今日待办");
+                }
+
+                //$('#@Html.IdFor(model => model.StartDateTime)').change(function () { setStartDateTime($(this).val()) });
+                $('#@Html.IdFor(model => model.DateAttribute)').change(function () { setDataAttribute($(this).children('option:selected').val()) });
+                var viewbgaDa='@ViewBag.dataAttr';
+                $('#@Html.IdFor(model => model.DateAttribute)').val(viewbgaDa);
+                setDataAttribute(viewbgaDa);
+            });
+    </script>
 }

@@ -65,8 +65,9 @@ namespace GTD.Controllers
         }
 
         // GET: /Task/Create
-        public ActionResult Create()
+        public ActionResult Create(string da)
         {
+            ViewBag.dataAttr = da;
             return View();
         }
 
