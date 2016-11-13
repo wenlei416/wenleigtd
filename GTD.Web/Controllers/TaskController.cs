@@ -10,6 +10,7 @@ using GTD.Services;
 using GTD.Services.Abstract;
 using GTD.Util;
 using GTD.ViewModels;
+using Microsoft.Ajax.Utilities;
 
 namespace GTD.Controllers
 {
@@ -78,6 +79,10 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (task.StartDateTime != null&&task.CloseDateTime==null)
+                {
+                    task.CloseDateTime = task.StartDateTime;
+                }
                 _taskServices.AddTask(task);
                 //task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
                 //_taskRepository.InsertTask(task);
