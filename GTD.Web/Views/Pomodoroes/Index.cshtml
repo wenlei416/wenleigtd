@@ -13,7 +13,10 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Task.Headline)
+            任务名称
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsWorkingTime)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.IsCompletedPomodoro)
@@ -24,9 +27,7 @@
         <th>
             @Html.DisplayNameFor(model => model.EnDateTime)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsWorkingTime)
-        </th>
+
         <th></th>
     </tr>
 
@@ -36,7 +37,10 @@
             @Html.DisplayFor(modelItem => item.Task.Headline)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.IsCompletedPomodoro)
+            @(item.IsWorkingTime ? "工作" : "休息")
+        </td>
+        <td>
+            @(item.IsCompletedPomodoro ? "是" : "否")
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.StarDateTime)
@@ -44,9 +48,7 @@
         <td>
             @Html.DisplayFor(modelItem => item.EnDateTime)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsWorkingTime)
-        </td>
+
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.PomodoroId }) |
             @Html.ActionLink("Details", "Details", new { id=item.PomodoroId }) |

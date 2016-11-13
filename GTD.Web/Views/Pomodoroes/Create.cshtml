@@ -2,16 +2,15 @@
 
 @{
     ViewBag.Title = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Create</h2>
 
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Pomodoro</h4>
         <hr />
@@ -74,4 +73,14 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <link rel="stylesheet" type="text/css" href="/Scripts/datetimepicker/jquery.datetimepicker.min.css">
+    <script src="/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
+    <script>
+        $(document)
+            .ready(function () {
+                $.datetimepicker.setLocale('zh');
+                $('#@Html.IdFor(model => model.StarDateTime)').datetimepicker({ step: 1 });
+                $('#@Html.IdFor(model=>model.EnDateTime)').datetimepicker({ step: 1 });
+            });
+    </script>
 }
