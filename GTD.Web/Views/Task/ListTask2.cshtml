@@ -34,7 +34,7 @@
                     <div class="startat">
                         @if (item.StartDateTime != null)
                         {
-                            @item.StartDateTime.Value.ToShortDateString()
+                        @item.StartDateTime.Value.ToShortDateString()
                         }
                     </div>
 
@@ -43,14 +43,14 @@
                     <div class="context">
                         @if (item.Context != null)
                         {
-                            @:@@@item.Context.ContextName
+                        @:@@@item.Context.ContextName
                     }
                     </div>
 
                     <div class="project">
                         @if (item.Pro != null)
                         {
-                            @:#@item.Pro.ProjectName
+                        @:#@item.Pro.ProjectName
                     }
                     </div>
                 </div>
@@ -67,3 +67,14 @@
         <li>@Html.ActionLink("按场景排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "context" }, "")</li>
     </ul>
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery");
+    @Scripts.Render("~/bundles/jqueryui");
+    <script>
+        $(function() {
+            $(".tasklist").sortable();
+            $(".tasklist").disableSelection();
+        });
+    </script>
+}
