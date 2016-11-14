@@ -116,8 +116,9 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval");
-    <script src="/Scripts/moment.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    @*<script src="../../Scripts/moment.js"></script>*@
     <script>
         $(document)
             .ready(function () {
@@ -143,7 +144,7 @@
 
                 //$('#@Html.IdFor(model => model.StartDateTime)').change(function () { setStartDateTime($(this).val()) });
                 $('#@Html.IdFor(model => model.DateAttribute)').change(function () { setDataAttribute($(this).children('option:selected').val()) });
-                var viewbgaDa='@ViewBag.dataAttr';
+                var viewbgaDa = '@ViewBag.dataAttr';
                 $('#@Html.IdFor(model => model.DateAttribute)').val(viewbgaDa);
                 setDataAttribute(viewbgaDa);
             });

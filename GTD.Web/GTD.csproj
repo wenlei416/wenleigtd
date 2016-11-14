@@ -418,9 +418,6 @@
     <Content Include="Views\Pomodoroes\Edit.cshtml" />
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
-    <None Include="Web.Home-Dev.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
