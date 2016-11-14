@@ -1,7 +1,6 @@
 ﻿@using GTD.Util
 @model GTD.ViewModels.TasklistVM
 
-
 @{
     //ViewBag.Title = "Index";
 }
@@ -9,7 +8,7 @@
 <h2>@ViewBag.Title</h2>
 
 <p>
-    @Html.ActionLink("创建任务", "Create",new { da = ViewBag.da.ToString()})  @Html.ActionLink("批量创建任务","BatchCreate")
+    @Html.ActionLink("创建任务", "Create", new { da = ViewBag.da.ToString() })  @Html.ActionLink("批量创建任务", "BatchCreate")
 </p>
 @foreach (var p in Model.tl.Keys)
 {
@@ -34,7 +33,7 @@
                     <div class="startat">
                         @if (item.StartDateTime != null)
                         {
-                        @item.StartDateTime.Value.ToShortDateString()
+                            @item.StartDateTime.Value.ToShortDateString()
                         }
                     </div>
 
@@ -43,14 +42,14 @@
                     <div class="context">
                         @if (item.Context != null)
                         {
-                        @:@@@item.Context.ContextName
+                            @:@@@item.Context.ContextName
                     }
                     </div>
 
                     <div class="project">
                         @if (item.Pro != null)
                         {
-                        @:#@item.Pro.ProjectName
+                            @:#@item.Pro.ProjectName
                     }
                     </div>
                 </div>
@@ -72,7 +71,7 @@
     @Scripts.Render("~/bundles/jquery");
     @Scripts.Render("~/bundles/jqueryui");
     <script>
-        $(function() {
+        $(function () {
             $(".tasklist").sortable();
             $(".tasklist").disableSelection();
         });

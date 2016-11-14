@@ -1,12 +1,11 @@
-﻿using System;
+﻿using GTD.DAL.Abstract;
+using GTD.Models;
+using GTD.Services.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.WebPages;
-using GTD.DAL;
-using GTD.DAL.Abstract;
-using GTD.Models;
-using GTD.Services.Abstract;
 
 namespace GTD.Services
 {
@@ -52,6 +51,7 @@ namespace GTD.Services
                     UpdateDateAttribute(tasks, dateAttribute);
 
                     break;
+
                 case "明日待办":
                     tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
                         .Where(
@@ -60,6 +60,7 @@ namespace GTD.Services
                     UpdateDateAttribute(tasks, dateAttribute);
 
                     break;
+
                 case "日程":
                     tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
                         .Where(
@@ -275,7 +276,6 @@ namespace GTD.Services
                 //        continue;
                 //    }
                 //}
-
             }
 
             return tasklist;

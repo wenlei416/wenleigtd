@@ -1,16 +1,12 @@
-﻿using System;
+﻿using GTD.Models;
+using GTD.Services.Abstract;
+using GTD.Util;
+using GTD.ViewModels;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.WebPages;
-using GTD.DAL;
-using GTD.DAL.Abstract;
-using GTD.Models;
-using GTD.Services;
-using GTD.Services.Abstract;
-using GTD.Util;
-using GTD.ViewModels;
-using Microsoft.Ajax.Utilities;
 
 namespace GTD.Controllers
 {
@@ -25,7 +21,6 @@ namespace GTD.Controllers
             this._taskServices = taskServices;
             _projectServices = projectServices;
             _contextServices = contextServices;
-
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
             //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
@@ -60,7 +55,6 @@ namespace GTD.Controllers
                 InprogressSubTasks = task.SubTasks.Where(s => s.IsComplete == false).OrderByDescending(s => s.SubTaskId),
                 NextTask = _taskServices.GetNextTaskByTaskId(id),
                 PreviousTask = _taskServices.GetPreviousTaskByTaskId(id)
-                
             };
             return View(viewmodel);
         }
@@ -79,7 +73,7 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (task.StartDateTime != null&&task.CloseDateTime==null)
+                if (task.StartDateTime != null && task.CloseDateTime == null)
                 {
                     task.CloseDateTime = task.StartDateTime;
                 }
@@ -104,7 +98,7 @@ namespace GTD.Controllers
                 return HttpNotFound();
             }
             //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", task.Pro );
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", task.Pro);
 
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
@@ -112,7 +106,6 @@ namespace GTD.Controllers
             ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
             ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
             ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.PreviousTask_TaskId ?? new int());
-
 
             return View(task);
         }
@@ -124,7 +117,6 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
             }
@@ -163,7 +155,6 @@ namespace GTD.Controllers
             return RedirectToAction("ListTask", new { da = tempda.ToString() });
         }
 
-
         // GET: /Task/Complete/5
         public ActionResult Complete(int id)
         {
@@ -192,7 +183,6 @@ namespace GTD.Controllers
             var viewmodel = new TasklistVM(workingtasks, sortOrder);
             return View("ListTask2", viewmodel);
         }
-
 
         /// <summary>
         /// 显示已经完成的任务列表
@@ -243,7 +233,6 @@ namespace GTD.Controllers
                                       select t
 
                 //taskRepository.GetTasks().Where(t=>t.IsComplete==true &)
-
             };
             return View(viewmodel);
         }
