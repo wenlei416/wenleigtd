@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTD", "GTD.Web\GTD.csproj", "{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}"
 EndProject
@@ -17,20 +17,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Home-Dev|Any CPU = Home-Dev|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Home-Dev|Any CPU.ActiveCfg = Home-Dev|Any CPU
-		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Home-Dev|Any CPU.Build.0 = Home-Dev|Any CPU
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96653DFD-ED0D-4405-A10E-F34C4CB15FA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Home-Dev|Any CPU.ActiveCfg = Home-Dev|Any CPU
-		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Home-Dev|Any CPU.Build.0 = Home-Dev|Any CPU
 		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C048F1B3-ED56-45E0-B51C-71EB0DC92C99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

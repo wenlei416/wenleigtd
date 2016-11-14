@@ -19,6 +19,8 @@ namespace GTD
 
             bundles.Add(new ScriptBundle("~/bundles/layer").Include("~/Scripts/layer/layer.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/moment").Include("~/Scripts/moment.js"));
+
             // 使用要用于开发和学习的 Modernizr 的开发版本。然后，当你做好
             // 生产准备时，请使用 http://modernizr.com 上的生成工具来仅选择所需的测试。
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(

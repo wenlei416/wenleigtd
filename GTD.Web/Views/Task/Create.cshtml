@@ -114,8 +114,9 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval");
-    <script src="/Scripts/moment.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    @*<script src="../../Scripts/moment.js"></script>*@
     <script>
         $(document)
             .ready(function () {
