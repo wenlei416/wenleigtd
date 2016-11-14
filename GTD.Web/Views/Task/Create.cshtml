@@ -116,7 +116,9 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/moment")
-    @*<script src="../../Scripts/moment.js"></script>*@
+    <script src="~/Scripts/CustomValidation.js"></script>
+    @*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
+    <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
     <script>
         $(document)
             .ready(function () {
@@ -145,6 +147,10 @@
                 var viewbgaDa = '@ViewBag.dataAttr';
                 $('#@Html.IdFor(model => model.DateAttribute)').val(viewbgaDa);
                 setDataAttribute(viewbgaDa);
+
+                @*$.datetimepicker.setLocale('zh');
+                $('#@Html.IdFor(model => model.CloseDateTime)').datetimepicker({ timepicker: false, format: 'YYYY/mm/dd' });
+                $('#@Html.IdFor(model=>model.StartDateTime)').datetimepicker();*@
             });
     </script>
 }

@@ -239,6 +239,7 @@
     <Compile Include="Services\ProjectServices.cs" />
     <Compile Include="Services\SubTaskServices.cs" />
     <Compile Include="Services\TaskServices.cs" />
+    <Compile Include="Util\DateGreaterThanAttribute.cs" />
     <Compile Include="Util\OutlookAppointment.cs" />
     <Compile Include="Util\DropDownListHelp.cs" />
     <Compile Include="Util\TaskUtil.cs" />
@@ -317,6 +318,7 @@
     <None Include="Properties\PublishProfiles\本地.pubxml" />
     <None Include="Properties\PublishProfiles\本地iis.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\CustomValidation.js" />
     <Content Include="Scripts\datetimepicker\jquery.datetimepicker.full.js" />
     <Content Include="Scripts\datetimepicker\jquery.datetimepicker.full.min.js" />
     <Content Include="Scripts\datetimepicker\jquery.datetimepicker.min.css" />

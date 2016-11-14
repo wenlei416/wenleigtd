@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using GTD.Util;
 
 namespace GTD.Models
 {
@@ -39,6 +40,7 @@ namespace GTD.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = @"结束时间")]
+        [DateGreaterThan("StartDateTime","结束时间必须大于开始时间")]
         public DateTime? CloseDateTime { get; set; }
 
         [Display(Name = @"属性")]
