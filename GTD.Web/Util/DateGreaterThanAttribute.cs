@@ -20,16 +20,17 @@ namespace GTD.Util
         {
             var validationResult = ValidationResult.Success;
 
-            var otherPropertyInfo = validationContext.ObjectType.GetProperty(this._otherPropertyName);
+            var otherPropertyInfo = validationContext.ObjectType.GetProperty(this._otherPropertyName).GetValue(validationContext.ObjectInstance, null);
 
+            //如果2个日期中任意一个为空，就跳过检查
+            if (value == null || otherPropertyInfo == null) return validationResult;
             DateTime toValidate = (DateTime)value;
-            DateTime referenceProperty = (DateTime)otherPropertyInfo.GetValue(validationContext.ObjectInstance, null);
+            DateTime referenceProperty = (DateTime)otherPropertyInfo;
 
             if (toValidate.CompareTo(referenceProperty) < 0)
             {
                 validationResult = new ValidationResult(ErrorMessageString);
             }
-
             return validationResult;
         }
 
