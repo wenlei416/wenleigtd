@@ -24,7 +24,7 @@ namespace GTD.Controllers
 
             //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
             //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
-            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName");
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName), "ProjectID", "ProjectName");
 
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
@@ -78,9 +78,6 @@ namespace GTD.Controllers
                     task.CloseDateTime = task.StartDateTime;
                 }
                 _taskServices.AddTask(task);
-                //task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
-                //_taskRepository.InsertTask(task);
-                //_taskRepository.Save();
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
             }
 
@@ -98,7 +95,7 @@ namespace GTD.Controllers
                 return HttpNotFound();
             }
             //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", task.Pro);
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName), "ProjectID", "ProjectName", task.Pro != null ? task.Pro.ProjectId : new int());
 
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
@@ -120,7 +117,8 @@ namespace GTD.Controllers
                 _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
             }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName), "ProjectID", "ProjectName", task.Pro != null ? task.Pro.ProjectId : new int());
             ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
                 task.Context != null ? task.Context.ContextId : new int());
             ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
