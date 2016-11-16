@@ -120,4 +120,49 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    <script src="~/Scripts/CustomValidation.js"></script>
+    @*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
+        <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
+    <script>
+        $(document)
+            .ready(function () {
+                function setDataAttribute(da) {
+                    var datetime;
+                    switch (da) {
+                        case "今日待办":
+                            datetime = moment().format('YYYY-MM-DD');
+                            break;
+                        case "明日待办":
+                            datetime = moment().add(1, 'days').format('YYYY-MM-DD');
+                            break;
+                        case "日程":
+                            datetime = moment().add(2, 'days').format('YYYY-MM-DD');
+                            break;
+                        case "下一步行动":
+                        case "收集箱":
+                        case "将来也许":
+                        case "等待":
+                            datetime = "";
+                            break;
+                        default:
+                    }
+                    $('#@Html.IdFor(model => model.StartDateTime)').val(datetime);
+                    $('#@Html.IdFor(model => model.CloseDateTime)').val(datetime);
+
+                };
+
+                @*function setStartDateTime(date) {
+                    $('#@Html.IdFor(model => model.DateAttribute)').val("今日待办");
+                }*@
+
+                //$('#@Html.IdFor(model => model.StartDateTime)').change(function () { setStartDateTime($(this).val()) });
+                $('#@Html.IdFor(model => model.DateAttribute)').change(function () { setDataAttribute($(this).children('option:selected').val()) });
+
+
+                @*$.datetimepicker.setLocale('zh');
+                $('#@Html.IdFor(model => model.CloseDateTime)').datetimepicker({ timepicker: false, format: 'YYYY/mm/dd' });
+                $('#@Html.IdFor(model=>model.StartDateTime)').datetimepicker();*@
+            });
+    </script>
 }

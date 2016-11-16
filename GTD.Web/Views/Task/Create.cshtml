@@ -118,7 +118,7 @@
     @Scripts.Render("~/bundles/moment")
     <script src="~/Scripts/CustomValidation.js"></script>
     @*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
-    <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
+        <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
     <script>
         $(document)
             .ready(function () {
@@ -130,6 +130,15 @@
                             break;
                         case "明日待办":
                             datetime = moment().add(1, 'days').format('YYYY-MM-DD');
+                            break;
+                        case "日程":
+                            datetime = moment().add(2, 'days').format('YYYY-MM-DD');
+                            break;
+                        case "下一步行动":
+                        case "收集箱":
+                        case "将来也许":
+                        case "等待":
+                            datetime = "";
                             break;
                         default:
                     }
