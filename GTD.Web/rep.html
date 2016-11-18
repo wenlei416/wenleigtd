@@ -3,7 +3,28 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>重复任务</title>
-
+    <style type="text/css">
+        .popup {
+            background-color: rgb(255, 255, 255);
+            border-color: rgb(136, 136, 136) rgb(136, 136, 136) rgb(136, 136, 136) rgb(136, 136, 136);
+            box-shadow: rgb(0, 0, 0) 0 1px 5px 0;
+            box-shadow: rgba(0, 0, 0, 0.4) 0 1px 5px 0;
+            color: rgb(136, 136, 136);
+            display: block;
+            line-height: 24px;
+            list-style-position: outside;
+            list-style-type: none;
+            margin: 0 0 5px 0;
+            padding: 16px 16px 16px 16px;
+            /*position: fixed;*/
+            text-align: left;
+            vertical-align: baseline;
+            width: 530px;
+            height: 200px;
+            top: 10px;
+            left: 204.5px;
+        }
+    </style>
 </head>
 <body>
     <ul>
@@ -14,9 +35,9 @@
                     <input class="meta-input" value="" readonly="" type="text">
                     <input class="json-input" value="" readonly="" type="text" style="display: none;">
                 </div>
-                <div class="popup" style="top: 622px; left: 204.5px; position: fixed; display: none;">
+                <div class="popup" style="top: 622px; left: 204.5px;  display: none;">
                     <div class="repeat-tab">
-                        <label >模式：</label>
+                        <label>模式：</label>
                         <div class="selector" id="uniform-undefined">
                             <select class="type">
                                 <option data-id="repeat_daily" value="daily">按天</option>
@@ -27,7 +48,7 @@
                         </div>
                     </div>
                     <dl id="repeat_daily" class="clearfix repeat-section" style="display: block;">
-                        <dt><label  class="label">频率：</label></dt>
+                        <dt><label class="label">频率：</label></dt>
                         <dd class="task-freq">
                             <span></span>
                             <input name="task_tag_repeat_daily" class="repeat-cycle text" value="1">
@@ -41,7 +62,7 @@
                         </dd>
                     </dl>
                     <dl id="repeat_weekly" class="clearfix repeat-section" style="display: none">
-                        <dt><label  class="label">频率：</label></dt>
+                        <dt><label class="label">频率：</label></dt>
                         <dd class="task-freq">
                             <span></span>
                             <input name="task_tag_repeat_weekly" class="repeat-cycle text" value="1">
@@ -177,7 +198,7 @@
                     $('#repeat_yearly').hide();
                     switch (val) {
                         case "daily":
-                            $('#repeat_daily').show();
+                            $('#repeat_daily').show();//每次都需要改位置和大小，以适应不同的选项
                             break;
                         case "weekly":
                             $('#repeat_weekly').show();
