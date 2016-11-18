@@ -34,6 +34,7 @@ namespace GTD.Util
                 if (cyc == 366)
                 {
                     //构造第一个循环日
+                    //这里假设了第一年一定有2-29
                     cycDateTime = new DateTime(startDateTime.Year, 2, 29);
                 }
                 else
@@ -45,7 +46,7 @@ namespace GTD.Util
                     cycDateTime =
                         new DateTime(startDateTime.Year, dtDate.Month, dtDate.Day);
                 }
-                //对2-29不好使
+                //todo 对2-29不好使
                 //如果循环日小于结束日，进循环
                 while (cycDateTime <= endday)
                 {
@@ -64,11 +65,126 @@ namespace GTD.Util
             }
             else if (cmonth != 0)
             {
+                int y = startDateTime.Year;
+                int m = startDateTime.Month;
+                int d;
+                //cyc在30以内，说明按几月几号循环，31表示当月最后一天。
+                //对于二月，29，30，31都代表最后一天
+                //在30以外，说明按第几周的周几循环100代表第一个周日，205，代表第2个周5，505，代表最后一个周5
+
+                //最后一天的场景
+                if (cyc == 31)
+                {
+                    //通过下个月第一天加-1天，获取本月最后一天
+                    cycDateTime = new DateTime(y, m, 1).AddMonths(1).AddDays(-1);//这是第startdate那个月的最后一天，第一个循环
+                    while (cycDateTime <= endday)
+                    {
+                        //如果循环日大于开始日期，加入返回队列，月加1
+                        recurringDateTimes.Add(cycDateTime);
+                        cycDateTime =
+                            new DateTime(cycDateTime.AddMonths(1).Year, cycDateTime.AddMonths(1).Month, 1).AddMonths(1).AddDays(
+                                -1);
+                    }
+                }
+                //不是最后一天的场景
+                //处理2月29和30
+                else if (cyc < 100)
+                {
+                    d = cyc;
+                    cycDateTime = new DateTime(y, m, d);
+
+                    while (cycDateTime <= endday)
+                    {
+                        //如果循环日小于开始日期，不能加入返回队列，月加1
+                        if (cycDateTime < startDateTime)
+                        {
+                            //如果是2月，需要处理29和30两个场景
+                            if (cycDateTime.Month == 2 && (cyc == 29 || cyc == 30))
+                            {
+                                cycDateTime = new DateTime(cycDateTime.Year, 3, d);
+                            }
+                            else
+                            {
+                                cycDateTime = cycDateTime.AddMonths(cmonth);
+                            }
+                        }
+                        //如果循环日大于开始日期，加入返回队列，月加1，也要处理了2月场景
+                        else
+                        {
+                            recurringDateTimes.Add(cycDateTime);
+                            if (cycDateTime.Month == 2 && (cyc == 29 || cyc == 30))
+                            {
+                                cycDateTime = new DateTime(cycDateTime.Year, 3, d);
+                            }
+                            else
+                            {
+                                cycDateTime = cycDateTime.AddMonths(cmonth);
+                            }
+                        }
+                    }
+                }
+                //按周指定的场景
+                //在30以外，说明按第几周的周几循环100代表第一个周日，205，代表第2个周5，505，代表最后一个周5
+                //不是第一周的周几，而是第一个周几
+                else if (cyc >= 100)
+                {
+                    int week = cyc / 100;//第几周，5代表最后一周
+                    int weekday = cyc % 100;//周几，周日是0
+                    if (week == 5)
+                    {
+                        cycDateTime = new DateTime(y, m, 1);
+                        DateTime lastDayofCycMonth = cycDateTime.AddMonths(1).AddDays(-1);
+                        int lastDayofCycMonthWeekDay = (int)lastDayofCycMonth.DayOfWeek;
+                        cycDateTime =
+                            lastDayofCycMonth.AddDays(weekday - lastDayofCycMonthWeekDay >= 0
+                                ? weekday - lastDayofCycMonthWeekDay
+                                : weekday - lastDayofCycMonthWeekDay - 7);
+
+                        while (cycDateTime <= endday)
+                        {
+                            if (cycDateTime >= startDateTime)
+                            {
+                                recurringDateTimes.Add(cycDateTime);
+                            }
+                            cycDateTime = cycDateTime.AddMonths(cmonth);
+                            lastDayofCycMonth = new DateTime(cycDateTime.AddMonths(1).Year, cycDateTime.AddMonths(1).Month, 1).AddDays(-1);
+                            lastDayofCycMonthWeekDay = (int)lastDayofCycMonth.DayOfWeek;
+                            cycDateTime =
+                                lastDayofCycMonth.AddDays(weekday - lastDayofCycMonthWeekDay <= 0
+                                    ? weekday - lastDayofCycMonthWeekDay
+                                    : weekday - lastDayofCycMonthWeekDay - 7);
+                        }
+                    }
+                    else
+                    {
+                        cycDateTime = new DateTime(y, m, 1);
+                        int firstDayofCycMonthWeekDay = (int)cycDateTime.DayOfWeek;
+                        cycDateTime =
+                            cycDateTime.AddDays(weekday - firstDayofCycMonthWeekDay >= 0
+                                ? weekday - firstDayofCycMonthWeekDay + 7 * (week - 1)
+                                : weekday - firstDayofCycMonthWeekDay + 7 * week);
+
+                        while (cycDateTime <= endday)
+                        {
+                            if (cycDateTime >= startDateTime)
+                            {
+                                recurringDateTimes.Add(cycDateTime);
+                            }
+                            cycDateTime = new DateTime(cycDateTime.AddMonths(cmonth).Year, cycDateTime.AddMonths(cmonth).Month, 1);
+                            firstDayofCycMonthWeekDay = (int)cycDateTime.DayOfWeek;
+                            cycDateTime =
+                                cycDateTime.AddDays(weekday - firstDayofCycMonthWeekDay >= 0
+                                    ? weekday - firstDayofCycMonthWeekDay + 7 * (week - 1)
+                                    : weekday - firstDayofCycMonthWeekDay + 7 * week);
+                        }
+                    }
+                }
+
 
             }
             else if (cweek != 0)
             {
-                //周日是0
+                //周日是0，算出最近的符合要求的周几，可能是倒退一天
                 cycDateTime = startDateTime.AddDays(cyc - (int)startDateTime.DayOfWeek);
                 while (cycDateTime <= endday)
                 {
@@ -87,6 +203,7 @@ namespace GTD.Util
             }
             else if (cday != 0)
             {
+                //开始日第一天一定在范围内，cyc是没有用的
                 cycDateTime = startDateTime;
                 while (cycDateTime <= endday)
                 {
