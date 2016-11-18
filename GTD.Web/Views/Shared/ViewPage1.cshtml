@@ -1,0 +1,125 @@
+﻿<li class="meta task-repeat">
+    <div class="meta-wrap">
+        <div class="meta-inner">
+            <div class="meta-default-text" style="display: block;">重复</div>
+            <input class="meta-input" value="" readonly="" type="text">
+        </div>
+        <div class="popup" style="top: 622px; left: 204.5px; position: fixed; display: none;">
+            <div class="repeat-tab">
+                <label for="repeat_type">模式：</label>
+                <div class="selector" id="uniform-undefined">
+                    <span>按天</span><select class="type" style="opacity: 0;">
+                        <option data-id="repeat_daily" value="daily">按天</option>
+                        <option data-id="repeat_weekly" value="weekly">按周</option>
+                        <option data-id="repeat_monthly" value="monthly">按月</option>
+                        <option data-id="repeat_yearly" value="yearly">按年</option>
+                    </select>
+                </div>
+            </div>
+            <dl id="repeat_daily" class="clearfix repeat-section" style="display: block;">
+                <dt><label for="task_tag_repeat_daily" class="label">频率：</label></dt>
+                <dd class="task-freq">
+                    <span></span>
+                    <input name="task_tag_repeat_daily" class="repeat-cycle text" value="1">
+                    <span>天重复一次</span>
+                </dd>
+                <dt>区间：</dt>
+                <dd class="task-repeat-time-box">
+                    <span class="repeat_start_at text text-time">2016-11-18</span>
+                    <span>-</span>
+                    <input type="text" name="repeat_time_end" id="repeat_time_end" class="repeat_end_at text  datepicker" placeholder="结束时间">
+                </dd>
+            </dl>
+            <dl id="repeat_weekly" class="clearfix repeat-section" style="display:none">
+                <dt><label for="task_tag_repeat_weekly" class="label">频率：</label></dt>
+                <dd class="task-freq">
+                    <span></span>
+                    <input name="task_tag_repeat_weekly" class="repeat-cycle text" value="1">
+                    <span>周重复一次</span>
+                </dd>
+                <dt>重复日：</dt>
+                <dd class="task-repeat-box">
+                    <div class="checkbox" data-id="1"><input name="repeat-monday" type="hidden" value="">周一</div>
+                    <div class="checkbox" data-id="2"><input name="repeat-tuesday" type="hidden" value="">周二</div>
+                    <div class="checkbox" data-id="3"><input name="repeat-wednesday" type="hidden" value="">周三</div>
+                    <div class="checkbox" data-id="4"><input name="repeat-thursday" type="hidden" value="">周四</div>
+                    <div class="checkbox" data-id="5"><input name="repeat-friday" type="hidden" value="">周五</div>
+                    <div class="checkbox" data-id="6"><input name="repeat-saturday" type="hidden" value="">周六</div>
+                    <div class="checkbox last" data-id="0"><input name="repeat-sunday" type="hidden" value="">周日</div>
+                </dd>
+                <dt>区间：</dt>
+                <dd class="task-repeat-time-box">
+                    <span class="repeat_start_at text text-time">2016-11-18</span>
+                    <span>-</span>
+                    <input type="text" name="repeat_time_end" id="repeat_time_end" class="repeat_end_at text  datepicker" placeholder="结束时间">
+                </dd>
+            </dl>
+            <dl id="repeat_monthly" class="clearfix repeat-section" style="display:none">
+                <dt><label for="task_tag_repeat_monthly" class="label">频率：</label></dt>
+                <dd class="task-freq">
+                    <span></span>
+                    <input name="task_tag_repeat_monthly" value="1" class=" repeat-cycle text">
+                    <span>月重复一次</span>
+                </dd>
+                <dt><label for="task_tag" class="label">重复日：</label></dt>
+                <dd class="repeat-on">
+                    <label for="repeat_monthly_day"><input type="radio" checked="" name="repeat_monthly_type" id="repeat_monthly_day">每逢</label>
+                    <span class="select">
+                        <div class="selector" id="uniform-undefined">
+                            <span>1</span><select class="repeat-monthly-type" style="opacity: 0;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
+                    </span>
+                    号
+                    <label for="repeat_monthly_date"><input type="radio" name="repeat_monthly_type" id="repeat_monthly_date"></label>
+                    <span class="select">
+                        <div class="selector" id="uniform-undefined">
+                            <span>第一个</span><select class="repeat-monthly-o" style="opacity: 0;">
+                                <option value="1">第一个</option>
+                                <option value="2">第二个</option>
+                                <option value="3">第三个</option>
+                                <option value="4">第四个</option>
+                                <option value="-1">最后一个</option>
+                            </select>
+                        </div>
+                        <div class="selector" id="uniform-undefined">
+                            <span>周一</span><select class="repeat-monthly-w" style="opacity: 0;">
+                                <option value="1">周一</option>
+                                <option value="2">周二</option>
+                                <option value="3">周三</option>
+                                <option value="4">周四</option>
+                                <option value="5">周五</option>
+                                <option value="6">周六</option>
+                                <option value="0">周日</option>
+                            </select>
+                        </div>
+                    </span>
+                </dd>
+                <dt>区间：</dt>
+                <dd class="task-repeat-time-box">
+                    <span class="repeat_start_at text text-time">2016-11-18</span>
+                    <span>-</span>
+                    <input type="text" name="repeat_time_end" id="repeat_time_end" class="repeat_end_at text  datepicker" placeholder="结束时间">
+                </dd>
+            </dl>
+            <dl id="repeat_yearly" class="clearfix repeat-section" style="display:none">
+                <dt><label for="task_tag_repeat_yearly" class="label">频率：</label></dt>
+                <dd class="task-freq">
+                    <span></span>
+                    <input name="task_tag_repeat_yearly" class="repeat-cycle text" value="1">
+                    <span>年重复一次</span>
+                </dd>
+                <dt>区间：</dt>
+                <dd class="task-repeat-time-box">
+                    <span class="repeat_start_at text text-time">2016-11-18</span>
+                    <span>-</span>
+                    <input type="text" name="repeat_time_end" id="repeat_time_end" class="repeat_end_at text  datepicker" placeholder="结束时间">
+                </dd>
+            </dl>
+            <div class="btn-4 repeat-ok" type="button">确定</div>
+        </div>
+    </div>
+    <span class="clear-this" style="display:none"></span>
+</li>

@@ -353,6 +353,7 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="rep.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -421,6 +422,7 @@
     <Content Include="Views\Pomodoroes\Edit.cshtml" />
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
+    <Content Include="Views\Shared\ViewPage1.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
