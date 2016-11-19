@@ -81,7 +81,7 @@
         <div class="popup" style="display: none">
             <div class="repeat-tab row">
                 <div class="col-md-2">模式：</div>
-                <div class="selector col-md-9" id="uniform-undefined">
+                <div class="selector col-md-9">
                     <select class="cyctype form-control">
                         <option data-id="repeat_daily" value="daily">按天</option>
                         <option data-id="repeat_weekly" value="weekly">按周</option>
@@ -131,7 +131,7 @@
                 </div>
                 <div class="row">
                     <div class=" col-md-2">重复日：</div>
-                    <div class="selector col-md-9" id="uniform-undefined">
+                    <div class="selector col-md-9">
                         <select class="repeat-weekly-o form-control">
                             <option value="1">周一</option>
                             <option value="2">周二</option>
@@ -176,7 +176,7 @@
                             <div class="col-md-2 radios">
                                 <input type="radio" checked="" name="repeat_monthly_type" value="repeat_monthly_day">每逢
                             </div>
-                            <div class="selector col-md-2" id="uniform-undefined">
+                            <div class="selector col-md-2">
                                 <select class="repeat-monthly-type  form-control">
                                     <option value="1">1</option>
                                     <option value="2">2</option>
@@ -215,7 +215,7 @@
                             <div class="col-md-1 radios">
                                 <input type="radio" name="repeat_monthly_type" value="repeat_monthly_date">
                             </div>
-                            <div class="selector  col-md-3" id="uniform-undefined">
+                            <div class="selector  col-md-3">
                                 <select class="repeat-monthly-o form-control">
                                     <option value="1">第一个</option>
                                     <option value="2">第二个</option>
@@ -224,7 +224,7 @@
                                     <option value="5">最后一个</option>
                                 </select>
                             </div>
-                            <div class="selector col-md-2" id="uniform-undefined">
+                            <div class="selector col-md-2">
                                 <select class="repeat-monthly-w  form-control">
                                     <option value="1">周一</option>
                                     <option value="2">周二</option>
@@ -314,7 +314,7 @@
 
                 };
 
-                var dayinyear = function(date) {
+                var dayinyear = function (date) {
                     var diff;
                     if (moment(date).format('m') === 2 && moment(date).format('D') === 29) {
                         diff = 366;
@@ -327,7 +327,19 @@
                     return diff;
                 };
 
-                var numinmonth = function (repeattype,t,o,w) {
+                // ReSharper disable NativeTypePrototypeExtending
+                String.prototype.format = String.prototype.f = function () {
+                    // ReSharper restore NativeTypePrototypeExtending
+                    var s = this,
+                        i = arguments.length;
+
+                    while (i--) {
+                        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+                    }
+                    return s;
+                };
+
+                var numinmonth = function (repeattype, t, o, w) {
                     var result;
                     switch (repeattype) {
                         case 'repeat_monthly_day':
@@ -336,7 +348,21 @@
                         case 'repeat_monthly_date':
                             result = o * 10 + w;
                             break;
-                    default:
+                        default:
+                    }
+                    return result;
+                }
+
+                var textinmonth = function (repeattype, t, o, w) {
+                    var result;
+                    switch (repeattype) {
+                        case 'repeat_monthly_day':
+                            result = t;
+                            break;
+                        case 'repeat_monthly_date':
+                            result = '第'+o+'周星期' + w;
+                            break;
+                        default:
                     }
                     return result;
                 }
@@ -347,7 +373,7 @@
                     var result = new Array();
                     switch (cyctype) {
                         case 'daily':
-                            result[1] = "每" + $("#task_tag_repeat_" + cyctype).val() + "天重复";
+                            result[1] = "每{0}天重复".f($("#task_tag_repeat_" + cyctype).val());
                             result[2] = {
                                 'cday': $("#task_tag_repeat_daily").val(),
                                 'cweek': 0,
@@ -359,7 +385,7 @@
                             };
                             break;
                         case 'weekly':
-                            result[1] = "每" + $("#task_tag_repeat_" + cyctype).val() + "周" + $('.repeat-weekly-o').children('option:selected').text() + "重复";
+                            result[1] = "每{0}周的{1}重复".f($("#task_tag_repeat_" + cyctype).val(), $('.repeat-weekly-o').children('option:selected').text());
                             result[2] = {
                                 'cday': 0,
                                 'cweek': $("#task_tag_repeat_" + cyctype).val(),
@@ -372,7 +398,11 @@
                             break;
 
                         case 'monthly':
-                            result[1] = "每" + $("#task_tag_repeat_" + cyctype).val() + "个月" + "重复";
+                            result[1] = "每{0}个月的{1}重复".f($("#task_tag_repeat_" + cyctype).val(),
+                                textinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
+                                    $('.repeat-monthly-type').children('option:selected').val(),
+                                    $('.repeat-monthly-o').children('option:selected').val(),
+                                    $('.repeat-monthly-w').children('option:selected').val()));
                             result[2] = {
                                 'cday': 0,
                                 'cweek': 0,
@@ -388,7 +418,7 @@
                             break;
 
                         case 'yearly':
-                            result[1] = "每" + $("#task_tag_repeat_" + cyctype).val() + "年" + moment($("#repeat_time_start_" + cyctype).val()).format('M月D日') + "重复";
+                            result[1] = "每{0}年{1}重复".f($("#task_tag_repeat_" + cyctype).val(), moment($("#repeat_time_start_" + cyctype).val()).format('M月D日'));
                             result[2] = {
                                 'cday': 0,
                                 'cweek': 0,
@@ -404,10 +434,11 @@
                     }
                     return result;
                 }
+
                 $('.meta-input')
-                        .click(function () {
-                            $('.popup').toggle();
-                        });
+                    .click(function () {
+                        $('.popup').toggle();
+                    });
                 $('.repeat-ok')
                     .click(function () {
                         $('.popup').toggle();
@@ -425,6 +456,7 @@
                     .change(function () {
                         showpopup($(this).children('option:selected').val());
                     });
+
                 $.datetimepicker.setLocale('zh');
                 $('.datepicker').datetimepicker({ timepicker: false, format: 'Y/m/d' });
             });
