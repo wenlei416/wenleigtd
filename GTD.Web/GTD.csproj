@@ -432,6 +432,7 @@
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
     <Content Include="Views\Shared\ViewPage1.cshtml" />
+    <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -360,7 +360,7 @@
                             result = t;
                             break;
                         case 'repeat_monthly_date':
-                            result = '第'+o+'周星期' + w;
+                            result = '第' + o + '周星期' + w;
                             break;
                         default:
                     }
@@ -437,7 +437,19 @@
 
                 $('.meta-input')
                     .click(function () {
-                        $('.popup').toggle();
+                        var top = $('.meta-input').offset().top + 35;
+                        if (top > $(window).height() - 186)
+                            top = $('.meta-input').offset().top - 185;
+                        $('.popup')
+                            .toggle()
+                            .css("left", $('.meta-input').offset().left + 3)
+                            .css("top",top );
+                        console.log("window" + $(window).height());
+
+                        //console.log("top:"+$('.popup').offset().top);
+                        //console.log("left:" + $('.popup').offset().left);
+                        //console.log("top:" + $('.popup').position().top);
+                        //console.log("left:" + $('.popup').position().left);
                     });
                 $('.repeat-ok')
                     .click(function () {
