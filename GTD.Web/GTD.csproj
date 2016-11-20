@@ -227,6 +227,10 @@
     <Compile Include="Migrations\201611041430552_addPomodoro.Designer.cs">
       <DependentUpon>201611041430552_addPomodoro.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611200732321_addTaskPropertyRepeatJson.cs" />
+    <Compile Include="Migrations\201611200732321_addTaskPropertyRepeatJson.Designer.cs">
+      <DependentUpon>201611200732321_addTaskPropertyRepeatJson.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Pomodoro.cs" />
     <Compile Include="Services\Abstract\ICommentServices.cs" />
@@ -460,6 +464,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201611041430552_addPomodoro.resx">
       <DependentUpon>201611041430552_addPomodoro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611200732321_addTaskPropertyRepeatJson.resx">
+      <DependentUpon>201611200732321_addTaskPropertyRepeatJson.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -68,6 +68,8 @@ namespace GTD.Models
 
         public virtual ICollection<Pomodoro> Pomodoros { get; set; }
 
+        [HiddenInput(DisplayValue = false)]
+        public string RepeatJson { get; set; }
 
         public override string ToString()
         {
