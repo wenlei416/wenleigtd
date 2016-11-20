@@ -1,0 +1,1 @@
+ERROR 2016-11-20 14:44:31,257 24342ms LogHelper              WriteLog           - abc

@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.IO;
+using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -26,8 +27,8 @@ namespace GTD
             //而是在ninjectwebcommon里面注册各种bind，包括过滤器的
             //注意，引入了ninject对mvc的支持
             //ControllerBuilder.Current.SetControllerFactory(new NinjectControllerFactory());
-            
 
+            log4net.Config.XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
         }
     }
 }

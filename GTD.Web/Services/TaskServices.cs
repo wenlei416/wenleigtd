@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.WebPages;
+using GTD.Util;
 
 namespace GTD.Services
 {
@@ -77,6 +78,7 @@ namespace GTD.Services
         {
             task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
             _taskRepository.Create(task);
+            LogHelper.WriteLog("abc");
         }
 
         public void UpdateTask(Task task)
