@@ -78,13 +78,14 @@ namespace GTD.Services
         {
             task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
             _taskRepository.Create(task);
-            LogHelper.WriteLog("abc");
+            LogHelper.WriteLog(task.ToString());
         }
 
         public void UpdateTask(Task task)
         {
             task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
             _taskRepository.Update(task);
+
         }
 
         public IEnumerable<Task> GetCompletedTasks()

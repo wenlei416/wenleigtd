@@ -1,1 +1,4 @@
 ERROR 2016-11-20 14:44:31,257 24342ms LogHelper              WriteLog           - abc
+INFO  2016-11-20 14:49:19,608 18747ms LogHelper              WriteLog           - GTD.Models.Task
+INFO  2016-11-20 15:07:02,603 LogHelper              WriteLog           - GTD.Models.Task
+INFO  2016-11-20 15:08:45,193 LogHelper        WriteLog   - GTD.Models.Task

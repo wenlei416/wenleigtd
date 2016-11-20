@@ -69,6 +69,9 @@ namespace GTD.Models
         public virtual ICollection<Pomodoro> Pomodoros { get; set; }
 
 
-
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }

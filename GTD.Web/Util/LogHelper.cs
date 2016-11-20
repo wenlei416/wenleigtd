@@ -8,7 +8,7 @@ namespace GTD.Util
         public static void WriteLog(string txt)
         {
             ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            log.Error(txt);
+            log.Info(txt);
         }
     }
 }
