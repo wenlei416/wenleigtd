@@ -7,6 +7,7 @@ namespace GTD.UT.Util.Tests
     [TestClass()]
     public class RecurringDateTests
     {
+        #region JsonToDate的测试
 
         #region 针对年的测试
         //全部循环日期都在范围内
@@ -197,7 +198,7 @@ namespace GTD.UT.Util.Tests
             Assert.AreEqual(new DateTime(2016, 1, 30), a[3]);
             Assert.AreEqual(new DateTime(2016, 2, 29), a[4]);
             Assert.AreEqual(new DateTime(2016, 3, 30), a[5]);
-            Assert.AreEqual(a.Count,6);
+            Assert.AreEqual(a.Count, 6);
         }
 
         //502，最后一周的场景
@@ -268,8 +269,61 @@ namespace GTD.UT.Util.Tests
 
             Assert.AreEqual(a.Count, 6);
         }
-
         #endregion
+
+        #endregion JsonToDate的测试
+
+        #region JsonToString
+        #region 针对年的测试
+
+        [TestMethod]
+        public void JsonToStringYear1Test()
+        {
+            const string cyc1 = @"{'cyear':'1','cmonth':'0','cweek':'0','cday':'0','startday':'2016-1-2','endday':'2018-4-5','cyc':'12'}";
+            var a1 = RecurringDate.JsonToString(cyc1);
+            Assert.AreEqual(a1, "每隔1年的1月12日重复");
+
+            const string cyc2 = @"{'cyear':'1','cmonth':'0','cweek':'0','cday':'0','startday':'2016-1-2','endday':'2024-4-5','cyc':'366'}";
+            var a2 = RecurringDate.JsonToString(cyc2);
+            Assert.AreEqual(a2, "每隔1年的2月29日重复");
+
+            const string cyc3 = @"{'cyear':'0','cmonth':'1','cweek':'0','cday':'0','startday':'2016-1-1','endday':'2017-4-6','cyc':'31'}";
+            var a3 = RecurringDate.JsonToString(cyc3);
+            Assert.AreEqual(a3, "每隔1个月的最后一天重复");
+
+            const string cyc4 = @"{'cyear':'0','cmonth':'1','cweek':'0','cday':'0','startday':'2015-10-1','endday':'2016-4-5','cyc':'30'}";
+            var a4 = RecurringDate.JsonToString(cyc4);
+            Assert.AreEqual(a4, "每隔1个月的30日重复");
+
+            const string cyc5 = @"{'cyear':'0','cmonth':'1','cweek':'0','cday':'0','startday':'2016-11-1','endday':'2017-4-30','cyc':'503'}";
+            var a5 = RecurringDate.JsonToString(cyc5);
+            Assert.AreEqual(a5, "每隔1个月的最后一周周3重复");
+
+            const string cyc6 = @"{'cyear':'0','cmonth':'1','cweek':'0','cday':'0','startday':'2016-11-1','endday':'2017-4-30','cyc':'202'}";
+            var a6 = RecurringDate.JsonToString(cyc6);
+            Assert.AreEqual(a6, "每隔1个月的第2周周2重复");
+
+            const string cyc8 = @"{'cyear':'0','cmonth':'1','cweek':'0','cday':'0','startday':'2016-11-1','endday':'2017-4-30','cyc':'200'}";
+            var a8 = RecurringDate.JsonToString(cyc8);
+            Assert.AreEqual(a8, "每隔1个月的第2周周日重复");
+
+            const string cyc7 = @"{'cyear':'0','cmonth':'0','cweek':'1','cday':'0','startday':'2016-11-9','endday':'2016-11-25','cyc':'4'}";
+            var a7 = RecurringDate.JsonToString(cyc7);
+            Assert.AreEqual(a7, "每隔1周的周4重复");
+
+            const string cyc9 = @"{'cyear':'0','cmonth':'0','cweek':'1','cday':'0','startday':'2016-11-9','endday':'2016-11-25','cyc':'0'}";
+            var a9 = RecurringDate.JsonToString(cyc9);
+            Assert.AreEqual(a9, "每隔1周的周日重复");
+
+            const string cyc10 = @"{'cyear':'0','cmonth':'0','cweek':'0','cday':'5','startday':'2016-10-1','endday':'2016-10-5','cyc':'0'}";
+            var a10 = RecurringDate.JsonToString(cyc10);
+            Assert.AreEqual(a10, "每隔5天重复");
+
+
+        }
+        #endregion
+        #endregion JsonToString
+
 
     }
 }

@@ -15,12 +15,6 @@ namespace GTD.Services
         private readonly ITaskRepository _taskRepository;
         private readonly IProjectServices _projectServices;
 
-        //public TaskServices()
-        //{
-        //    _projectServices = new ProjectServices();
-        //    _taskRepository = new TaskRepository();
-        //}
-
         public TaskServices(ITaskRepository taskRepository, IProjectServices projectServices)
         {
             _taskRepository = taskRepository;
@@ -76,9 +70,9 @@ namespace GTD.Services
 
         public void AddTask(Task task)
         {
+            LogHelper.WriteLog(task.Headline);
             task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
             _taskRepository.Create(task);
-            LogHelper.WriteLog(task.ToString());
         }
 
         public void UpdateTask(Task task)

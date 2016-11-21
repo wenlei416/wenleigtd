@@ -12,7 +12,8 @@ namespace GTD.Util
             List<DateTime> recurringDateTimes = new List<DateTime>();
 
             //把json字符串解析为dic，并把对应的值取出来
-            Dictionary<string, string> recurringDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(recurringJson);
+            Dictionary<string, string> recurringDictionary =
+                JsonConvert.DeserializeObject<Dictionary<string, string>>(recurringJson);
             int cyear = Convert.ToInt32(recurringDictionary["cyear"]);
             int cmonth = Convert.ToInt32(recurringDictionary["cmonth"]);
             int cweek = Convert.ToInt32(recurringDictionary["cweek"]);
@@ -76,14 +77,15 @@ namespace GTD.Util
                 if (cyc == 31)
                 {
                     //通过下个月第一天加-1天，获取本月最后一天
-                    cycDateTime = new DateTime(y, m, 1).AddMonths(1).AddDays(-1);//这是第startdate那个月的最后一天，第一个循环
+                    cycDateTime = new DateTime(y, m, 1).AddMonths(1).AddDays(-1); //这是第startdate那个月的最后一天，第一个循环
                     while (cycDateTime <= endday)
                     {
                         //如果循环日大于开始日期，加入返回队列，月加1
                         recurringDateTimes.Add(cycDateTime);
                         cycDateTime =
-                            new DateTime(cycDateTime.AddMonths(1).Year, cycDateTime.AddMonths(1).Month, 1).AddMonths(1).AddDays(
-                                -1);
+                            new DateTime(cycDateTime.AddMonths(1).Year, cycDateTime.AddMonths(1).Month, 1).AddMonths(1)
+                                .AddDays(
+                                    -1);
                     }
                 }
                 //不是最后一天的场景
@@ -128,8 +130,8 @@ namespace GTD.Util
                 //不是第一周的周几，而是第一个周几
                 else if (cyc >= 100)
                 {
-                    int week = cyc / 100;//第几周，5代表最后一周
-                    int weekday = cyc % 100;//周几，周日是0
+                    int week = cyc / 100; //第几周，5代表最后一周
+                    int weekday = cyc % 100; //周几，周日是0
                     if (week == 5)
                     {
                         cycDateTime = new DateTime(y, m, 1);
@@ -147,7 +149,9 @@ namespace GTD.Util
                                 recurringDateTimes.Add(cycDateTime);
                             }
                             cycDateTime = cycDateTime.AddMonths(cmonth);
-                            lastDayofCycMonth = new DateTime(cycDateTime.AddMonths(1).Year, cycDateTime.AddMonths(1).Month, 1).AddDays(-1);
+                            lastDayofCycMonth =
+                                new DateTime(cycDateTime.AddMonths(1).Year, cycDateTime.AddMonths(1).Month, 1).AddDays(
+                                    -1);
                             lastDayofCycMonthWeekDay = (int)lastDayofCycMonth.DayOfWeek;
                             cycDateTime =
                                 lastDayofCycMonth.AddDays(weekday - lastDayofCycMonthWeekDay <= 0
@@ -170,7 +174,8 @@ namespace GTD.Util
                             {
                                 recurringDateTimes.Add(cycDateTime);
                             }
-                            cycDateTime = new DateTime(cycDateTime.AddMonths(cmonth).Year, cycDateTime.AddMonths(cmonth).Month, 1);
+                            cycDateTime = new DateTime(cycDateTime.AddMonths(cmonth).Year,
+                                cycDateTime.AddMonths(cmonth).Month, 1);
                             firstDayofCycMonthWeekDay = (int)cycDateTime.DayOfWeek;
                             cycDateTime =
                                 cycDateTime.AddDays(weekday - firstDayofCycMonthWeekDay >= 0
@@ -213,6 +218,102 @@ namespace GTD.Util
             }
             return recurringDateTimes;
 
+        }
+
+
+        public static string JsonToString(string recurringJson)
+        {
+            //{'cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-10-1','endday':'2016-10-5','cyc':'100'}
+            string recurringDescription = null;
+            string repeatDate;
+
+            //把json字符串解析为dic，并把对应的值取出来
+            Dictionary<string, string> recurringDictionary =
+                JsonConvert.DeserializeObject<Dictionary<string, string>>(recurringJson);
+            int cyear = Convert.ToInt32(recurringDictionary["cyear"]);
+            int cmonth = Convert.ToInt32(recurringDictionary["cmonth"]);
+            int cweek = Convert.ToInt32(recurringDictionary["cweek"]);
+            int cday = Convert.ToInt32(recurringDictionary["cday"]);
+
+            //循环日，表示和按json中表明的循环方法，离这个循环方法的第一天距离多少天
+            int cyc = Convert.ToInt32(recurringDictionary["cyc"]);
+
+            DateTime startDateTime = Convert.ToDateTime(recurringDictionary["startday"]);
+            DateTime endday = Convert.ToDateTime(recurringDictionary["endday"]);
+
+            if (cyear != 0)
+            {
+                //业务规则，cyc设为366，表示循环2-29
+                if (cyc == 366)
+                {
+                    //构造第一个循环日
+                    //这里假设了第一年一定有2-29
+                    repeatDate = "2月29日";
+                }
+                else
+                {
+                    //非闰年，则随便找个普通年，计算那年的第cyc天是几月几号
+                    DateTime dtBase = new DateTime(2001, 1, 1);
+                    DateTime dtDate = dtBase.AddDays(cyc - 1);
+                    //构造第一个循环日
+                    repeatDate = (new DateTime(startDateTime.Year, dtDate.Month, dtDate.Day)).ToString("M月d日");
+                }
+                recurringDescription = $"每隔{cyear}年的{repeatDate}重复";
+            }
+            else if (cmonth != 0)
+            {
+                int m = startDateTime.Month;
+                int d = cyc;
+                //cyc在30以内，说明按几月几号循环，31表示当月最后一天。
+                //对于二月，29，30，31都代表最后一天
+                //在30以外，说明按第几周的周几循环100代表第一个周日，205，代表第2个周5，505，代表最后一个周5
+
+                //最后一天的场景
+                if (cyc == 31)
+                {
+                    repeatDate = "最后一天";
+                    recurringDescription = $"每隔{cmonth}个月的{repeatDate}重复";
+                }
+                //不是最后一天的场景
+                //处理2月29和30
+                else if (cyc < 100)
+                {
+                    repeatDate = $"{d}日";
+                    recurringDescription = $"每隔{cmonth}个月的{repeatDate}重复";
+
+                }
+                ////按周指定的场景
+                ////在30以外，说明按第几周的周几循环100代表第一个周日，205，代表第2个周5，505，代表最后一个周5
+                ////不是第一周的周几，而是第一个周几
+                else if (cyc >= 100)
+                {
+                    int week = cyc / 100;//第几周，5代表最后一周
+                    string weekday = (cyc % 100) != 0 ? (cyc % 100).ToString() : "日";
+                    //周几，周日是0
+                    if (week == 5)
+                    {
+                        repeatDate = $"最后一周周{weekday}";
+                        recurringDescription = $"每隔{cmonth}个月的{repeatDate}重复";
+                    }
+                    else
+                    {
+                        repeatDate = $"第{week}周周{weekday}";
+                        recurringDescription = $"每隔{cmonth}个月的{repeatDate}重复";
+                    }
+                }
+            }
+            else if (cweek != 0)
+            {
+                //周日是0
+                repeatDate = cyc != 0 ? cyc.ToString() : "日";
+                recurringDescription = $"每隔{cweek}周的周{repeatDate}重复";
+            }
+            else if (cday != 0)
+            {
+                recurringDescription = $"每隔{cday}天重复";
+            }
+
+            return recurringDescription;
         }
     }
 }

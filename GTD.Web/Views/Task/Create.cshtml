@@ -135,8 +135,8 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/moment")
     <script src="~/Scripts/CustomValidation.js"></script>
-    @*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
-        <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
+    <link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
+        <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script>
         $(document)
             .ready(function () {
@@ -179,15 +179,11 @@
                     .click(function() {
                         var t = $('.meta-input').offset().top + 35;
                         if (t > $(window).height() - 186 )
-                            t = $('.meta-input').offset().top - 410;
+                            t = $('.meta-input').offset().top - 410;//单位似乎不是px，而是像素，不知道会不会不好使
                         $('.popup')
                             .toggle()
                             .css("left", $('.meta-input').offset().left + 3)
                             .css("top", t);
-                        console.log($('.popup').height());
-                        //console.log($('.meta-input').offset().top);
-                        console.log("window:" + $(window).height());
-                        //console.log($(window).height() - 186 - 35 - $('.meta-input').offset().top);
                     });
 
                 $('.repeat-ok')
@@ -208,8 +204,8 @@
                         showpopup($(this).children('option:selected').val());
                     });
 
-                //$.datetimepicker.setLocale('zh');
-                //$('.datepicker').datetimepicker({ timepicker: false, format: 'Y/m/d' });
+                $.datetimepicker.setLocale('zh');
+                $('.datepicker').datetimepicker({ timepicker: false, format: 'Y/m/d' });
                 @*$.datetimepicker.setLocale('zh');
                 $('#@Html.IdFor(model => model.CloseDateTime)').datetimepicker({ timepicker: false, format: 'YYYY/mm/dd' });
                 $('#@Html.IdFor(model=>model.StartDateTime)').datetimepicker();*@
