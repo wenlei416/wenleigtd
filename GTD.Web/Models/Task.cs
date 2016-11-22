@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Mvc;
 using GTD.Util;
 
 namespace GTD.Models
 {
     [Serializable]
-    public class Task
+    public class Task:ICloneable
     {
         [HiddenInput(DisplayValue = false)]
         public int TaskId { get; set; }
@@ -75,6 +77,18 @@ namespace GTD.Models
         public override string ToString()
         {
             return base.ToString();
+        }
+
+        public object Clone()
+        {
+            using (MemoryStream objectStream = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(objectStream, this);
+                objectStream.Seek(0, SeekOrigin.Begin);
+                //Task t = (Task)formatter.Deserialize(objectStream);
+                return formatter.Deserialize(objectStream);
+            }
         }
     }
 }

@@ -91,9 +91,6 @@ namespace GTD.Services
                 var id = _taskRepository.CreateWithId(cycTasks[0]);
 
                 //修改刚插入的task，把id加入json
-                //Dictionary<string, string> recurringDictionary =JsonConvert.DeserializeObject<Dictionary<string, string>>(cycTasks[0].RepeatJson);
-                //recurringDictionary.Add("id", id.ToString());
-                //cycTasks[0].RepeatJson = JsonConvert.SerializeObject(recurringDictionary);
                 cycTasks[0].RepeatJson = cycTasks[0].RepeatJson.Replace("}", ",'id':'" + id + "'}");
                 cycTasks[0].TaskId = id;
                 _taskRepository.Update(cycTasks[0]);
@@ -106,9 +103,11 @@ namespace GTD.Services
                 }
             }
         }
-
-        //根据传入的task，来计算需要生成的重复任务
-        //todo 可能需要根据展示来调整日程里面的任务
+        /// <summary>
+        /// 根据传入的task，来计算需要生成的重复任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
         private List<Task> CreateCycTasks(Task task)
         {
             List<Task> cycTasks = new List<Task>();
@@ -117,47 +116,67 @@ namespace GTD.Services
             if (recurringDate == null)
                 return cycTasks;
 
-            //获取每次任务的周期
-            var timeSpan = task.CloseDateTime - task.StartDateTime;
-            //todo 需要处理没有结束日期的任务
-            int taskDuration = 0;
-            if (timeSpan != null)
-            {
-                TimeSpan ts = (TimeSpan)timeSpan;
-                taskDuration = ts.Days;
-            }
+            //获取任务的周期
+            var taskDuration = TaskDuration(task);
 
             //生成任务，最多生成今天、明天和第一个日程三个任务
             //逻辑：因为recurringDate不会为空（已经判断），所以第一个任务肯定要加（最差是日程任务）
-            //此时，如果第一个日期大于明天，则跳出循环；如果小于明天，就再加一天，在看是否大于明天。
+            //除非是设置的第一天比今天还早
+            //此时，如果第一个日期大于明天，则跳出循环；如果小于明天，就再加一天，再看是否大于明天。
             for (int i = 0; i <= recurringDate.Count; i++)
             {
-                //深度克隆对象，可以考虑改写到model的clone接口中
-                using (MemoryStream ms = new MemoryStream())
+                if (recurringDate[i].Date < DateTime.Now.Date)
                 {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    //序列化成流
-                    bf.Serialize(ms, task);
-                    ms.Seek(0, SeekOrigin.Begin);
-                    //反序列化成对象
-                    Task t = (Task)bf.Deserialize(ms);
-                    //克隆出来的对象要改任务开始和结束日期
-                    t.StartDateTime = recurringDate[i];
-                    t.CloseDateTime = task.CloseDateTime != null
-                        ? (DateTime?)recurringDate[i].AddDays(taskDuration)
-                        : null;
-                    t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
-
-                    cycTasks.Add(t);
-                    ms.Close();
+                    continue;
                 }
-                if (recurringDate[i] > DateTime.Now.AddDays(1))
+                //深度克隆对象，可以考虑改写到model的clone接口中
+                //using (MemoryStream ms = new MemoryStream())
+                //{
+                //    BinaryFormatter bf = new BinaryFormatter();
+                //    //序列化成流
+                //    bf.Serialize(ms, task);
+                //    ms.Seek(0, SeekOrigin.Begin);
+                //    //反序列化成对象
+                //    Task t = (Task)bf.Deserialize(ms);
+                //    //克隆出来的对象要改任务开始和结束日期
+                //    t.StartDateTime = recurringDate[i];
+                //    //处理没有结束日期的任务
+                //    t.CloseDateTime = task.CloseDateTime != null
+                //        ? (DateTime?)recurringDate[i].AddDays(taskDuration)
+                //        : null;
+                //    t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
+
+                //    cycTasks.Add(t);
+                //    ms.Close();
+                //}
+                Task t = (Task) task.Clone();
+                t.StartDateTime = recurringDate[i];
+                //处理没有结束日期的任务
+                t.CloseDateTime = task.CloseDateTime != null
+                    ? (DateTime?)recurringDate[i].AddDays(taskDuration)
+                    : null;
+                t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
+
+                cycTasks.Add(t);
+
+                if (recurringDate[i].Date > DateTime.Now.AddDays(1).Date)
                 {
                     break;
                 }
             }
 
             return cycTasks;
+        }
+
+        //计算任务的周期
+        private int TaskDuration(Task task)
+        {
+            int taskDuration = 0;
+            var timeSpan = task.CloseDateTime - task.StartDateTime;
+            if (timeSpan == null) return taskDuration;
+            TimeSpan ts = (TimeSpan) timeSpan;
+            taskDuration = ts.Days;
+            return taskDuration;
         }
 
         public void UpdateTask(Task task)
