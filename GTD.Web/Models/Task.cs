@@ -6,6 +6,7 @@ using GTD.Util;
 
 namespace GTD.Models
 {
+    [Serializable]
     public class Task
     {
         [HiddenInput(DisplayValue = false)]
