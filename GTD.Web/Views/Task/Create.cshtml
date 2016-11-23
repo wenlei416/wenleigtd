@@ -177,14 +177,22 @@
 
                 $('.meta-input')
                     .click(function() {
-                        var t = $('.meta-input').offset().top + 35;
+                        var t = $('.meta-input').offset().top + $('.meta-input').outerHeight(true);
                         if (t > $(window).height() - 186 )
-                            t = $('.meta-input').offset().top - 410;//单位似乎不是px，而是像素，不知道会不会不好使
+                            t = $('.meta-input').offset().top - 173;//单位似乎不是px，而是像素，不知道会不会不好使
                         $('.popup')
                             .toggle()
-                            .css("left", $('.meta-input').offset().left + 3)
-                            .css("top", t);
+                            .css({"left": $('.meta-input').offset().left+1+'px'})
+                            .css({ "top": t + 'px' });
                     });
+
+                //$(document).click(function (event) {
+                //    console.log(event.target.id !== $('.popup').id);
+                //    console.log($('.popup').css('display'));
+                //    if (event.target.id !== $('.popup').id && $('.popup').css('display') === 'none') {
+                //        $('.popup').hide();
+                //    }
+                //});
 
                 $('.repeat-ok')
                     .click(function() {
