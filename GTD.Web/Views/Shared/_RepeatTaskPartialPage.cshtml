@@ -9,12 +9,16 @@
         color: rgb(136, 136, 136);
         display: block;
         margin: 0 0 5px 0;
-        padding: 16px 16px 8px 16px;
+        padding: 12px 8px 8px 8px;
         width: 530px;
         height: 172px;
         top: 40px;
         left: 20px;
         position: fixed;
+    }
+
+    input[type="radio"] {
+        width: 30px;
     }
 
     .row {
@@ -125,15 +129,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class=" col-md-2">重复日：</div>
+                <div class="col-md-2">重复日：</div>
                 <div class="selector col-md-9">
                     <select class="repeat-weekly-o form-control">
-                        <option value="1">周一</option>
-                        <option value="2">周二</option>
-                        <option value="3">周三</option>
-                        <option value="4">周四</option>
-                        <option value="5">周五</option>
-                        <option value="6">周六</option>
+                        <option value="1">周1</option>
+                        <option value="2">周2</option>
+                        <option value="3">周3</option>
+                        <option value="4">周4</option>
+                        <option value="5">周5</option>
+                        <option value="6">周6</option>
                         <option value="0">周日</option>
                     </select>
                 </div>
@@ -168,7 +172,7 @@
                 <div class="col-md-2">重复日：</div>
                 <div class="repeat-on col-md-10">
                     <div class="row">
-                        <div class="col-md-2 radios">
+                        <div class="radios col-md-2">
                             <input type="radio" checked="" name="repeat_monthly_type" value="repeat_monthly_day">每逢
                         </div>
                         <div class="selector col-md-2">
@@ -203,14 +207,14 @@
                                 <option value="28">28</option>
                                 <option value="29">29</option>
                                 <option value="30">30</option>
-                                <option value="31">31</option>
+                                <option value="31">最后一天</option>
                             </select>
                         </div>
-                        <div class=" col-md-1">号</div>
-                        <div class="col-md-1 radios">
+                        <div class="col-md-1">日</div>
+                        <div class="radios col-md-1">
                             <input type="radio" name="repeat_monthly_type" value="repeat_monthly_date">
                         </div>
-                        <div class="selector  col-md-3">
+                        <div class="selector col-md-3">
                             <select class="repeat-monthly-o form-control">
                                 <option value="1">第一个</option>
                                 <option value="2">第二个</option>
@@ -221,12 +225,12 @@
                         </div>
                         <div class="selector col-md-2">
                             <select class="repeat-monthly-w  form-control">
-                                <option value="1">周一</option>
-                                <option value="2">周二</option>
-                                <option value="3">周三</option>
-                                <option value="4">周四</option>
-                                <option value="5">周五</option>
-                                <option value="6">周六</option>
+                                <option value="1">周1</option>
+                                <option value="2">周2</option>
+                                <option value="3">周3</option>
+                                <option value="4">周4</option>
+                                <option value="5">周5</option>
+                                <option value="6">周6</option>
                                 <option value="0">周日</option>
                             </select>
                         </div>
@@ -308,7 +312,7 @@
         };
 
     };
-
+    //计算一个日期是这年中的第几天
     var dayinyear = function (date) {
         var diff;
         if (moment(date).format('m') === 2 && moment(date).format('D') === 29) {
@@ -322,6 +326,7 @@
         return diff;
     };
 
+    //内部工具，方便拼接字符串
     // ReSharper disable NativeTypePrototypeExtending
     String.prototype.format = String.prototype.f = function () {
         // ReSharper restore NativeTypePrototypeExtending
@@ -349,10 +354,11 @@
     }
 
     var textinmonth = function (repeattype, t, o, w) {
-        var result;
+        var result = "";
         switch (repeattype) {
             case 'repeat_monthly_day':
-                result = t;
+                if (t === '31') result = "最后一天";
+                else result = t + "日";
                 break;
             case 'repeat_monthly_date':
                 result = '第' + o + '周星期' + w;
@@ -363,12 +369,13 @@
     }
 
     //{'cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-10-1','endday':'2016-10-5','cyc':'100'}
+    //根据页面上的选择，生成json和页面上显示的文字
     var createresult = function () {
         var cyctype = $('.cyctype').children('option:selected').val();
         var result = new Array();
         switch (cyctype) {
             case 'daily':
-                result[1] = "每{0}天重复".f($("#task_tag_repeat_" + cyctype).val());
+                result[1] = "每隔{0}天重复".f($("#task_tag_repeat_" + cyctype).val());
                 result[2] = {
                     'cday': $("#task_tag_repeat_daily").val(),
                     'cweek': 0,
@@ -380,7 +387,7 @@
                 };
                 break;
             case 'weekly':
-                result[1] = "每{0}周的{1}重复".f($("#task_tag_repeat_" + cyctype).val(), $('.repeat-weekly-o').children('option:selected').text());
+                result[1] = "每隔{0}周的{1}重复".f($("#task_tag_repeat_" + cyctype).val(), $('.repeat-weekly-o').children('option:selected').text());
                 result[2] = {
                     'cday': 0,
                     'cweek': $("#task_tag_repeat_" + cyctype).val(),
@@ -393,7 +400,7 @@
                 break;
 
             case 'monthly':
-                result[1] = "每{0}个月的{1}重复".f($("#task_tag_repeat_" + cyctype).val(),
+                result[1] = "每隔{0}个月的{1}重复".f($("#task_tag_repeat_" + cyctype).val(),
                     textinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
                         $('.repeat-monthly-type').children('option:selected').val(),
                         $('.repeat-monthly-o').children('option:selected').val(),
@@ -431,4 +438,3 @@
     }
 
 </script>
-
