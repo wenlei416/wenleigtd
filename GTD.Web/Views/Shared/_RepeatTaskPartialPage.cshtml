@@ -1,6 +1,4 @@
-﻿@*<link rel="stylesheet" type="text/css" href="/Content/bootstrap.css" />*@
-@*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">*@
-<style type="text/css">
+﻿<style type="text/css">
     .popup {
         background-color: rgb(255, 255, 255);
         border-color: rgb(136, 136, 136) rgb(136, 136, 136) rgb(136, 136, 136) rgb(136, 136, 136);
@@ -12,9 +10,7 @@
         padding: 16px 16px 8px 16px;
         width: 530px;
         height: 172px;
-        top: 40px;
-        left: 20px;
-        position: fixed;
+
     }
 
     .row {
@@ -65,14 +61,6 @@
 
 
 <div class="meta-wrap container">
-    @*<div class="meta-inner row">
-            <div class="col-md-2 ">重复</div>
-            <div class="col-md-5">
-                <input class="form-control meta-input" value="" readonly="" type="text">
-                <input class="form-control json-input" value="" readonly="" type="text">
-            </div>
-            <div class="clear-this btn  btn-default" style="display: none">清除</div>
-        </div>*@
     <div class="popup" style="display: none" id="popup">
         <div class="repeat-tab row">
             <div class="col-md-2">模式：</div>
@@ -276,12 +264,7 @@
     </div>
 </div>
 
-@*<script src="/Scripts/jquery-3.1.1.js"></script>*@
-@*<script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
-@*<script src="/Scripts/moment.js"></script>*@
-
 <script>
-
     var showpopup = function (val) {
         $('#repeat_weekly').hide();
         $('#repeat_daily').hide();
