@@ -329,7 +329,7 @@
                 result = t;
                 break;
             case 'repeat_monthly_date':
-                result = o * 10 + w;
+                result = o * 100 + w;
                 break;
             default:
         }
@@ -361,9 +361,9 @@
                 result[1] = "每隔{0}天重复".f($("#task_tag_repeat_" + cyctype).val());
                 result[2] = {
                     'cday': $("#task_tag_repeat_daily").val(),
-                    'cweek': 0,
-                    'cmonth': 0,
-                    'cyear': 0,
+                    'cweek': '0',
+                    'cmonth': '0',
+                    'cyear': '0',
                     'startday': $("#repeat_time_start_" + cyctype).val(),
                     'endday': $("#repeat_time_end_" + cyctype).val(),
                     'cyc': $("#task_tag_repeat_" + cyctype).val()
@@ -372,10 +372,10 @@
             case 'weekly':
                 result[1] = "每隔{0}周的{1}重复".f($("#task_tag_repeat_" + cyctype).val(), $('.repeat-weekly-o').children('option:selected').text());
                 result[2] = {
-                    'cday': 0,
+                    'cday': '0',
                     'cweek': $("#task_tag_repeat_" + cyctype).val(),
-                    'cmonth': 0,
-                    'cyear': 0,
+                    'cmonth': '0',
+                    'cyear': '0',
                     'startday': $("#repeat_time_start_" + cyctype).val(),
                     'endday': $("#repeat_time_end_" + cyctype).val(),
                     'cyc': $('.repeat-weekly-o').children('option:selected').val()
@@ -389,10 +389,10 @@
                         $('.repeat-monthly-o').children('option:selected').val(),
                         $('.repeat-monthly-w').children('option:selected').val()));
                 result[2] = {
-                    'cday': 0,
-                    'cweek': 0,
+                    'cday': '0',
+                    'cweek': '0',
                     'cmonth': $("#task_tag_repeat_" + cyctype).val(),
-                    'cyear': 0,
+                    'cyear': '0',
                     'startday': $("#repeat_time_start_" + cyctype).val(),
                     'endday': $("#repeat_time_end_" + cyctype).val(),
                     'cyc': numinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
@@ -405,9 +405,9 @@
             case 'yearly':
                 result[1] = "每{0}年{1}重复".f($("#task_tag_repeat_" + cyctype).val(), moment($("#repeat_time_start_" + cyctype).val()).format('M月D日'));
                 result[2] = {
-                    'cday': 0,
-                    'cweek': 0,
-                    'cmonth': 0,
+                    'cday': '0',
+                    'cweek': '0',
+                    'cmonth': '0',
                     'cyear': $("#task_tag_repeat_" + cyctype).val(),
                     'startday': $("#repeat_time_start_" + cyctype).val(),
                     'endday': $("#repeat_time_end_" + cyctype).val(),

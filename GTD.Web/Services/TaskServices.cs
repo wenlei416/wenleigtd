@@ -91,7 +91,7 @@ namespace GTD.Services
                 var id = _taskRepository.CreateWithId(cycTasks[0]);
 
                 //修改刚插入的task，把id加入json
-                cycTasks[0].RepeatJson = cycTasks[0].RepeatJson.Replace("}", ",'id':'" + id + "'}");
+                cycTasks[0].RepeatJson = cycTasks[0].RepeatJson.Replace("}", ",\"id\":\"" + id + "\"}");
                 cycTasks[0].TaskId = id;
                 _taskRepository.Update(cycTasks[0]);
 

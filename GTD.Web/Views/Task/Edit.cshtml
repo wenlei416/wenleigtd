@@ -139,29 +139,30 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/moment")
     <script src="~/Scripts/CustomValidation.js"></script>
-
+    <link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
+    <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
     <script>
         $(document)
-            .ready(function () {
+            .ready(function() {
                 function setDataAttribute(da) {
                     var datetime;
                     switch (da) {
-                        case "今日待办":
-                            datetime = moment().format('YYYY-MM-DD');
-                            break;
-                        case "明日待办":
-                            datetime = moment().add(1, 'days').format('YYYY-MM-DD');
-                            break;
-                        case "日程":
-                            datetime = moment().add(2, 'days').format('YYYY-MM-DD');
-                            break;
-                        case "下一步行动":
-                        case "收集箱":
-                        case "将来也许":
-                        case "等待":
-                            datetime = "";
-                            break;
-                        default:
+                    case "今日待办":
+                        datetime = moment().format('YYYY-MM-DD');
+                        break;
+                    case "明日待办":
+                        datetime = moment().add(1, 'days').format('YYYY-MM-DD');
+                        break;
+                    case "日程":
+                        datetime = moment().add(2, 'days').format('YYYY-MM-DD');
+                        break;
+                    case "下一步行动":
+                    case "收集箱":
+                    case "将来也许":
+                    case "等待":
+                        datetime = "";
+                        break;
+                    default:
                     }
                     $('#@Html.IdFor(model => model.StartDateTime)').val(datetime);
                     $('#@Html.IdFor(model => model.CloseDateTime)').val(datetime);
@@ -173,12 +174,35 @@
                 }*@
 
                 //$('#@Html.IdFor(model => model.StartDateTime)').change(function () { setStartDateTime($(this).val()) });
-                $('#@Html.IdFor(model => model.DateAttribute)').change(function () { setDataAttribute($(this).children('option:selected').val()) });
+                $('#@Html.IdFor(model => model.DateAttribute)')
+                    .change(function() { setDataAttribute($(this).children('option:selected').val()) });
 
+                var showpopup = function(val) {
+                    $('#repeat_weekly').hide();
+                    $('#repeat_daily').hide();
+                    $('#repeat_monthly').hide();
+                    $('#repeat_yearly').hide();
+                    switch (val) {
+                    case "daily":
+                        $('.popup').height(148);
+                        $('#repeat_daily').show().css('display', 'block'); //每次都需要改位置和大小，以适应不同的选项
+                        break;
+                    case "weekly":
+                        $('.popup').height(186);
+                        $('#repeat_weekly').show().css('display', 'block');
+                        break;
+                    case "monthly":
+                        $('.popup').height(186);
+                        $('#repeat_monthly').show().css('display', 'block');
+                        break;
+                    case "yearly":
+                        $('.popup').height(148);
+                        $('#repeat_yearly').show().css('display', 'block');
+                        break;
+                    default:
+                    };
+                };
 
-                @*$.datetimepicker.setLocale('zh');
-                $('#@Html.IdFor(model => model.CloseDateTime)').datetimepicker({ timepicker: false, format: 'YYYY/mm/dd' });
-                $('#@Html.IdFor(model=>model.StartDateTime)').datetimepicker();*@
                 $('.meta-input')
                     .click(function() {
                         var t = $('.meta-input').offset().top + $('.meta-input').outerHeight(true);
@@ -190,6 +214,42 @@
                             .css({ "left": $('.meta-input').offset().left + 1 + 'px' })
                             .css({ "top": t + 'px' });
                         //解析json，并为_RepeatTaskPartialPage.cshtml中的各个属性赋值
+                        if ($('#@Html.IdFor(model => model.RepeatJson)').val()!=='') {
+                            var recurringJson = jQuery.parseJSON($('#@Html.IdFor(model => model.RepeatJson)').val());
+                            var cyctype;
+
+                            if (recurringJson.cday !== "0") {
+                                cyctype = 'daily';
+                                $("#task_tag_repeat_" + cyctype).val(recurringJson.cday);
+                            }
+
+                            if (recurringJson.cmonth !== "0") {
+                                cyctype = 'monthly';
+                                $("#task_tag_repeat_" + cyctype).val(recurringJson.cmonth);
+                                /*
+                    'cyc': numinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
+                        $('.repeat-monthly-type').children('option:selected').val(),
+                        $('.repeat-monthly-o').children('option:selected').val(),
+                        $('.repeat-monthly-w').children('option:selected').val())
+                                */
+                            }
+
+                            if (recurringJson.cweek !== "0") {
+                                cyctype = 'weekly';
+                                $("#task_tag_repeat_" + cyctype).val(recurringJson.cweek);
+                                $('.repeat-weekly-o').val(recurringJson.cyc);
+                            }
+
+                            if (recurringJson.cyear !== "0") {
+                                cyctype = 'yearly';
+                                $("#task_tag_repeat_" + cyctype).val(recurringJson.cyear);
+                            }
+                            $('.cyctype').val(cyctype);
+                            $("#repeat_time_start_" + cyctype).val(recurringJson.startday);
+                            $("#repeat_time_end_" + cyctype).val(recurringJson.endday);
+                            showpopup(cyctype);
+
+                        }
                     });
 
                 //$(document).click(function (event) {
@@ -201,25 +261,29 @@
                 //});
 
                 $('.repeat-ok')
-                    .click(function () {
+                    .click(function() {
                         $('.popup').toggle();
                         $('.meta-input').val(createresult()[1]); //根据内容拼展示文字，没选完整的直接清除
                         $('.json-input').val(JSON.stringify(createresult()[2])); //根据内容拼json字符串，并用这个字符串来绑定，没选完整的直接清除
                         $('.clear-this').toggle(); //这里还需要清除所有输入的内容
                     });
                 $('.clear-this')
-                    .click(function () {
+                    .click(function() {
                         $('.meta-input').val("");
                         $('.json-input').val("");
                         $('.clear-this').toggle();
                     });
                 $('.cyctype')
-                    .change(function () {
+                    .change(function() {
                         showpopup($(this).children('option:selected').val());
                     });
 
                 $.datetimepicker.setLocale('zh');
                 $('.datepicker').datetimepicker({ timepicker: false, format: 'Y/m/d' });
+
+                //两个原始的时间输入框不能用，和系统提供的日期选择框冲突
+                @*$('#@Html.IdFor(model => model.CloseDateTime)').datetimepicker({ timepicker: false, format: 'YYYY/mm/dd' });
+                $('#@Html.IdFor(model=>model.StartDateTime)').datetimepicker();*@
             });
     </script>
 }
