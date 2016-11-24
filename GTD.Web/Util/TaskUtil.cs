@@ -1,6 +1,6 @@
 ﻿using System;
-using GTD.DAL;
 using GTD.Models;
+using Microsoft.Ajax.Utilities;
 
 namespace GTD.Util
 {
@@ -80,8 +80,9 @@ namespace GTD.Util
                 return string.Empty;
         }
 
-
+        public static string RecurringString(this Task task)
+        {
+            return task.RepeatJson.IsNullOrWhiteSpace() ? "" : RecurringDate.JsonToString(task.RepeatJson);
+        }
     }
-
-
 }

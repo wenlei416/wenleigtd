@@ -1,4 +1,5 @@
 ﻿@using GTD.Models
+@using GTD.Util
 @model GTD.Models.Task
 
 @{
@@ -107,7 +108,15 @@
 
             @Html.ValidationMessageFor(model => model.PreviousTask_TaskId)
         </div>
-
+        @*----------重复----------*@
+        <div class="editor-label">
+            @Html.Label("重复")
+        </div>
+        <div class="editor-field">
+            @Html.Editor("meta-input", new { htmlAttributes = new { @class = "meta-input", @readonly = "readonly", @Value = @Model.RecurringString() } })
+            @Html.HiddenFor(model => model.RepeatJson, new { @class = "json-input" })
+            <div class="clear-this btn  btn-default" style="display: none">清除</div>
+        </div>
         <p>
             <input type="submit" value="保存" />
         </p>
@@ -118,12 +127,19 @@
     @Html.ActionLink("返回列表", "ListTask", "Task", new { da = DateAttribute.今日待办.ToString(), sortorder = "priority" }, "")
 </div>
 
+<div>
+    @{
+        Html.RenderPartial("_RepeatTaskPartialPage");
+    }
+</div>
+
+
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/moment")
     <script src="~/Scripts/CustomValidation.js"></script>
-    @*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
-        <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
+
     <script>
         $(document)
             .ready(function () {
@@ -163,6 +179,47 @@
                 @*$.datetimepicker.setLocale('zh');
                 $('#@Html.IdFor(model => model.CloseDateTime)').datetimepicker({ timepicker: false, format: 'YYYY/mm/dd' });
                 $('#@Html.IdFor(model=>model.StartDateTime)').datetimepicker();*@
+                $('.meta-input')
+                    .click(function() {
+                        var t = $('.meta-input').offset().top + $('.meta-input').outerHeight(true);
+                        if (t > $(window).height() - 186)
+                            t = $('.meta-input').offset().top - 173; //单位似乎不是px，而是像素，不知道会不会不好使
+                        $('.popup')
+                            .toggle()
+                            .css({ "position": "absolute" })
+                            .css({ "left": $('.meta-input').offset().left + 1 + 'px' })
+                            .css({ "top": t + 'px' });
+                        //解析json，并为_RepeatTaskPartialPage.cshtml中的各个属性赋值
+                    });
+
+                //$(document).click(function (event) {
+                //    console.log(event.target.id !== $('.popup').id);
+                //    console.log($('.popup').css('display'));
+                //    if (event.target.id !== $('.popup').id && $('.popup').css('display') === 'none') {
+                //        $('.popup').hide();
+                //    }
+                //});
+
+                $('.repeat-ok')
+                    .click(function () {
+                        $('.popup').toggle();
+                        $('.meta-input').val(createresult()[1]); //根据内容拼展示文字，没选完整的直接清除
+                        $('.json-input').val(JSON.stringify(createresult()[2])); //根据内容拼json字符串，并用这个字符串来绑定，没选完整的直接清除
+                        $('.clear-this').toggle(); //这里还需要清除所有输入的内容
+                    });
+                $('.clear-this')
+                    .click(function () {
+                        $('.meta-input').val("");
+                        $('.json-input').val("");
+                        $('.clear-this').toggle();
+                    });
+                $('.cyctype')
+                    .change(function () {
+                        showpopup($(this).children('option:selected').val());
+                    });
+
+                $.datetimepicker.setLocale('zh');
+                $('.datepicker').datetimepicker({ timepicker: false, format: 'Y/m/d' });
             });
     </script>
 }

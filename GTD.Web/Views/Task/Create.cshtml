@@ -181,7 +181,7 @@
                         if (t > $(window).height() - 186 )
                             t = $('.meta-input').offset().top - 173;//单位似乎不是px，而是像素，不知道会不会不好使
                         $('.popup')
-                            .toggle()
+                            .toggle().css({ "position": "absolute" })
                             .css({"left": $('.meta-input').offset().left+1+'px'})
                             .css({ "top": t + 'px' });
                     });
