@@ -85,7 +85,7 @@ namespace GTD.App_Start
             kernel.Bind<IPomodoroServices>().To<PomodoroServices>();
             kernel.Bind<IProjectServices>().To<ProjectServices>();
             kernel.Bind<ISubTaskServices>().To<SubTaskServices>();
-            kernel.Bind<ITaskServices>().To<TaskServices>();
+            kernel.Bind<ITaskServices>().To<TaskServices>();//.Intercept().With<LogInterceptor>(); ;
         }
     }
 }

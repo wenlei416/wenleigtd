@@ -226,6 +226,18 @@
                             if (recurringJson.cmonth !== "0") {
                                 cyctype = 'monthly';
                                 $("#task_tag_repeat_" + cyctype).val(recurringJson.cmonth);
+                                if (recurringJson.cyc < 100) {
+                                    $("input[name=repeat_monthly_type]:eq(0)").attr("checked", 'checked');
+                                    if (recurringJson.cyc == 31) {
+                                        $('.repeat-monthly-type').val("最后一天");
+                                    } else {
+                                        $('.repeat-monthly-type').val(recurringJson.cyc);
+                                    }
+                                } else {
+                                    $("input[name=repeat_monthly_type]:eq(1)").attr("checked", 'checked');
+                                    $('.repeat-monthly-o').val(parseInt(recurringJson.cyc / 100));
+                                    $('.repeat-monthly-w').val(recurringJson.cyc % 100);
+                                }
                                 /*
                     'cyc': numinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
                         $('.repeat-monthly-type').children('option:selected').val(),
