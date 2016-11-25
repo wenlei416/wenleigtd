@@ -4,13 +4,10 @@ using GTD.Services.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.WebPages;
 using Castle.Core.Internal;
 using GTD.Util;
-using Newtonsoft.Json;
 
 namespace GTD.Services
 {
@@ -35,7 +32,7 @@ namespace GTD.Services
 
         public IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute)
         {
-            IEnumerable<Task> tasks = null;
+            IEnumerable<Task> tasks;
             var tomorrow = DateTime.Today.AddDays(1);
             switch (dateAttribute.ToString())
             {
@@ -103,6 +100,7 @@ namespace GTD.Services
                 }
             }
         }
+
         /// <summary>
         /// 根据传入的task，来计算需要生成的重复任务
         /// </summary>
@@ -149,7 +147,7 @@ namespace GTD.Services
                 //    cycTasks.Add(t);
                 //    ms.Close();
                 //}
-                Task t = (Task) task.Clone();
+                Task t = (Task)task.Clone();
                 t.StartDateTime = recurringDate[i];
                 //处理没有结束日期的任务
                 t.CloseDateTime = task.CloseDateTime != null
@@ -168,70 +166,91 @@ namespace GTD.Services
             return cycTasks;
         }
 
-        //计算任务的周期
-        private int TaskDuration(Task task)
-        {
-            int taskDuration = 0;
-            var timeSpan = task.CloseDateTime - task.StartDateTime;
-            if (timeSpan == null) return taskDuration;
-            TimeSpan ts = (TimeSpan) timeSpan;
-            taskDuration = ts.Days;
-            return taskDuration;
-        }
-
+        /// <summary>
+        /// 更新task，包括重复任务
+        /// </summary>
+        /// <param name="task"></param>
         public void UpdateTask(Task task)
         {
-            task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
-            _taskRepository.Update(task);
-
+            var oldRepeatJson = GetTaskById(task.TaskId).RepeatJson;
+            //如果RepeatJson一样，说明没变化，不需要调整循环任务，但可能会需要调整每个循环任务的属性
+            //但需要更新循环任务
+            if (oldRepeatJson == task.RepeatJson)
+            {
+                if (!oldRepeatJson.IsNullOrEmpty() && TaskUtil.ModifiedPropertiesInList(GetTaskById(task.TaskId), task))//这里还要增加个条件判断修改属性在不在范围内
+                {
+                    //更新循环任务，包括需要更新字段的
+                    //输入：tasklist，输出：修改后的tasklist，无需泛型支持（因为是要排除到一些特定的字段的，比如id，stasttime，closetime，comment
+                    //然后循环update
+                    var repeatTasks = GetRepeatTasks(oldRepeatJson);
+                    var toUpdateTasks = TaskUtil.UpdateRepeatTasksProperties(repeatTasks.AsQueryable(), task);
+                    foreach (var t in toUpdateTasks)
+                    {
+                        t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
+                        _taskRepository.Update(t);
+                    }
+                }
+                else
+                {
+                    task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
+                    _taskRepository.Update(task);
+                }
+            }
+            else
+            {
+                if (task.RepeatJson.IsNullOrEmpty())
+                {
+                    //删除所有循环任务，保留当前打开的任务
+                    var repeatTasks = GetRepeatTasks(oldRepeatJson);
+                    foreach (var t in repeatTasks)
+                    {
+                        if (t.TaskId != task.TaskId)
+                            DeleteTask(t.TaskId);
+                    }
+                }
+                else if (oldRepeatJson.IsNullOrEmpty())
+                {
+                    //增加循环任务，把当前选择的任务改成符合循环规则的
+                    var repeatTasks = CreateCycTasks(task);
+                    //避免出现循环任务创建不出来，现在的任务又被删除掉了的情况
+                    if (repeatTasks.IsNullOrEmpty())
+                    {
+                        foreach (var t in repeatTasks)
+                        {
+                            AddTask(t);
+                        }
+                        DeleteTask(task.TaskId);
+                    }
+                }
+                else
+                {
+                    var repeatTasks = CreateCycTasks(task);
+                    var oldrepeatTasks = GetRepeatTasks(oldRepeatJson);
+                    if (repeatTasks.IsNullOrEmpty())
+                    {
+                        foreach (var t in repeatTasks)
+                        {
+                            AddTask(t);
+                        }
+                        foreach (var t in oldrepeatTasks)
+                        {
+                            DeleteTask(t.TaskId);
+                        }
+                    }
+                }
+            }
         }
 
+        //获取已经完成的任务，不包括被删除的
         public IEnumerable<Task> GetCompletedTasks()
         {
-            return _taskRepository.GetAll().Include(t => t.Pro).Where(t => t.IsComplete == true && t.IsDeleted == false);
+            return _taskRepository.GetAll().Include(t => t.Pro).Where(t => t.IsComplete && t.IsDeleted == false);
         }
 
+        //获取正在处理中的任务（没有完成也没有被删除的）
         public IEnumerable<Task> GetInProgressTasks()
         {
             return _taskRepository.GetAll().Include(t => t.Pro).Where(t => t.IsComplete == false && t.IsDeleted == false);
-        }
-
-        /// <summary>
-        ///根据输入的其他属性，判断DateAttribute应该是什么
-        ///业务规则如下：
-        ///开始时间：无             项目：无     收集箱
-        ///开始时间：今天           项目：任意   今日待办
-        ///开始时间：无             项目：有    下一步行动
-        ///开始时间：明天           项目：任意   明日待办
-        ///开始时间：今天/明天以外   项目：任意   日程
-        ///开始时间：无             项目：任意   需要主动设置 将来也许
-        ///开始时间：无             项目：任意   需要主动设置 等待
-        /// </summary>
-        /// <param name="star"></param>
-        /// <param name="att"></param>
-        /// <param name="projectid"></param>
-        /// <returns></returns>
-        public static DateAttribute? SetDateAttribute(DateTime? star, DateAttribute? att, int? projectid)
-        {
-            if (star != null)
-            {
-                if (Convert.ToDateTime(star).DayOfYear <= DateTime.Now.DayOfYear)
-                    return DateAttribute.今日待办;
-                else if (Convert.ToDateTime(star).DayOfYear == DateTime.Now.DayOfYear + 1)
-                    return DateAttribute.明日待办;
-                else
-                    return DateAttribute.日程;
-            }
-            else if (projectid != null)
-            {
-                return DateAttribute.下一步行动;
-            }
-            else if (att == DateAttribute.将来也许
-                    || att == DateAttribute.等待
-                    || att == DateAttribute.收集箱)
-                return att;
-            else
-                return DateAttribute.收集箱;
         }
 
         /// <summary>
@@ -246,11 +265,10 @@ namespace GTD.Services
                 task.DateAttribute = da;
             }
             _taskRepository.BatchUpdateTask(tasks);
-            //_taskRepository.Updates(tasks);
         }
 
         [Log]
-        public  Task GetTaskById(int? taskId)
+        public Task GetTaskById(int? taskId)
         {
             return _taskRepository.GetTaskById(taskId);
         }
@@ -264,11 +282,6 @@ namespace GTD.Services
         {
             return _taskRepository.GetAll();
         }
-
-        //public void BatchUpdateTask(IEnumerable<Task> tasks)
-        //{
-        //    _taskRepository.BatchUpdateTask(tasks);
-        //}
 
         public void CompleteTask(Task task)
         {
@@ -326,58 +339,12 @@ namespace GTD.Services
             IEnumerable<string> taskTexts = taskText.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             foreach (var t in taskTexts)
             {
-                var headline = GetTaskNameFromText(t);
-                var project = GetProjectNameFromText(t);
+                var headline = TaskUtil.GetTaskNameFromText(t);
+                var project = TaskUtil.GetProjectNameFromText(t);
                 if (headline != null)
                 {
                     tasklist.Add(new Task { Headline = headline, ProjectID = _projectServices.IsExistByName(project) });
                 }
-                //var t1 = t.Trim();
-                //if (t1.IsEmpty()) continue; ;
-
-                ////开头是#：#到第一个空格，作为项目名称，空格后所有内容作为项目标题（不去中间空格）
-                //if (t1[0] == '#')
-                //{
-                //    //用第一个空格的位置来确定项目名称
-                //    var i = t1.IndexOf(" ", StringComparison.Ordinal);
-                //    if (i > 1)
-                //    {
-                //        project = t1.Substring(1, i - 1).Trim();
-                //    }
-                //    headline = t1.Substring(i + 1).Trim();
-                //    if (!string.IsNullOrEmpty(project) && !string.IsNullOrEmpty(headline))
-                //    {
-                //        Task task = new Task { Headline = headline, ProjectID = _projectServices.IsExistByName(project) };
-                //        tasks.Add(task);
-                //        continue;
-                //    }
-
-                //}
-
-                ////其他内容开头：空格#到紧接的空格，作为项目名称。项目名称之前的内容作为任务名称，项目名称之后的内容废弃。
-                //if (t1.IndexOf(" #", StringComparison.Ordinal) > 0)
-                //{
-                //    int projectstart = t1.IndexOf(" #", StringComparison.Ordinal);
-                //    project = t1.Substring(projectstart + 2, t1.Length - projectstart - 2).Trim();
-                //    headline = t1.Substring(0, projectstart).Trim();
-                //    if (!string.IsNullOrEmpty(project) && !string.IsNullOrEmpty(headline))
-                //    {
-                //        Task task = new Task { Headline = headline, ProjectID = _projectServices.IsExistByName(project) };
-                //        tasks.Add(task);
-                //        continue;
-                //    }
-                //}
-
-                ////没有#的：所有内容作为task
-                //if (t1.IndexOf("#", StringComparison.Ordinal) < 0)
-                //{
-                //    if (!string.IsNullOrEmpty(t1))
-                //    {
-                //        Task task = new Task { Headline = t1 };
-                //        tasks.Add(task);
-                //        continue;
-                //    }
-                //}
             }
 
             return tasklist;
@@ -395,68 +362,59 @@ namespace GTD.Services
             return task.PreviousTask_TaskId != null ? _taskRepository.GetTaskById(task.PreviousTask_TaskId) : null;
         }
 
-        //输入文本，返回任务名称
-        public string GetTaskNameFromText(string tasktext)
+        //获取循环任务
+        private IEnumerable<Task> GetRepeatTasks(string repeatJson)
         {
-            string taskname = null;
-            var t1 = tasktext.Trim();
-            if (t1.IsEmpty()) return null; ;
-
-            //开头是#：#到第一个空格作为项目名称，空格后所有内容作为项目标题（不去中间空格）
-            if (t1.IndexOf("#", StringComparison.Ordinal) == 0)
-            {
-                int i = t1.IndexOf(" ", StringComparison.Ordinal);
-                if (i > 0)
-                {
-                    taskname = t1.Substring(i + 1).Trim();
-                }
-            }
-
-            //其他内容开头：空格#到紧接的空格，作为项目名称。项目名称之前的内容作为任务名称，项目名称之后的内容废弃。
-            if (t1.IndexOf(" #", StringComparison.Ordinal) > 0)
-            {
-                var i = t1.IndexOf(" #", StringComparison.Ordinal);
-                taskname = t1.Substring(0, i).Trim();
-            }
-
-            //没有#的：所有内容作为task
-            if (t1.IndexOf("#", StringComparison.Ordinal) < 0)
-            {
-                taskname = t1;
-            }
-            return taskname;
+            return GetInProgressTasks().Where(t => t.RepeatJson == repeatJson);
         }
 
-        //输入文本，返回项目名称
-        public string GetProjectNameFromText(string tasktext)
+        /// <summary>
+        ///根据输入的其他属性，判断DateAttribute应该是什么
+        ///业务规则如下：
+        ///开始时间：无             项目：无     收集箱
+        ///开始时间：今天           项目：任意   今日待办
+        ///开始时间：无             项目：有    下一步行动
+        ///开始时间：明天           项目：任意   明日待办
+        ///开始时间：今天/明天以外   项目：任意   日程
+        ///开始时间：无             项目：任意   需要主动设置 将来也许
+        ///开始时间：无             项目：任意   需要主动设置 等待
+        /// </summary>
+        /// <param name="star"></param>
+        /// <param name="att"></param>
+        /// <param name="projectid"></param>
+        /// <returns></returns>
+        private static DateAttribute? SetDateAttribute(DateTime? star, DateAttribute? att, int? projectid)
         {
-            string projectname = null;
-            var t1 = tasktext.Trim();
-            if (t1.IsEmpty()) return null; ;
-
-            //开头是#：#到第一个空格作为项目名称
-            if (t1.IndexOf("#", StringComparison.Ordinal) == 0)
+            if (star != null)
             {
-                //用第一个空格的位置来确定项目名称
-                var i = t1.IndexOf(" ", StringComparison.Ordinal);
-                if (i > 0)
-                {
-                    projectname = t1.Substring(1, i - 1).Trim();
-                }
+                if (Convert.ToDateTime(star).DayOfYear <= DateTime.Now.DayOfYear)
+                    return DateAttribute.今日待办;
+                else if (Convert.ToDateTime(star).DayOfYear == DateTime.Now.DayOfYear + 1)
+                    return DateAttribute.明日待办;
+                else
+                    return DateAttribute.日程;
             }
-
-            //其他内容开头：空格#到紧接的空格作为项目名称
-            if (t1.IndexOf(" #", StringComparison.Ordinal) > 0)
+            else if (projectid != null)
             {
-                int projectstart = t1.IndexOf(" #", StringComparison.Ordinal);
-                projectname = t1.Substring(projectstart + 2, t1.Length - projectstart - 2).Trim();
+                return DateAttribute.下一步行动;
             }
+            else if (att == DateAttribute.将来也许
+                    || att == DateAttribute.等待
+                    || att == DateAttribute.收集箱)
+                return att;
+            else
+                return DateAttribute.收集箱;
+        }
 
-            //没有#的：没有project
-            if (t1.IndexOf("#", StringComparison.Ordinal) < 0)
-            {
-            }
-            return projectname;
+        //计算任务的周期
+        private int TaskDuration(Task task)
+        {
+            int taskDuration = 0;
+            var timeSpan = task.CloseDateTime - task.StartDateTime;
+            if (timeSpan == null) return taskDuration;
+            TimeSpan ts = (TimeSpan)timeSpan;
+            taskDuration = ts.Days;
+            return taskDuration;
         }
     }
 }

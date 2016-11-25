@@ -6,14 +6,13 @@ namespace GTD.Util
     {
         protected override void BeforeInvoke(IInvocation invocation)
         {
-            LogHelper.WriteLog("BeforeInvoke");
-
+            //LogHelper.WriteLog($"BeforeInvoke : Method: {invocation.Request.Method.Name} called with arguments {invocation.Request.Arguments} returned {invocation.ReturnValue}");
         }
 
         protected override void AfterInvoke(IInvocation invocation)
         {
 
-            LogHelper.WriteLog("AfterInvoke");
+            LogHelper.WriteLog($"AfterInvoke  : Method: {invocation.Request.Method.Name} Arguments: {invocation.Request.Arguments[0]} Returned: {invocation.ReturnValue}");
         }
     }
 }
