@@ -183,9 +183,10 @@ namespace GTD.Services
                     //输入：tasklist，输出：修改后的tasklist，无需泛型支持（因为是要排除到一些特定的字段的，比如id，stasttime，closetime，comment
                     //然后循环update
                     var repeatTasks = GetRepeatTasks(oldRepeatJson);
-                    var toUpdateTasks = TaskUtil.UpdateRepeatTasksProperties(repeatTasks, task);
+                    var toUpdateTasks = TaskUtil.UpdateRepeatTasksProperties(repeatTasks.AsQueryable(), task);
                     foreach (var t in toUpdateTasks)
                     {
+                        t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
                         _taskRepository.Update(t);
                     }
                 }

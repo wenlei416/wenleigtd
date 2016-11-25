@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.WebPages;
 using GTD.Models;
 using Microsoft.Ajax.Utilities;
@@ -102,7 +103,7 @@ namespace GTD.Util
             return false;
         }
 
-        public static IEnumerable<Task> UpdateRepeatTasksProperties(IEnumerable<Task> repeatTasks, Task templateTask)
+        public static IQueryable<Task> UpdateRepeatTasksProperties(IQueryable<Task> repeatTasks, Task templateTask)
         {
             List<Task> resulTasks = new List<Task>();
             var properitiesList = new string[] { "Headline", "Description", "ProjectID", "ContextID", "Priority" };
@@ -116,7 +117,7 @@ namespace GTD.Util
                 resulTasks.Add(repeatTask);
             }
 
-            return resulTasks;
+            return resulTasks.AsQueryable();
         }
 
 

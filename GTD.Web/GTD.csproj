@@ -233,7 +233,7 @@
     <Compile Include="DAL\ProjectRepository.cs" />
     <Compile Include="DAL\SubTaskRepository.cs" />
     <Compile Include="DAL\TaskRepository.cs" />
-    <Compile Include="Filters\LogActionAttribute.cs" />
+    <Compile Include="Filters\RepeatTaskFilter.cs" />
     <Compile Include="Filters\TaskCount.cs" />
     <Compile Include="Infrastructure\NinjectControllerFactory.cs" />
     <Compile Include="Migrations\201611041430552_addPomodoro.cs" />
