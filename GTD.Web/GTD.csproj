@@ -233,7 +233,7 @@
     <Compile Include="DAL\ProjectRepository.cs" />
     <Compile Include="DAL\SubTaskRepository.cs" />
     <Compile Include="DAL\TaskRepository.cs" />
-    <Compile Include="Filters\RepeatTaskFilter.cs" />
+    <Compile Include="Filters\RepeatTaskFilterAttribute.cs" />
     <Compile Include="Filters\TaskCount.cs" />
     <Compile Include="Infrastructure\NinjectControllerFactory.cs" />
     <Compile Include="Migrations\201611041430552_addPomodoro.cs" />
@@ -295,6 +295,7 @@
     <Compile Include="ViewModels\TaskWeekly.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\log.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -446,12 +447,9 @@
     <Content Include="Views\Pomodoroes\Edit.cshtml" />
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
-    <Content Include="Views\Shared\ViewPage1.cshtml" />
     <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>

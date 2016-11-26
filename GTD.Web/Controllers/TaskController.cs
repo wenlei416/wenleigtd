@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.WebPages;
+using GTD.Filters;
 
 namespace GTD.Controllers
 {
@@ -18,7 +19,7 @@ namespace GTD.Controllers
 
         public TaskController(ITaskServices taskServices, IProjectServices projectServices, IContextServices contextServices)
         {
-            this._taskServices = taskServices;
+            _taskServices = taskServices;
             _projectServices = projectServices;
             _contextServices = contextServices;
 
@@ -34,6 +35,7 @@ namespace GTD.Controllers
         }
 
         // GET: /Task/
+        [RepeatTaskFilter]
         public ActionResult Index()
         {
             return RedirectToAction("ListTask", new { da = DateAttribute.今日待办.ToString() });
@@ -167,6 +169,7 @@ namespace GTD.Controllers
         }
 
         // GET: /Task/ListTask/da/sortOrder
+        [RepeatTaskFilter]
         public ActionResult ListTask(string da = "收集箱", string sortOrder = "priority")
         {
             var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);

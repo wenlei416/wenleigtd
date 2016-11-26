@@ -182,5 +182,100 @@ namespace GTD.Util
             return taskname;
         }
 
+        //计算任务周期
+        public static int TaskDuration(Task task)
+        {
+            int taskDuration = 0;
+            var timeSpan = task.CloseDateTime - task.StartDateTime;
+            if (timeSpan == null) return taskDuration;
+            TimeSpan ts = (TimeSpan)timeSpan;
+            taskDuration = ts.Days;
+            return taskDuration;
+        }
+
+
+        /// <summary>
+        /// 根据传入的task，来计算需要生成的重复任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static List<Task> CreateCycTasks(Task task)
+        {
+            List<Task> cycTasks = new List<Task>();
+
+            var recurringDate = RecurringDate.RecurringJsonToDate(task.RepeatJson);
+            if (recurringDate == null)
+                return cycTasks;
+
+            //获取任务的周期
+            var taskDuration = TaskUtil.TaskDuration(task);
+
+            //生成任务，最多生成今天、明天和第一个日程三个任务
+            //逻辑：因为recurringDate不会为空（已经判断），所以第一个任务肯定要加（最差是日程任务）
+            //除非是设置的第一天比今天还早
+            //此时，如果第一个日期大于明天，则跳出循环；如果小于明天，就再加一天，再看是否大于明天。
+            for (int i = 0; i <= recurringDate.Count; i++)
+            {
+                if (recurringDate[i].Date < DateTime.Now.Date)
+                {
+                    continue;
+                }
+                Task t = (Task)task.Clone();
+                t.StartDateTime = recurringDate[i];
+                //处理没有结束日期的任务
+                t.CloseDateTime = task.CloseDateTime != null
+                    ? (DateTime?)recurringDate[i].AddDays(taskDuration)
+                    : null;
+                t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
+
+                cycTasks.Add(t);
+
+                if (recurringDate[i].Date > DateTime.Now.AddDays(1).Date)
+                {
+                    break;
+                }
+            }
+
+            return cycTasks;
+        }
+
+        /// <summary>
+        ///根据输入的其他属性，判断DateAttribute应该是什么
+        ///业务规则如下：
+        ///开始时间：无             项目：无     收集箱
+        ///开始时间：今天           项目：任意   今日待办
+        ///开始时间：无             项目：有    下一步行动
+        ///开始时间：明天           项目：任意   明日待办
+        ///开始时间：今天/明天以外   项目：任意   日程
+        ///开始时间：无             项目：任意   需要主动设置 将来也许
+        ///开始时间：无             项目：任意   需要主动设置 等待
+        /// </summary>
+        /// <param name="star"></param>
+        /// <param name="att"></param>
+        /// <param name="projectid"></param>
+        /// <returns></returns>
+        public static DateAttribute? SetDateAttribute(DateTime? star, DateAttribute? att, int? projectid)
+        {
+            if (star != null)
+            {
+                if (Convert.ToDateTime(star).DayOfYear <= DateTime.Now.DayOfYear)
+                    return DateAttribute.今日待办;
+                else if (Convert.ToDateTime(star).DayOfYear == DateTime.Now.DayOfYear + 1)
+                    return DateAttribute.明日待办;
+                else
+                    return DateAttribute.日程;
+            }
+            else if (projectid != null)
+            {
+                return DateAttribute.下一步行动;
+            }
+            else if (att == DateAttribute.将来也许
+                    || att == DateAttribute.等待
+                    || att == DateAttribute.收集箱)
+                return att;
+            else
+                return DateAttribute.收集箱;
+        }
+
     }
 }
