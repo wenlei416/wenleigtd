@@ -35,7 +35,7 @@ namespace GTD.Controllers
         }
 
         // GET: /Task/
-        [RepeatTaskFilter]
+        //[RepeatTaskFilter]
         public ActionResult Index()
         {
             return RedirectToAction("ListTask", new { da = DateAttribute.今日待办.ToString() });
@@ -169,7 +169,7 @@ namespace GTD.Controllers
         }
 
         // GET: /Task/ListTask/da/sortOrder
-        [RepeatTaskFilter]
+        //[RepeatTaskFilter]
         public ActionResult ListTask(string da = "收集箱", string sortOrder = "priority")
         {
             var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);

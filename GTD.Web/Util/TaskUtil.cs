@@ -182,7 +182,16 @@ namespace GTD.Util
             return taskname;
         }
 
-        //计算任务周期
+        //
+        //
+        /// <summary>
+        /// 计算任务周期
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns>
+        /// 如果没有结束日期， 返回的是0;
+        /// 如果有结束日期，但结束日期和开始日期是同一天，返回的也是0
+        /// </returns>
         public static int TaskDuration(Task task)
         {
             int taskDuration = 0;
@@ -208,7 +217,7 @@ namespace GTD.Util
                 return cycTasks;
 
             //获取任务的周期
-            var taskDuration = TaskUtil.TaskDuration(task);
+            var taskDuration = TaskDuration(task);
 
             //生成任务，最多生成今天、明天和第一个日程三个任务
             //逻辑：因为recurringDate不会为空（已经判断），所以第一个任务肯定要加（最差是日程任务）
@@ -221,13 +230,13 @@ namespace GTD.Util
                     continue;
                 }
                 Task t = (Task)task.Clone();
+                //这里Clone出来的Task可能是有id的，后面直接拿有id的Task去写入db，不会有问题，会直接把id省略掉，重新自动生成id
                 t.StartDateTime = recurringDate[i];
                 //处理没有结束日期的任务
                 t.CloseDateTime = task.CloseDateTime != null
                     ? (DateTime?)recurringDate[i].AddDays(taskDuration)
                     : null;
                 t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
-
                 cycTasks.Add(t);
 
                 if (recurringDate[i].Date > DateTime.Now.AddDays(1).Date)

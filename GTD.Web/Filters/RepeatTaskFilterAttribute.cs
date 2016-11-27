@@ -19,25 +19,42 @@ namespace GTD.Filters
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            //todo 如何测试
             base.OnActionExecuting(filterContext);
             var requestCookie = HttpContext.Current.Request.Cookies["lastCreateRepeatTaskDate"];
-            var toBeCreadedTasks = new List<Task>();
             if (requestCookie != null)
             {
                 //获取cookie中的最后创建日期
                 var lastCreateRepeatTaskDate = Convert.ToDateTime(requestCookie.Value,
                     new DateTimeFormatInfo() { ShortDatePattern = "yyyyMMdd" });
                 if (lastCreateRepeatTaskDate >= DateTime.Now.Date)
-                {
                     return;
-                }
             }
 
             //按RepeatJson分组
             var groupByRepeatJson = TaskServices.GetInProgressTasks()
                 .Where(t => t.RepeatJson.IsNullOrEmpty())
                 .GroupBy(t => t.RepeatJson);
+
+            var toBeCreadedTasks=GetValue(groupByRepeatJson);
+            //在这里集中创建会比较快
+            foreach (var creadedTask in toBeCreadedTasks)
+            {
+                TaskServices.AddTask(creadedTask);
+            }
+            //创建完任务，处理cookie
+            if (requestCookie != null)
+                requestCookie.Value = DateTime.Now.Date.ToString("yyyyMMdd");
+            else
+            {
+                //创建cookie
+                HttpCookie cookie = new HttpCookie("lastCreateRepeatTaskDate") { Value = DateTime.Now.Date.ToString("yyyyMMdd") };
+                HttpContext.Current.Response.Cookies.Add(cookie);
+            }
+        }
+
+        public static List<Task> GetValue(IEnumerable<IGrouping<string, Task>> groupByRepeatJson)
+        {
+            List<Task> toBeCreadedTasks=new List<Task>();
             //先在组级别循环（组是按RepeatJson分的）
             foreach (var tasks in groupByRepeatJson)
             {
@@ -64,19 +81,7 @@ namespace GTD.Filters
                     break;
                 }
             }
-            //在这里集中创建会比较快
-            foreach (var creadedTask in toBeCreadedTasks)
-            {
-                TaskServices.AddTask(creadedTask);
-            }
-            if (requestCookie != null)
-                requestCookie.Value = DateTime.Now.Date.ToString("yyyyMMdd");
-            else
-            {
-                //创建cookie
-                HttpCookie cookie = new HttpCookie("lastCreateRepeatTaskDate") { Value = DateTime.Now.Date.ToString("yyyyMMdd") };
-                HttpContext.Current.Response.Cookies.Add(cookie);
-            }
+            return toBeCreadedTasks;
         }
     }
 }

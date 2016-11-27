@@ -1,10 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GTD.Util;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using GTD.Models;
+using Microsoft.QualityTools.Testing.Fakes;
+using System;
 
 namespace GTD.Util.Tests
 {
@@ -30,9 +29,9 @@ namespace GTD.Util.Tests
             Assert.AreEqual(b, false);
         }
 
-        [TestMethod()]
+        //[TestMethod()]
         public void UpdateRepeatTasksPropertiesTest()
-        {            
+        {
             //准备
             //需要批量更新的修改：标题，描述，项目，场景，优先级。其他的都需要批量更新，允许不一致
             IQueryable<Task> repeatTasks = new List<Task>
@@ -43,14 +42,19 @@ namespace GTD.Util.Tests
             }.AsQueryable();
             Task templateTask = new Task()
             {
-                Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,Priority = Priority.高,IsComplete = false
+                Headline = "Test1",
+                Description = "TestD1",
+                ProjectID = 1,
+                ContextID = 1,
+                Priority = Priority.高,
+                IsComplete = false
             };
 
             //动作
             var resultTasks = TaskUtil.UpdateRepeatTasksProperties(repeatTasks, templateTask);
 
             //断言
-            Assert.AreEqual(resultTasks.Count(),repeatTasks.Count());
+            Assert.AreEqual(resultTasks.Count(), repeatTasks.Count());
             for (int i = 0; i < resultTasks.Count(); i++)
             {
                 Assert.AreEqual(resultTasks.ToList()[i].Headline, templateTask.Headline);
@@ -61,5 +65,18 @@ namespace GTD.Util.Tests
                 Assert.AreEqual(resultTasks.ToList()[i].IsComplete, repeatTasks.ToList()[i].IsComplete);
             }
         }
+
+        //[TestMethod()]
+        public void CreateCycTasksTest()
+        {
+            //var ts = TaskUtil.CreateCycTasks(new Task()
+            //{
+            //    Headline = "测试CreateCycTasksTest",
+            //    StartDateTime = new DateTime()
+            //});
+            Assert.Fail();
+        }
+
+
     }
 }
