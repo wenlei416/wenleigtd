@@ -1,9 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using GTD.Models;
-using Microsoft.QualityTools.Testing.Fakes;
-using System;
 
 namespace GTD.Util.Tests
 {
@@ -66,17 +65,81 @@ namespace GTD.Util.Tests
             }
         }
 
-        //[TestMethod()]
-        public void CreateCycTasksTest()
+        //测试场景
+        // 1. 有或没有closeTime
+        // 2. 是否有符合今天、明天、日程的任务（今天，明天，日程；今天，日程；明天，日程；日程）
+        //这里需要设定今天的日期，测试日期是1127，需要继续找mock日期的方法 
+        [TestMethod()]
+        public void CreateCycTasksTest1()
         {
-            //var ts = TaskUtil.CreateCycTasks(new Task()
-            //{
-            //    Headline = "测试CreateCycTasksTest",
-            //    StartDateTime = new DateTime()
-            //});
-            Assert.Fail();
+            var task = new Task()
+            {
+                TaskId = 100,
+                Headline = "测试CreateCycTasksTest",
+                StartDateTime = new DateTime(2016, 11, 27),
+                RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-11-30','cyc':'1'}"
+            };
+            var ts = TaskUtil.CreateCycTasks(task);
+            Assert.AreEqual(ts.Count, 3);
+            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 27));
+            Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 28));
+            Assert.AreEqual(ts[2].StartDateTime, new DateTime(2016, 11, 29));
+            Assert.AreEqual(ts[0].CloseDateTime, null);
         }
 
+        [TestMethod]
+        public void CreateCycTasksTest2()
+        {
+            var task = new Task()
+            {
+                TaskId = 100,
+                Headline = "测试CreateCycTasksTest",
+                StartDateTime = new DateTime(2016, 11, 27),
+                CloseDateTime = new DateTime(2016, 11, 28),
+                RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'2','startday':'2016-11-25','endday':'2016-11-30','cyc':'2'}"
+            };
+            var ts = TaskUtil.CreateCycTasks(task);
+            Assert.AreEqual(ts.Count, 2);
+            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 27));
+            Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 29));
+            Assert.AreEqual(ts[0].CloseDateTime, new DateTime(2016, 11, 28));
+            Assert.AreEqual(ts[1].CloseDateTime, new DateTime(2016, 11, 30));
+        }
+
+        [TestMethod]
+        public void CreateCycTasksTest3()
+        {
+            var task = new Task()
+            {
+                TaskId = 100,
+                Headline = "测试CreateCycTasksTest",
+                StartDateTime = new DateTime(2016, 11, 27),
+                CloseDateTime = new DateTime(2016, 11, 28),
+                RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'2','startday':'2016-11-26','endday':'2016-11-30','cyc':'2'}"
+            };
+            var ts = TaskUtil.CreateCycTasks(task);
+            Assert.AreEqual(ts.Count, 2);
+            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 28));
+            Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 30));
+            Assert.AreEqual(ts[0].CloseDateTime, new DateTime(2016, 11, 29));
+            Assert.AreEqual(ts[1].CloseDateTime, new DateTime(2016, 12, 1));
+        }
+
+        [TestMethod]
+        public void CreateCycTasksTest4()
+        {
+            var task = new Task()
+            {
+                TaskId = 100,
+                Headline = "测试CreateCycTasksTest",
+                StartDateTime = new DateTime(2016, 11, 27),
+                RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'4','startday':'2016-11-26','endday':'2016-11-30','cyc':'4'}"
+            };
+            var ts = TaskUtil.CreateCycTasks(task);
+            Assert.AreEqual(ts.Count, 1);
+            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 30));
+            Assert.AreEqual(ts[0].CloseDateTime, null);
+        }
 
     }
 }

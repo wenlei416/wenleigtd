@@ -1,8 +1,7 @@
 ﻿using System;
-using GTD.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GTD.UT.Util.Tests
+namespace GTD.Util.Tests
 {
     [TestClass()]
     public class RecurringDateTests

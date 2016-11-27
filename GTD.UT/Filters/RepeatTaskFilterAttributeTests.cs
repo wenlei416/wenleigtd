@@ -10,13 +10,12 @@ namespace GTD.Filters.Tests
     [TestClass()]
     public class RepeatTaskFilterAttributeTests
     {
-        [TestMethod()]
+        //测试场景
+        // 1. 生成的任务都在list中，不需要新建
+        // 2. 生成的任务在list中缺少部分，需要新建
+        // 3. list中有过期任务，没有额外影响
         public void GetValueTest()
         {
-            //测试场景
-            // 1. 生成的任务都在list中，不需要新建
-            // 2. 生成的任务在list中缺少部分，需要新建
-            // 3. list中有过期任务，没有额外影响
             //准备
             IEnumerable<Task> tasks = new List<Task>()
             {
