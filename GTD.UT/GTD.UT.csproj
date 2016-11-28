@@ -127,7 +127,6 @@
     <Compile Include="Services\Tests\PomodoroServicesTests.cs" />
     <Compile Include="Services\Tests\TaskServicesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTestFakeToday.cs" />
     <Compile Include="Util\RecurringDateTests.cs" />
     <Compile Include="Util\TaskUtilTests.cs" />
   </ItemGroup>

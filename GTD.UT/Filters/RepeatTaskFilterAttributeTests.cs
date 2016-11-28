@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
 using GTD.Models;
+using Microsoft.QualityTools.Testing.Fakes;
+using Microsoft.QualityTools.Testing.Fakes.Shims;
 
 namespace GTD.Filters.Tests
 {
@@ -12,32 +14,21 @@ namespace GTD.Filters.Tests
     public class RepeatTaskFilterAttributeTests
     {
         /*
+         * 整体和今天无关
          * 最早传进来的是所有有json字符串的任务
          * 测试场景
          * 1.原list，比Cyc任务少，GetToBeCreadedTasks有新任务
-         * 2.原list，和Cyc任务一样，GetToBeCreadedTasks无新任务
+         * 2.原list，和Cyc任务多，GetToBeCreadedTasks无新任务
          * 3.原list中，有完成/删除的任务，需要注意
          * 4.原list中，生成不出来新的Cyc任务
          * 5.原list中，有过期任务，不影响GetToBeCreadedTasks的新任务（结合场景1和2）
          */
-        public void GetToBeCreadedTasksTest()
+        [TestMethod]
+        public void GetToBeCreadedTasksTest_Scene_1()
         {
             //准备
-            IEnumerable<Task> tasks = new List<Task>()
+            IEnumerable<Task> exitsTasks = new List<Task>()
             {
-                new Task()
-                { TaskId = 1,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
-                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,27).Date,
-                    RepeatJson = @"{'id':'1','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"},
-                new Task()
-                { TaskId = 2,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
-                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,28).Date,
-                    RepeatJson = @"{'id':'1','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"},
-                new Task()
-                { TaskId = 3,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
-                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,26).Date,
-                    RepeatJson = @"{'id':'1','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"},
-
                 new Task()
                 { TaskId = 4,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
                     Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,26).Date,
@@ -56,28 +47,157 @@ namespace GTD.Filters.Tests
                     RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"}
             };
 
-            IEnumerable<IGrouping<string, Task>> groupByRepeatJson = tasks.Where(t => t.RepeatJson.IsNullOrEmpty())
+            IEnumerable<IGrouping<string, Task>> groupByRepeatJson = exitsTasks.Where(t => !t.RepeatJson.IsNullOrEmpty())
                 .GroupBy(t => t.RepeatJson);
 
-            //动作
-            var z = RepeatTaskFilterAttribute.GetToBeCreadedTasks(groupByRepeatJson);
-
-            var g101 = new Task()
+            var result01 = new Task()
             {
+                TaskId = 4,
                 Headline = "Test1",
                 Description = "TestD1",
                 ProjectID = 1,
                 ContextID = 1,
                 Priority = Priority.高,
-                IsComplete = true,
-                StartDateTime = new DateTime(2016, 11, 29).Date,
+                IsComplete = false,
+                IsDeleted = false,
+                StartDateTime = new DateTime(2016, 11, 30).Date,
                 RepeatJson =
-                    @"{'id':'1','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                    @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+            };
+            var result00 = new Task()
+            {
+                TaskId = 4,
+                Headline = "Test1",
+                Description = "TestD1",
+                ProjectID = 1,
+                ContextID = 1,
+                Priority = Priority.高,
+                IsComplete = false,
+                IsDeleted = false,
+                StartDateTime = new DateTime(2016, 11, 25).Date,
+                RepeatJson =
+        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
             };
 
-            //判断
-            Assert.AreEqual(z.Count,1);
-            Assert.AreEqual(z[0].StartDateTime, g101.StartDateTime);
+            using (ShimsContext.Create())
+            {
+                System.Fakes.ShimDateTime.NowGet = () => new DateTime(2016, 11, 28);
+                //动作
+                var reslut = RepeatTaskFilterAttribute.GetToBeCreadedTasks(groupByRepeatJson);
+
+                //判断
+                Assert.AreEqual(reslut.Count, 2);
+                Assert.AreEqual(reslut[0].StartDateTime, result00.StartDateTime);
+                Assert.AreEqual(reslut[1].StartDateTime, result01.StartDateTime);
+                Assert.AreEqual(reslut[1].IsComplete, result01.IsComplete);
+                Assert.AreEqual(reslut[1].IsDeleted, result01.IsDeleted);
+            }
         }
+
+        [TestMethod]
+        public void GetToBeCreadedTasksTest_Scene_2()
+        {
+            //准备
+            #region 准备existTasks
+            IEnumerable<Task> exitsTasks = new List<Task>()
+            {
+                new Task()
+                {
+                    TaskId = 4,
+                    Headline = "Test1",
+                    Description = "TestD1",
+                    ProjectID = 1,
+                    ContextID = 1,
+                    Priority = Priority.高,
+                    IsComplete = true,
+                    StartDateTime = new DateTime(2016, 11, 26).Date,
+                    RepeatJson =
+                        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                },
+                new Task()
+                {
+                    TaskId = 4,
+                    Headline = "Test1",
+                    Description = "TestD1",
+                    ProjectID = 1,
+                    ContextID = 1,
+                    Priority = Priority.高,
+                    IsComplete = true,
+                    StartDateTime = new DateTime(2016, 11, 27).Date,
+                    RepeatJson =
+                        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                },
+                new Task()
+                {
+                    TaskId = 4,
+                    Headline = "Test1",
+                    Description = "TestD1",
+                    ProjectID = 1,
+                    ContextID = 1,
+                    Priority = Priority.高,
+                    IsComplete = true,
+                    StartDateTime = new DateTime(2016, 11, 28).Date,
+                    RepeatJson =
+                        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                },
+                new Task()
+                {
+                    TaskId = 4,
+                    Headline = "Test1",
+                    Description = "TestD1",
+                    ProjectID = 1,
+                    ContextID = 1,
+                    Priority = Priority.高,
+                    IsComplete = true,
+                    StartDateTime = new DateTime(2016, 11, 29).Date,
+                    RepeatJson =
+                        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                },
+                new Task()
+                {
+                    TaskId = 4,
+                    Headline = "Test1",
+                    Description = "TestD1",
+                    ProjectID = 1,
+                    ContextID = 1,
+                    Priority = Priority.高,
+                    IsComplete = false,
+                    IsDeleted = false,
+                    StartDateTime = new DateTime(2016, 11, 30).Date,
+                    RepeatJson =
+                        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                },
+                new Task()
+                {
+                    TaskId = 4,
+                    Headline = "Test1",
+                    Description = "TestD1",
+                    ProjectID = 1,
+                    ContextID = 1,
+                    Priority = Priority.高,
+                    IsComplete = false,
+                    IsDeleted = false,
+                    StartDateTime = new DateTime(2016, 11, 25).Date,
+                    RepeatJson =
+                        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+                }
+            };
+            #endregion
+
+            IEnumerable<IGrouping<string, Task>> groupByRepeatJson = exitsTasks.Where(t => !t.RepeatJson.IsNullOrEmpty())
+                .GroupBy(t => t.RepeatJson);
+
+            using (ShimsContext.Create())
+            {
+                System.Fakes.ShimDateTime.NowGet = () => new DateTime(2016, 11, 28);
+                //动作
+                var reslut = RepeatTaskFilterAttribute.GetToBeCreadedTasks(groupByRepeatJson);
+
+                //判断
+                Assert.AreEqual(reslut.Count, 0);
+            }
+        }
+
+
     }
 }

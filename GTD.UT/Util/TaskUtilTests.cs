@@ -1,9 +1,9 @@
-﻿using GTD.Util;
-using System;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using GTD.Models;
+using Microsoft.QualityTools.Testing.Fakes;
 
 namespace GTD.Util.Tests
 {
@@ -83,12 +83,19 @@ namespace GTD.Util.Tests
                 StartDateTime = new DateTime(2016, 11, 27),
                 RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-11-30','cyc':'1'}"
             };
-            var ts = TaskUtil.CreateCycTasks(task);
-            Assert.AreEqual(ts.Count, 3);
-            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 27));
-            Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 28));
-            Assert.AreEqual(ts[2].StartDateTime, new DateTime(2016, 11, 29));
-            Assert.AreEqual(ts[0].CloseDateTime, null);
+            using (ShimsContext.Create())
+            {
+                // Detour DateTime.Now to return a fixed date:  
+                System.Fakes.ShimDateTime.NowGet =
+                () => new DateTime(2016, 11, 27);
+
+                var ts = TaskUtil.CreateCycTasks(task);
+                Assert.AreEqual(ts.Count, 3);
+                Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 27));
+                Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 28));
+                Assert.AreEqual(ts[2].StartDateTime, new DateTime(2016, 11, 29));
+                Assert.AreEqual(ts[0].CloseDateTime, null);
+            }
         }
 
         [TestMethod]
@@ -102,12 +109,19 @@ namespace GTD.Util.Tests
                 CloseDateTime = new DateTime(2016, 11, 28),
                 RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'2','startday':'2016-11-25','endday':'2016-11-30','cyc':'2'}"
             };
-            var ts = TaskUtil.CreateCycTasks(task);
-            Assert.AreEqual(ts.Count, 2);
-            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 27));
-            Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 29));
-            Assert.AreEqual(ts[0].CloseDateTime, new DateTime(2016, 11, 28));
-            Assert.AreEqual(ts[1].CloseDateTime, new DateTime(2016, 11, 30));
+            using (ShimsContext.Create())
+            {
+                // Detour DateTime.Now to return a fixed date:  
+                System.Fakes.ShimDateTime.NowGet =
+                () => new DateTime(2016, 11, 27);
+
+                var ts = TaskUtil.CreateCycTasks(task);
+                Assert.AreEqual(ts.Count, 2);
+                Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 27));
+                Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 29));
+                Assert.AreEqual(ts[0].CloseDateTime, new DateTime(2016, 11, 28));
+                Assert.AreEqual(ts[1].CloseDateTime, new DateTime(2016, 11, 30));
+            }
         }
 
         [TestMethod]
@@ -215,6 +229,23 @@ namespace GTD.Util.Tests
             Assert.AreEqual(result1.Priority, result1.Priority);
             Assert.AreEqual(task2.Priority, result2.Priority);
 
+        }
+
+        [TestMethod]
+        public void FakeToday()
+        {
+            using (ShimsContext.Create())
+            {
+                // Arrange:  
+                System.Fakes.ShimDateTime.NowGet =
+                () => new DateTime(2000, 1, 1);
+
+                // Do:
+                var d = DateTime.Now;
+
+                // Assert:
+                Assert.AreEqual(2000, d.Year);
+            }
         }
     }
 }
