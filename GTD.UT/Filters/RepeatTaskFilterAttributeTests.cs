@@ -7,6 +7,13 @@ using GTD.Models;
 
 namespace GTD.Filters.Tests
 {
+    /*
+     * 测试场景
+     * group过后，
+     * group中，有新任务
+     * group中，没有新任务
+     * exist任务中，有以前的任务
+     */
     [TestClass()]
     public class RepeatTaskFilterAttributeTests
     {
@@ -54,7 +61,7 @@ namespace GTD.Filters.Tests
                 .GroupBy(t => t.RepeatJson);
 
             //动作
-            var z = RepeatTaskFilterAttribute.GetValue(groupByRepeatJson);
+            var z = RepeatTaskFilterAttribute.GetToBeCreadedTasks(groupByRepeatJson);
 
             var g101 = new Task()
             {

@@ -88,6 +88,12 @@ namespace GTD.Util
             return task.RepeatJson.IsNullOrWhiteSpace() ? "" : RecurringDate.JsonToString(task.RepeatJson);
         }
 
+        /// <summary>
+        /// 为修改repeat任务设置，判断修改的属性是否在需要统一的属性中
+        /// </summary>
+        /// <param name="oldTask"></param>
+        /// <param name="newTask"></param>
+        /// <returns></returns>
         public static bool ModifiedPropertiesInList(Task oldTask, Task newTask)
         {
             //需要批量更新的修改：标题，描述，项目，场景，优先级。其他的都需要批量更新，允许不一致
@@ -182,8 +188,6 @@ namespace GTD.Util
             return taskname;
         }
 
-        //
-        //
         /// <summary>
         /// 计算任务周期
         /// </summary>
@@ -204,7 +208,7 @@ namespace GTD.Util
 
 
         /// <summary>
-        /// 根据传入的task，来计算需要生成的重复任务
+        /// 根据传入的task，来计算需要生成的重复任务，考虑了今天的日期
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
@@ -216,8 +220,6 @@ namespace GTD.Util
             if (recurringDate == null)
                 return cycTasks;
 
-            //获取任务的周期
-            var taskDuration = TaskDuration(task);
 
             //生成任务，最多生成今天、明天和第一个日程三个任务
             //逻辑：因为recurringDate不会为空（已经判断），所以第一个任务肯定要加（最差是日程任务）
@@ -229,15 +231,7 @@ namespace GTD.Util
                 {
                     continue;
                 }
-                Task t = (Task)task.Clone();
-                //这里Clone出来的Task可能是有id的，后面直接拿有id的Task去写入db，不会有问题，会直接把id省略掉，重新自动生成id
-                t.StartDateTime = recurringDate[i];
-                //处理没有结束日期的任务
-                t.CloseDateTime = task.CloseDateTime != null
-                    ? (DateTime?)recurringDate[i].AddDays(taskDuration)
-                    : null;
-                t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
-                cycTasks.Add(t);
+                cycTasks.Add(CloneTask(task, recurringDate[i]));
 
                 if (recurringDate[i].Date > DateTime.Now.AddDays(1).Date)
                 {
@@ -246,6 +240,22 @@ namespace GTD.Util
             }
 
             return cycTasks;
+        }
+
+        //todo 单元测试
+        //完整的用于创建循环任务的cloneedTask
+        public static Task CloneTask(Task task, DateTime startDateTime)
+        {
+            var taskDuration = TaskDuration(task);
+            Task t = (Task) task.Clone();
+            //这里Clone出来的Task可能是有id的，后面直接拿有id的Task去写入db，不会有问题，会直接把id省略掉，重新自动生成id
+            t.StartDateTime = startDateTime;
+            //处理没有结束日期的任务
+            t.CloseDateTime = task.CloseDateTime != null
+                ? (DateTime?) startDateTime.AddDays(taskDuration)
+                : null;
+            t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
+            return t;
         }
 
         /// <summary>

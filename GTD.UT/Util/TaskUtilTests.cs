@@ -9,6 +9,7 @@ namespace GTD.Util.Tests
     [TestClass()]
     public class TaskUtilTests
     {
+        #region ModifiedPropertiesInList
         //需要批量更新的修改：标题，描述，项目，场景，优先级。其他的都需要批量更新，允许不一致
         [TestMethod()]
         public void ModifiedPropertiesInListTest()
@@ -27,8 +28,9 @@ namespace GTD.Util.Tests
             var b = TaskUtil.ModifiedPropertiesInList(oldTask, newTask);
             Assert.AreEqual(b, false);
         }
+        #endregion
 
-        //[TestMethod()]
+        [TestMethod()]
         public void UpdateRepeatTasksPropertiesTest()
         {
             //准备
@@ -65,6 +67,7 @@ namespace GTD.Util.Tests
             }
         }
 
+        #region CreateCycTasks
         //测试场景
         // 1. 有或没有closeTime
         // 2. 是否有符合今天、明天、日程的任务（今天，明天，日程；今天，日程；明天，日程；日程）
@@ -140,6 +143,7 @@ namespace GTD.Util.Tests
             Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 30));
             Assert.AreEqual(ts[0].CloseDateTime, null);
         }
+        #endregion
 
     }
 }

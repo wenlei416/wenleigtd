@@ -107,17 +107,20 @@ namespace GTD.Services
         public void UpdateTask(Task task)
         {
             var oldRepeatJson = GetTaskById(task.TaskId).RepeatJson;
-            //如果RepeatJson一样，说明没变化，不需要调整循环任务，但可能会需要调整每个循环任务的属性
-            //但需要更新循环任务
+            //如果RepeatJson一样，说明循环任务没有变化，不需要调整循环任务
+            //但可能会需要调整每个循环任务的属性
             if (oldRepeatJson == task.RepeatJson)
             {
+                //repeatJson和原来一样而且不为空；修改的属性也在所有repeatTask必须一样的范围内。
+                //此时只需要更新字段，循环情况不用调整
                 if (!oldRepeatJson.IsNullOrEmpty() && TaskUtil.ModifiedPropertiesInList(GetTaskById(task.TaskId), task))//这里还要增加个条件判断修改属性在不在范围内
                 {
-                    //更新循环任务，包括需要更新字段的
-                    //输入：tasklist，输出：修改后的tasklist，无需泛型支持（因为是要排除到一些特定的字段的，比如id，stasttime，closetime，comment
-                    //然后循环update
+                    //把循环任务都取出来
                     var repeatTasks = GetRepeatTasks(oldRepeatJson);
+                    //更新循环任务的字段
+                    //输入：tasklist，输出：修改后的tasklist，无需泛型支持（因为是要排除到一些特定的字段的，比如id，stasttime，closetime，comment
                     var toUpdateTasks = TaskUtil.UpdateRepeatTasksProperties(repeatTasks.AsQueryable(), task);
+                    //然后循环update
                     foreach (var t in toUpdateTasks)
                     {
                         t.DateAttribute = TaskUtil.SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
@@ -126,28 +129,35 @@ namespace GTD.Services
                 }
                 else
                 {
+                    //repeatJson没有修改，而且为空的时候
                     task.DateAttribute = TaskUtil.SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
                     _taskRepository.Update(task);
                 }
             }
+            //RepeatJson发生了变化，需要调整原先生成的任务
             else
             {
+                //可能1：新RepeatJson为空
                 if (task.RepeatJson.IsNullOrEmpty())
                 {
                     //删除所有循环任务，保留当前打开的任务
-                    var repeatTasks = GetRepeatTasks(oldRepeatJson);
+                    var repeatTasks = GetRepeatTasks(oldRepeatJson) as IList<Task> ?? GetRepeatTasks(oldRepeatJson).ToList();
+                    repeatTasks.Remove(task);
                     foreach (var t in repeatTasks)
                     {
-                        if (t.TaskId != task.TaskId)
-                            DeleteTask(t.TaskId);
+                        DeleteTask(t.TaskId);
                     }
                 }
-                else if (oldRepeatJson.IsNullOrEmpty())
+                //可能2：新RepeatJson不为空、老RepeatJson为空
+                if (!task.RepeatJson.IsNullOrEmpty() && oldRepeatJson.IsNullOrEmpty())
                 {
-                    //增加循环任务，把当前选择的任务改成符合循环规则的
+                    //增加循环任务
                     var repeatTasks = TaskUtil.CreateCycTasks(task);
                     //避免出现循环任务创建不出来，现在的任务又被删除掉了的情况
-                    if (repeatTasks.IsNullOrEmpty())
+                    //如果循环任务为空，就什么都不做。
+                    //如果循环任务不为空，就把原来的任务删掉，不确定是否合理
+                    //得看一下页面的行为会不会有问题，不会有问题，update以后返回list页面
+                    if (!repeatTasks.IsNullOrEmpty())
                     {
                         foreach (var t in repeatTasks)
                         {
@@ -156,8 +166,11 @@ namespace GTD.Services
                         DeleteTask(task.TaskId);
                     }
                 }
-                else
+                //可能3：新RepeatJson不为空、老RepeatJson不为空
+                if (!task.RepeatJson.IsNullOrEmpty() && !oldRepeatJson.IsNullOrEmpty())
                 {
+                    //把老的循环任务全部删掉，把新的循环任务全部加上，最简单
+                    //得看一下页面的行为会不会有问题，不会有问题，update以后返回list页面
                     var repeatTasks = TaskUtil.CreateCycTasks(task);
                     var oldrepeatTasks = GetRepeatTasks(oldRepeatJson);
                     if (repeatTasks.IsNullOrEmpty())

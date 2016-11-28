@@ -6,6 +6,11 @@ namespace GTD.Util
 {
     public static class RecurringDate
     {
+        /// <summary>
+        /// 根据json字符串，生成会新建循环任务的日期，不考虑今天是什么日子
+        /// </summary>
+        /// <param name="recurringJson"></param>
+        /// <returns></returns>
         public static List<DateTime> RecurringJsonToDate(string recurringJson)
         {
             //返回值

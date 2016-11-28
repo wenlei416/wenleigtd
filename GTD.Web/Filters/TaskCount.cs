@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using GTD.Models;
-using GTD.Services;
 using GTD.Services.Abstract;
 
 namespace GTD.Filters
 {
     public class TaskCount : ActionFilterAttribute
     {
-        //todo 这里应该和service连接，而不是和repo连接
-        //private ITaskRepository taskRepository;
         private readonly ITaskServices _taskServices;
 
 
