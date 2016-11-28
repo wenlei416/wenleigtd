@@ -23,6 +23,9 @@ namespace UnitTestMockToday
                 // This will always be true if the component is working:  
                 Assert.AreEqual(fixedYear, d.Year);
             }
+            var z = DateTime.Now;
+            Assert.AreEqual(2016,z.Year);
+
         }
     }
 }
