@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTD.Util;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,5 +146,75 @@ namespace GTD.Util.Tests
         }
         #endregion
 
+        /*
+         * 测试场景，有结束日期 or 没有结束日期
+         * 调整过的内容是否真的没有clone
+         */
+        [TestMethod()]
+        public void CloneTaskForRepeatTest()
+        {
+            //准备
+            var task1 = new Task()
+            {
+                Headline = "Test1",
+                Description = "TestD1",
+                ProjectID = 1,
+                ContextID = 1,
+                Priority = Priority.高,
+                IsComplete = true,
+                StartDateTime = new DateTime(2016, 11, 26).Date,
+                CloseDateTime = new DateTime(2016, 11, 27).Date,
+                NextTask_TaskId = 2,
+                PreviousTask_TaskId = 3
+            };
+
+            var task2 = new Task()
+            {
+                Headline = "Test1",
+                Description = "TestD1",
+                ProjectID = 1,
+                ContextID = 1,
+                Priority = Priority.高,
+                IsComplete = true,
+                StartDateTime = new DateTime(2016, 11, 26).Date,
+                PreviousTask_TaskId = 3
+            };
+
+
+            var day = new DateTime(2016, 11, 28).Date;
+            //动作
+            var result1 = TaskUtil.CloneTaskForRepeat(task1, day);
+            var result2 = TaskUtil.CloneTaskForRepeat(task2, day);
+
+            //断言
+            Assert.AreEqual(task1.Headline, result1.Headline);
+            Assert.AreEqual(task2.Headline, result2.Headline);
+
+            Assert.AreEqual(result1.StartDateTime, day);
+            Assert.AreEqual(result2.StartDateTime, day);
+
+            Assert.AreEqual(result1.CloseDateTime, day.AddDays(1));
+            Assert.AreEqual(result2.CloseDateTime, null);
+
+            Assert.AreEqual(result1.PreviousTask_TaskId, null);
+            Assert.AreEqual(result2.PreviousTask_TaskId, null);
+
+            Assert.AreEqual(result1.NextTask_TaskId, null);
+            Assert.AreEqual(result2.NextTask_TaskId, null);
+
+            Assert.AreEqual(task1.ProjectID, result1.ProjectID);
+            Assert.AreEqual(task2.ProjectID, result2.ProjectID);
+
+            Assert.AreEqual(result1.IsComplete, false);
+            Assert.AreEqual(result2.IsComplete, false);
+
+            Assert.AreEqual(result1.IsDeleted, false);
+            Assert.AreEqual(result2.IsDeleted, false);
+
+
+            Assert.AreEqual(result1.Priority, result1.Priority);
+            Assert.AreEqual(task2.Priority, result2.Priority);
+
+        }
     }
 }

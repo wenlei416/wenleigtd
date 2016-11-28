@@ -7,21 +7,20 @@ using GTD.Models;
 
 namespace GTD.Filters.Tests
 {
-    /*
-     * 测试场景
-     * group过后，
-     * group中，有新任务
-     * group中，没有新任务
-     * exist任务中，有以前的任务
-     */
+
     [TestClass()]
     public class RepeatTaskFilterAttributeTests
     {
-        //测试场景
-        // 1. 生成的任务都在list中，不需要新建
-        // 2. 生成的任务在list中缺少部分，需要新建
-        // 3. list中有过期任务，没有额外影响
-        public void GetValueTest()
+        /*
+         * 最早传进来的是所有有json字符串的任务
+         * 测试场景
+         * 1.原list，比Cyc任务少，GetToBeCreadedTasks有新任务
+         * 2.原list，和Cyc任务一样，GetToBeCreadedTasks无新任务
+         * 3.原list中，有完成/删除的任务，需要注意
+         * 4.原list中，生成不出来新的Cyc任务
+         * 5.原list中，有过期任务，不影响GetToBeCreadedTasks的新任务（结合场景1和2）
+         */
+        public void GetToBeCreadedTasksTest()
         {
             //准备
             IEnumerable<Task> tasks = new List<Task>()

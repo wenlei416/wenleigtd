@@ -231,7 +231,7 @@ namespace GTD.Util
                 {
                     continue;
                 }
-                cycTasks.Add(CloneTask(task, recurringDate[i]));
+                cycTasks.Add(CloneTaskForRepeat(task, recurringDate[i]));
 
                 if (recurringDate[i].Date > DateTime.Now.AddDays(1).Date)
                 {
@@ -242,9 +242,8 @@ namespace GTD.Util
             return cycTasks;
         }
 
-        //todo 单元测试
         //完整的用于创建循环任务的cloneedTask
-        public static Task CloneTask(Task task, DateTime startDateTime)
+        public static Task CloneTaskForRepeat(Task task, DateTime startDateTime)
         {
             var taskDuration = TaskDuration(task);
             Task t = (Task) task.Clone();
@@ -255,6 +254,14 @@ namespace GTD.Util
                 ? (DateTime?) startDateTime.AddDays(taskDuration)
                 : null;
             t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
+            t.IsComplete = false;
+            t.IsDeleted = false;
+            t.CompleteDateTime = null;
+            t.NextTask_TaskId = null;
+            t.PreviousTask_TaskId = null;
+            //t.SubTasks = null;
+            //t.Comments = null;
+            //t.Pomodoros = null;
             return t;
         }
 

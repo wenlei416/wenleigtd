@@ -39,7 +39,8 @@ namespace GTD.Filters
                 .Where(t => t.RepeatJson.IsNullOrEmpty())
                 .GroupBy(t => t.RepeatJson);
             //取得需要创建的任务
-            var toBeCreadedTasks=GetToBeCreadedTasks(groupByRepeatJson);
+            //todo 但这里会有个问题，积累的任务会越来越多，效率会成为问题
+            var toBeCreadedTasks =GetToBeCreadedTasks(groupByRepeatJson);
             //在这里集中创建会比较快
             foreach (var creadedTask in toBeCreadedTasks)
             {
@@ -55,7 +56,7 @@ namespace GTD.Filters
                 HttpContext.Current.Response.Cookies.Add(cookie);
             }
         }
-
+        //todo UT
         //根据输入的任务组，返回需要创建的循环任务
         //传入的是所有的任务，所以完成的/删除任务也会被传入进来
         public static List<Task> GetToBeCreadedTasks(IEnumerable<IGrouping<string, Task>> groupByRepeatJson)
@@ -65,19 +66,20 @@ namespace GTD.Filters
             foreach (var tasks in groupByRepeatJson)
             {
                 //todo 这两个循环似乎可以减少成一个，因为内环永远只执行第一个
+                //var firstOrDefault = tasks.FirstOrDefault() ?? tasks.FirstOrDefault();
                 //在分组内部循环2
                 foreach (var t in tasks)
                 {
+
                     //如果t是完成或删除了的，就跳过，这主要是保证如果一个循环内所有任务都完成/删除了，其实是不需要再考虑重建的
                     //不能这么写，如果分组任务都被完成了，然后新任务没出来之前，这个重复任务就被干掉了
-                    //todo 但这里会有个问题，积累的任务会越来越多，效率会成为问题
                     //if(t.IsComplete || t.IsDeleted)
                     //    continue;
                     //根据组内任务创建出循环任务，其实这个在整个循环2中都是适用的
                     //如果昨天应该有循环任务，但是没创建，怎么办
                     //这里似乎更应该用jsontoDate，来搞定时间，然后用clone+修改时间的方法来增加新任务
                     //var cycTasks = TaskUtil.CreateCycTasks(t);
-                    //todo UT
+
                     var cycDates = RecurringDate.RecurringJsonToDate(t.RepeatJson);
                     //比较两个list是否一样，新创建的cycTasks考虑了今天的时间，所以和existTasks不同的可能性非常大
                     //因为existTasks中可能存在以前的任务，所以只能考查cycTasks是不是在existTasks中都存在
