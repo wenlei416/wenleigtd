@@ -338,6 +338,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="CreateTaskInLine.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
@@ -448,6 +449,7 @@
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
     <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
+    <Content Include="Views\Shared\_CreateTaskInLinPartialPage.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
