@@ -231,21 +231,6 @@ namespace GTD.Util.Tests
 
         }
 
-        [TestMethod]
-        public void FakeToday()
-        {
-            using (ShimsContext.Create())
-            {
-                // Arrange:  
-                System.Fakes.ShimDateTime.NowGet =
-                () => new DateTime(2000, 1, 1);
 
-                // Do:
-                var d = DateTime.Now;
-
-                // Assert:
-                Assert.AreEqual(2000, d.Year);
-            }
-        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Ajax.Utilities;
 
 namespace GTD.ViewModels
 {
+    //reqm 这里包含了VM和ConvertMtoVM的代码，需要拆分
     public class TasklistVM
     {
         public TasklistVM(IEnumerable<Task> tasks, string sortOrder)

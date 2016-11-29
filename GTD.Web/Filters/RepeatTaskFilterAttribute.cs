@@ -8,7 +8,6 @@ using Castle.Core.Internal;
 using GTD.Models;
 using GTD.Services.Abstract;
 using GTD.Util;
-using Microsoft.Ajax.Utilities;
 using Ninject;
 
 namespace GTD.Filters
@@ -24,7 +23,7 @@ namespace GTD.Filters
             base.OnActionExecuting(filterContext);
             //读取cookie
             //cookie用于记录最后一次执行创建新重复任务的日期
-            var requestCookie = HttpContext.Current.Request.Cookies["lastCreateRepeatTaskDate"];
+            var requestCookie = filterContext.HttpContext.Request.Cookies["lastCreateRepeatTaskDate"];
             //如果有有这个cookie
             if (requestCookie != null)
             {

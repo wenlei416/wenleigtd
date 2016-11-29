@@ -1,11 +1,21 @@
-﻿using System;
+﻿using GTD.Filters;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 using Castle.Core.Internal;
+using GTD.DAL;
+using GTD.DAL.Abstract;
 using GTD.Models;
+using GTD.Services;
+using GTD.Services.Abstract;
 using Microsoft.QualityTools.Testing.Fakes;
 using Microsoft.QualityTools.Testing.Fakes.Shims;
+using Moq;
+using Ninject;
+using Ninject.MockingKernel.Moq;
 
 namespace GTD.Filters.Tests
 {
@@ -13,6 +23,19 @@ namespace GTD.Filters.Tests
     [TestClass()]
     public class RepeatTaskFilterAttributeTests
     {
+        private readonly MoqMockingKernel _kernel;
+
+        public RepeatTaskFilterAttributeTests()
+        {
+            _kernel = new MoqMockingKernel();
+            _kernel.Bind<ITaskServices>().To<TaskServices>();
+        }
+
+        [TestCleanup]
+        public void SetUp()
+        {
+            _kernel.Reset();
+        }
         /*
          * 整体和今天无关
          * 最早传进来的是所有有json字符串的任务
@@ -198,6 +221,53 @@ namespace GTD.Filters.Tests
             }
         }
 
+        [TestMethod()]
+        public void OnActionExecutingTest()
+        {
+            IEnumerable<Task> exitsTasks = new List<Task>()
+            {
+                new Task()
+                { TaskId = 1,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
+                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,26).Date,
+                    RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"},
+               new Task()
+                { TaskId = 2,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
+                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,27).Date,
+                    RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"},
+                new Task()
+                { TaskId = 3,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
+                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,28).Date,
+                    RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"},
+                new Task()
+                { TaskId = 4,Headline = "Test1",Description = "TestD1",ProjectID = 1,ContextID = 1,
+                    Priority = Priority.高,IsComplete = true,StartDateTime = new DateTime(2016,11,29).Date,
+                    RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"}
+            };
+            var taskRepository = _kernel.GetMock<ITaskRepository>();
+            taskRepository.Setup(r => r.GetAll()).Returns(exitsTasks.AsQueryable());
+            var taskServices = _kernel.Get<ITaskServices>();
+            Assert.AreEqual(taskServices.GetTaskById(1).Headline, "Test1");
+            //using (ShimsContext.Create())
+            //{
+            //    // Mock今天是2016.11.29
+            //    System.Fakes.ShimDateTime.NowGet =
+            //    () => new DateTime(2016, 11, 29);
 
+            //    var request = new Mock<HttpRequestBase>();
+            //    var httpContext = new Mock<HttpContextBase>();
+            //    httpContext.SetupGet(c => c.Request).Returns(request.Object);
+
+            //    request.Setup(r => r.Cookies).Returns(new HttpCookieCollection() { new HttpCookie("lastCreateRepeatTaskDate", "2016-11-12") });
+
+
+            //    var filter = new RepeatTaskFilterAttribute();
+            //    var actionExecutedContext = new Mock<ActionExecutingContext>();
+            //    actionExecutedContext.SetupGet(c => c.HttpContext).Returns(httpContext.Object);
+
+            //    filter.OnActionExecuting(actionExecutedContext.Object);
+
+            //    Assert.AreEqual(actionExecutedContext.Object.HttpContext.Request.Cookies["lastCreateRepeatTaskDate"].Value, "2016-11-12");
+            //}
+        }
     }
 }
