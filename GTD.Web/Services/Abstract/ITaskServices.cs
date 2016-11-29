@@ -46,5 +46,8 @@ namespace GTD.Services.Abstract
         
         Task GetPreviousTaskByTaskId(int taskId);
 
+        void AddTaskFromFilter(Task task);
+
+
     }
 }

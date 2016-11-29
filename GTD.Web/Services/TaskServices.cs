@@ -80,6 +80,7 @@ namespace GTD.Services
             //有重复任务的场景
             else
             {
+                //这里的写法只适合于新建任务的时候创建有循环任务的情况，没有考虑重复创建等问题
                 var cycTasks = TaskUtil.CreateCycTasks(task);
                 if (cycTasks == null) return;
 
@@ -87,7 +88,10 @@ namespace GTD.Services
                 var id = _taskRepository.CreateWithId(cycTasks[0]);
 
                 //修改刚插入的task，把id加入json
-                cycTasks[0].RepeatJson = cycTasks[0].RepeatJson.Replace("}", ",\"id\":\"" + id + "\"}");
+                if (!cycTasks[0].RepeatJson.Contains("\"id\":"))
+                {
+                    cycTasks[0].RepeatJson = cycTasks[0].RepeatJson.Replace("}", ",\"id\":\"" + id + "\"}");
+                }
                 cycTasks[0].TaskId = id;
                 _taskRepository.Update(cycTasks[0]);
 
@@ -307,6 +311,12 @@ namespace GTD.Services
         {
             var task = _taskRepository.GetTaskById(taskId);
             return task.PreviousTask_TaskId != null ? _taskRepository.GetTaskById(task.PreviousTask_TaskId) : null;
+        }
+
+        public void AddTaskFromFilter(Task task)
+        {
+            task.DateAttribute = TaskUtil.SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
+            _taskRepository.Create(task);
         }
 
         //获取循环任务

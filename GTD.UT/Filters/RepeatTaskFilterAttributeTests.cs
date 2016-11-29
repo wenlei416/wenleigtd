@@ -244,43 +244,45 @@ namespace GTD.Filters.Tests
                     RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"}
             };
             var taskRepository = _kernel.GetMock<ITaskRepository>();
-            taskRepository.Setup(r => r.GetTaskById(1)).Returns(new Task()
-            {
-                TaskId = 1,
-                Headline = "Test1",
-                Description = "TestD1",
-                ProjectID = 1,
-                ContextID = 1,
-                Priority = Priority.高,
-                IsComplete = true,
-                StartDateTime = new DateTime(2016, 11, 26).Date,
-                RepeatJson =
-                    @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
-            });
-            var taskServices = _kernel.Get<ITaskServices>();
-            Assert.AreEqual(taskServices.GetTaskById(1).Headline, "Test1");
-
-            //using (ShimsContext.Create())
+            //taskRepository.Setup(r => r.GetTaskById(1)).Returns(new Task()
             //{
-            //    // Mock今天是2016.11.29
-            //    System.Fakes.ShimDateTime.NowGet =
-            //    () => new DateTime(2016, 11, 29);
+            //    TaskId = 1,
+            //    Headline = "Test1",
+            //    Description = "TestD1",
+            //    ProjectID = 1,
+            //    ContextID = 1,
+            //    Priority = Priority.高,
+            //    IsComplete = true,
+            //    StartDateTime = new DateTime(2016, 11, 26).Date,
+            //    RepeatJson =
+            //        @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+            //});
+            //var taskServices = _kernel.Get<ITaskServices>();
+            //Assert.AreEqual(taskServices.GetTaskById(1).Headline, "Test1");
+            taskRepository.Setup(t => t.GetAll()).Returns(exitsTasks.AsQueryable());
+            taskRepository.Setup(t => t.Create(new Task()));
 
-            //    var request = new Mock<HttpRequestBase>();
-            //    var httpContext = new Mock<HttpContextBase>();
-            //    httpContext.SetupGet(c => c.Request).Returns(request.Object);
+            using (ShimsContext.Create())
+            {
+                // Mock今天是2016.11.29
+                System.Fakes.ShimDateTime.NowGet =
+                () => new DateTime(2016, 11, 29);
 
-            //    request.Setup(r => r.Cookies).Returns(new HttpCookieCollection() { new HttpCookie("lastCreateRepeatTaskDate", "2016-11-12") });
+                var request = new Mock<HttpRequestBase>();
+                var httpContext = new Mock<HttpContextBase>();
+                httpContext.SetupGet(c => c.Request).Returns(request.Object);
+
+                request.Setup(r => r.Cookies).Returns(new HttpCookieCollection() { new HttpCookie("lastCreateRepeatTaskDate", "2016-11-12") });
 
 
-            //    var filter = new RepeatTaskFilterAttribute();
-            //    var actionExecutedContext = new Mock<ActionExecutingContext>();
-            //    actionExecutedContext.SetupGet(c => c.HttpContext).Returns(httpContext.Object);
+                var filter = new RepeatTaskFilterAttribute();
+                var actionExecutedContext = new Mock<ActionExecutingContext>();
+                actionExecutedContext.SetupGet(c => c.HttpContext).Returns(httpContext.Object);
 
-            //    filter.OnActionExecuting(actionExecutedContext.Object);
+                filter.OnActionExecuting(actionExecutedContext.Object);
 
-            //    Assert.AreEqual(actionExecutedContext.Object.HttpContext.Request.Cookies["lastCreateRepeatTaskDate"].Value, "2016-11-12");
-            //}
+                Assert.AreEqual(actionExecutedContext.Object.HttpContext.Request.Cookies["lastCreateRepeatTaskDate"].Value, "2016-11-12");
+            }
         }
     }
 }

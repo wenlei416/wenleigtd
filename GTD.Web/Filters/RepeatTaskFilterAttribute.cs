@@ -28,8 +28,8 @@ namespace GTD.Filters
             if (requestCookie != null)
             {
                 //获取cookie中的最后创建日期，与今天比较。如果大于今天，说明今天已经创建过了，结束
-                var lastCreateRepeatTaskDate = Convert.ToDateTime(requestCookie.Value,
-                    new DateTimeFormatInfo() { ShortDatePattern = "yyyyMMdd" });
+                var lastCreateRepeatTaskDate = DateTime.ParseExact(requestCookie.Value, "yyyyMMdd", CultureInfo.CurrentCulture);
+
                 if (lastCreateRepeatTaskDate >= DateTime.Now.Date)
                     return;
             }
@@ -42,19 +42,26 @@ namespace GTD.Filters
             //todo 但这里会有个问题，积累的任务会越来越多，效率会成为问题
             //可以在这里循环一下比较一下，如果循环任务的结束日期小于今天，就不要了
             //其实还是有循环，只是比较的内容稍微少一点，比在GetToBeCreadedTasks里面做快
-            var toBeCreadedTasks =GetToBeCreadedTasks(groupByRepeatJson);
+            var toBeCreadedTasks = GetToBeCreadedTasks(groupByRepeatJson);
             //在这里集中创建会比较快
             foreach (var creadedTask in toBeCreadedTasks)
             {
-                TaskServices.AddTask(creadedTask);
+                TaskServices.AddTaskFromFilter(creadedTask);
             }
             //创建完任务，处理cookie。cookie不为空就修改，为空就创建
             if (requestCookie != null)
+            {
                 requestCookie.Value = DateTime.Now.Date.ToString("yyyyMMdd");
+                requestCookie.Expires = DateTime.Now.AddDays(2);
+            }
             else
             {
                 //创建cookie
-                HttpCookie cookie = new HttpCookie("lastCreateRepeatTaskDate") { Value = DateTime.Now.Date.ToString("yyyyMMdd") };
+                HttpCookie cookie = new HttpCookie("lastCreateRepeatTaskDate")
+                {
+                    Value = DateTime.Now.Date.ToString("yyyyMMdd"),
+                    Expires = DateTime.Now.AddDays(2)
+                };
                 HttpContext.Current.Response.Cookies.Add(cookie);
             }
         }
@@ -63,7 +70,7 @@ namespace GTD.Filters
         //传入的是所有的任务，所以完成的/删除任务也会被传入进来
         public static List<Task> GetToBeCreadedTasks(IEnumerable<IGrouping<string, Task>> groupByRepeatJson)
         {
-            List<Task> toBeCreadedTasks=new List<Task>();
+            List<Task> toBeCreadedTasks = new List<Task>();
             //先在组级别循环1（组是按RepeatJson分的）
             foreach (var tasks in groupByRepeatJson)
             {
@@ -84,7 +91,7 @@ namespace GTD.Filters
                     var cycDates = RecurringDate.RecurringJsonToDate(t.RepeatJson);
                     //把不能用于创建任务的日期去掉，比如可能成为第二个日程的时间
                     var cycDatesForToBeCreadedTasks = new List<DateTime>();
-                    for (int i = 0; i <= cycDates.Count; i++)
+                    for (int i = 0; i < cycDates.Count; i++)
                     {
                         cycDatesForToBeCreadedTasks.Add(cycDates[i]);
 
@@ -99,9 +106,10 @@ namespace GTD.Filters
                     var exitsTaskStarDateTimes = (from e in tasks select e.StartDateTime).ToList();
                     foreach (var cycDate in cycDatesForToBeCreadedTasks)
                     {
-                        if (exitsTaskStarDateTimes.Contains(cycDate)) continue;
-                        var newTask = TaskUtil.CloneTaskForRepeat(t, cycDate);
+                        if (exitsTaskStarDateTimes.Contains(cycDate))
+                            continue;
 
+                        var newTask = TaskUtil.CloneTaskForRepeat(t, cycDate);
                         toBeCreadedTasks.Add(newTask);
                     }
 

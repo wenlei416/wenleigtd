@@ -225,7 +225,7 @@ namespace GTD.Util
             //逻辑：因为recurringDate不会为空（已经判断），所以第一个任务肯定要加（最差是日程任务）
             //除非是设置的第一天比今天还早
             //此时，如果第一个日期大于明天，则跳出循环；如果小于明天，就再加一天，再看是否大于明天。
-            for (int i = 0; i <= recurringDate.Count; i++)
+            for (int i = 0; i < recurringDate.Count; i++)
             {
                 if (recurringDate[i].Date < DateTime.Now.Date)
                 {
