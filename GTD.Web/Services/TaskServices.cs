@@ -218,7 +218,7 @@ namespace GTD.Services
             _taskRepository.BatchUpdateTask(tasks);
         }
 
-        [Log]
+        //[Log]
         public Task GetTaskById(int? taskId)
         {
             return _taskRepository.GetTaskById(taskId);
