@@ -244,9 +244,22 @@ namespace GTD.Filters.Tests
                     RepeatJson = @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"}
             };
             var taskRepository = _kernel.GetMock<ITaskRepository>();
-            taskRepository.Setup(r => r.GetAll()).Returns(exitsTasks.AsQueryable());
+            taskRepository.Setup(r => r.GetTaskById(1)).Returns(new Task()
+            {
+                TaskId = 1,
+                Headline = "Test1",
+                Description = "TestD1",
+                ProjectID = 1,
+                ContextID = 1,
+                Priority = Priority.高,
+                IsComplete = true,
+                StartDateTime = new DateTime(2016, 11, 26).Date,
+                RepeatJson =
+                    @"{'id':'4','cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-11-25','endday':'2016-12-1','cyc':'1'}"
+            });
             var taskServices = _kernel.Get<ITaskServices>();
             Assert.AreEqual(taskServices.GetTaskById(1).Headline, "Test1");
+
             //using (ShimsContext.Create())
             //{
             //    // Mock今天是2016.11.29

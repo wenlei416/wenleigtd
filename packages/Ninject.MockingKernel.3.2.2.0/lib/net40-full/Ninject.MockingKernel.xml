@@ -4,17 +4,59 @@
         <name>Ninject.MockingKernel</name>
     </assembly>
     <members>
+        <member name="T:Ninject.MockingKernel.AdditionalInterfaceParameter">
+            <summary>
+            Additional Interfaces
+            </summary>
+        </member>
+        <member name="F:Ninject.MockingKernel.AdditionalInterfaceParameter.additionalInterface">
+            <summary>
+            The type of additional interface.
+            </summary>
+        </member>
+        <member name="M:Ninject.MockingKernel.AdditionalInterfaceParameter.#ctor(System.Type)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.MockingKernel.AdditionalInterfaceParameter"/> class.
+            </summary>
+            <param name="additionalInterface">The type of additional interface</param>
+        </member>
+        <member name="M:Ninject.MockingKernel.AdditionalInterfaceParameter.GetValue(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Get the interface array
+            </summary>
+            <param name="context">The context.</param>
+            <param name="target">The target</param>
+            <returns>The interface type</returns>
+        </member>
+        <member name="M:Ninject.MockingKernel.AdditionalInterfaceParameter.Equals(Ninject.Parameters.IParameter)">
+            <summary>
+            Determines whether the object equals the specified object.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns><c>True</c> if the objects are equal; otherwise <c>false</c></returns>
+        </member>
+        <member name="P:Ninject.MockingKernel.AdditionalInterfaceParameter.Name">
+            <summary>
+            Gets the name of the parameter.
+            </summary>
+        </member>
+        <member name="P:Ninject.MockingKernel.AdditionalInterfaceParameter.ShouldInherit">
+            <summary>
+            Gets a value indicating whether the parameter should be inherited into child requests.
+            </summary>
+        </member>
         <member name="T:Ninject.MockingKernel.ExtensionsForBindingSyntax">
             <summary>
             Extensions for the fluent binding syntax API.
             </summary>
         </member>
-        <member name="M:Ninject.MockingKernel.ExtensionsForBindingSyntax.ToMock``1(Ninject.Syntax.IBindingToSyntax{``0})">
+        <member name="M:Ninject.MockingKernel.ExtensionsForBindingSyntax.ToMock``1(Ninject.Syntax.IBindingToSyntax{``0},System.Type[])">
             <summary>
             Indicates that the service should be bound to a mocked instance of the specified type.
             </summary>
             <typeparam name="T">The service that is being mocked.</typeparam>
             <param name="builder">The builder that is building the binding.</param>
+            <param name="additionalInterfaces">The additional interfaces for the mock.</param>
             <returns>The syntax for adding more information to the binding.</returns>
         </member>
         <member name="T:Ninject.MockingKernel.IMockProviderCallbackProvider">
@@ -38,6 +80,12 @@
             <summary>
             Initializes a new instance of the <see cref="T:Ninject.MockingKernel.MockingKernel"/> class.
             </summary>
+        </member>
+        <member name="M:Ninject.MockingKernel.MockingKernel.#ctor(Ninject.Modules.INinjectModule[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.MockingKernel.MockingKernel"/> class.
+            </summary>
+            <param name="modules">The modules to load into the kernel.</param>
         </member>
         <member name="M:Ninject.MockingKernel.MockingKernel.#ctor(Ninject.INinjectSettings,Ninject.Modules.INinjectModule[])">
             <summary>
