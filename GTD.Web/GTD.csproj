@@ -345,6 +345,8 @@
     <None Include="Properties\PublishProfiles\本地.pubxml" />
     <None Include="Properties\PublishProfiles\本地iis.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\autocompleteTrigger\jquery-ui.autocompleteTrigger.js" />
+    <Content Include="Scripts\autocompleteTrigger\jquery.caret.js" />
     <Content Include="Scripts\CustomValidation.js" />
     <Content Include="Scripts\datetimepicker\jquery.datetimepicker.full.js" />
     <Content Include="Scripts\datetimepicker\jquery.datetimepicker.full.min.js" />
