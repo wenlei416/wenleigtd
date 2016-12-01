@@ -64,7 +64,7 @@
         // 构造函数
         _create: function () {
             this.triggered = false;
-            console.log(this.element);
+            console.log("this "+this.element);
             //this.element是指使用这个widget的对象
             //这里是给这个对象加上autocomplete的widget，并发进去一个参数$extend
             //应该是用这个extend参数中的几个函数，替代了原来autocomplete的几个函数
@@ -73,9 +73,10 @@
                             /**
                              * @description only make a request and suggest items if acTrigger.triggered is true
                              */
+                            //http://www.w3school.com.cn/jquery/data_jquery_data.asp
                             var acTrigger =
                                 $(this).data("autocompleteTrigger") || $(this).data("uiAutocompleteTrigger");
-
+                            console.log(acTrigger);
                             return acTrigger.triggered;
                         },
                         select: function(event, ui) {
@@ -106,12 +107,11 @@
                                 var index = 0;
                                 while (i < searchTerm.length) {
                                     index = html.lastIndexOf(searchTerm.substring(i));
-                                    if (index != -1) {
+                                    if (index !== -1) {
                                         break;
                                     }
                                     i++;
                                 }
-                                //            console.log({html: html, index: index, searchTerm: searchTerm.substring(i) })
 
                                 var htmlCursorPosition = index + searchTerm.substring(i).length;
                                 var htmlLastTriggerPosition =
@@ -119,7 +119,6 @@
                                 var htmlFirstTextPart = html.substring(0, htmlLastTriggerPosition + trigger.length) +
                                     ui.item.value +
                                     acTrigger.options.triggerEnd;
-                                //            console.log({htmlCursorPosition: htmlCursorPosition, htmlLastTriggerPosition: htmlLastTriggerPosition, htmlFirstTextPart: htmlFirstTextPart })
 
                                 // necessary to set cursor position
                                 var lastTriggerPosition = text.substring(0, cursorPosition).lastIndexOf(trigger);
@@ -154,18 +153,18 @@
                          */
                         var widget = $(this);
                         var acTrigger = $(this).data("autocompleteTrigger") || $(this).data("uiAutocompleteTrigger");
-                        var delay = typeof acTrigger.options.delay === 'undefined' ? 0 : acTrigger.options.delay;
+                        var delay = typeof acTrigger.options.delay === "undefined" ? 0 : acTrigger.options.delay;
 
-                        if (event.keyCode != $.ui.keyCode.UP && event.keyCode != $.ui.keyCode.DOWN) {
-
-                            if ($(this).is('input,textarea')) {
-                                var text = $(this).val();
+                        if (event.keyCode !== $.ui.keyCode.UP && event.keyCode !== $.ui.keyCode.DOWN) {
+                            var text;
+                            if ($(this).is("input,textarea")) {
+                                text = $(this).val();
                             } else {
-                                var text = $(this).text();
+                                text = $(this).text();
                             }
 
                             acTrigger.textValue = text;
-                            if (typeof acTrigger.locked === 'undefined') {
+                            if (typeof acTrigger.locked === "undefined") {
                                 acTrigger.locked = false;
                             }
 
