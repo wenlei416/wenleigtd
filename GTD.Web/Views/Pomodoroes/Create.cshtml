@@ -75,12 +75,75 @@
     @Scripts.Render("~/bundles/jqueryval")
     <link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
     <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
+    <script src="~/Scripts/moment.js"></script>
     <script>
         $(document)
             .ready(function () {
                 $.datetimepicker.setLocale('zh');
                 $('#@Html.IdFor(model => model.StarDateTime)').datetimepicker({ step: 1 });
-                $('#@Html.IdFor(model=>model.EnDateTime)').datetimepicker({ step: 1 });
+                $('#@Html.IdFor(model => model.EnDateTime)').datetimepicker({ step: 1 });
+                $('#@Html.IdFor(p => p.StarDateTime)')
+                    .blur(function () {
+                        if ($('#@Html.IdFor(p => p.EnDateTime)').val() === '') {
+                            if ($('#@Html.IdFor(p => p.IsWorkingTime)').prop('checked')) {
+                                //console.log(moment($('#@Html.IdFor(p => p.StarDateTime)').val(), "YYYY/MM/DD HH:mm").add(25, 'm').format('YYYY/MM/DD HH:mm'));
+                                $('#@Html.IdFor(p => p.EnDateTime)')
+                                    .val(moment($('#@Html.IdFor(p => p.StarDateTime)')
+                                            .val(),
+                                            "YYYY/MM/DD HH:mm")
+                                        .add(25, 'm')
+                                        .format('YYYY/MM/DD HH:mm'));
+                            } else {
+                                $('#@Html.IdFor(p => p.EnDateTime)')
+                                    .val(moment($('#@Html.IdFor(p => p.StarDateTime)')
+                                            .val(),
+                                            "YYYY/MM/DD HH:mm")
+                                        .add(5, 'm')
+                                        .format('YYYY/MM/DD HH:mm'));
+
+                            }
+                        }
+                    });
+                $('#@Html.IdFor(p => p.EnDateTime)')
+                    .blur(function () {
+                        if ($('#@Html.IdFor(p => p.StarDateTime)').val() === '') {
+                            if ($('#@Html.IdFor(p => p.IsWorkingTime)').prop('checked')) {
+                                $('#@Html.IdFor(p => p.StarDateTime)')
+                                    .val(moment($('#@Html.IdFor(p => p.EnDateTime)').val(), "YYYY/MM/DD HH:mm")
+                                        .add(-25, 'm')
+                                        .format('YYYY/MM/DD HH:mm'));
+                            } else {
+                                $('#@Html.IdFor(p => p.StarDateTime)')
+                                    .val(moment($('#@Html.IdFor(p => p.EnDateTime)').val(), "YYYY/MM/DD HH:mm")
+                                        .add(-5, 'm')
+                                        .format('YYYY/MM/DD HH:mm'));
+                            }
+                        }
+                    });
+                $('#@Html.IdFor(p => p.IsWorkingTime)')
+                    .change(function () {
+                        if ($('#@Html.IdFor(p => p.StarDateTime)').val() !== '') {
+                            if ($('#@Html.IdFor(p => p.IsWorkingTime)').prop('checked')) {
+                                $('#@Html.IdFor(p => p.EnDateTime)')
+                                    .val(moment($('#@Html.IdFor(p => p.StarDateTime)')
+                                            .val(),
+                                            "YYYY/MM/DD HH:mm")
+                                        .add(25, 'm')
+                                        .format('YYYY/MM/DD HH:mm'));
+                            } else {
+                                $('#@Html.IdFor(p => p.EnDateTime)')
+                                    .val(moment($('#@Html.IdFor(p => p.StarDateTime)')
+                                            .val(),
+                                            "YYYY/MM/DD HH:mm")
+                                        .add(5, 'm')
+                                        .format('YYYY/MM/DD HH:mm'));
+                            }
+
+                        }
+
+
+                    });
+
             });
     </script>
 }
