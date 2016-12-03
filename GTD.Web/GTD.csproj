@@ -267,6 +267,7 @@
     <Compile Include="Util\OutlookAppointment.cs" />
     <Compile Include="Util\DropDownListHelp.cs" />
     <Compile Include="Util\RecurringDate.cs" />
+    <Compile Include="Util\SessionHelper.cs" />
     <Compile Include="Util\TaskUtil.cs" />
     <Compile Include="ViewModels\ProjectVM\ProjectDeatilVM.cs" />
     <Compile Include="ViewModels\TaskDetailVM.cs" />

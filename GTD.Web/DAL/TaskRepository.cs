@@ -46,5 +46,10 @@ namespace GTD.DAL
             return instance.TaskId;
         }
 
+        public Task GetOriginal(Task task)
+        {
+            return base.Context.Set<Task>().AsNoTracking().FirstOrDefault(t => t.TaskId == task.TaskId);
+        }
+
     }
 }

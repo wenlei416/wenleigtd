@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web.WebPages;
 using Castle.Core.Internal;
 using GTD.Util;
 
@@ -38,35 +37,36 @@ namespace GTD.Services
             {
                 //根据业务规则，只有明日待办或者日程有可能变成今日待办，其他状态要过来，需要主动设置
                 case "今日待办":
-                    tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
+                    tasks = GetInProgressTasks()
                         .Where(
                             t =>
-                                (t.DateAttribute == DateAttribute.日程 || t.DateAttribute == DateAttribute.明日待办)
-                                &&
-                                (t.StartDateTime != null && t.StartDateTime <= DateTime.Today));
+                                (t.DateAttribute == DateAttribute.日程 || t.DateAttribute == DateAttribute.明日待办) &&
+                                t.StartDateTime != null && t.StartDateTime <= DateTime.Today);
                     UpdateDateAttribute(tasks, dateAttribute);
 
                     break;
 
                 case "明日待办":
-                    tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
+                    tasks = GetInProgressTasks() //_taskRepository.GetWorkingTasks()
                         .Where(
                             t =>
-                                    (t.DateAttribute != dateAttribute && t.StartDateTime != null && t.StartDateTime == tomorrow));
+                                t.DateAttribute != dateAttribute && t.StartDateTime != null &&
+                                t.StartDateTime == tomorrow);
                     UpdateDateAttribute(tasks, dateAttribute);
 
                     break;
 
                 case "日程":
-                    tasks = GetInProgressTasks()//_taskRepository.GetWorkingTasks()
+                    tasks = GetInProgressTasks()
                         .Where(
                             t =>
-                                    (t.DateAttribute != dateAttribute && t.StartDateTime != null && t.StartDateTime > tomorrow));
+                                t.DateAttribute != dateAttribute && t.StartDateTime != null &&
+                                t.StartDateTime > tomorrow);
                     UpdateDateAttribute(tasks, dateAttribute);
 
                     break;
             }
-            return GetInProgressTasks().Where(t => t.DateAttribute == dateAttribute);//_taskRepository.GetWorkingTasks().Where(t=>t.DateAttribute==dateAttribute);
+            return GetInProgressTasks().Where(t => t.DateAttribute == dateAttribute);
         }
 
         public void AddTask(Task task)
@@ -110,14 +110,16 @@ namespace GTD.Services
         /// <param name="task"></param>
         public void UpdateTask(Task task)
         {
-            var oldRepeatJson = GetTaskById(task.TaskId).RepeatJson;
+            //todo 完全没测试，需要进一步抽象后测试，屏蔽掉所有数据库的操作
+            var originalTask = _taskRepository.GetOriginal(task);
+            var oldRepeatJson = originalTask.RepeatJson;
             //如果RepeatJson一样，说明循环任务没有变化，不需要调整循环任务
             //但可能会需要调整每个循环任务的属性
             if (oldRepeatJson == task.RepeatJson)
             {
                 //repeatJson和原来一样而且不为空；修改的属性也在所有repeatTask必须一样的范围内。
                 //此时只需要更新字段，循环情况不用调整
-                if (!oldRepeatJson.IsNullOrEmpty() && TaskUtil.ModifiedPropertiesInList(GetTaskById(task.TaskId), task))//这里还要增加个条件判断修改属性在不在范围内
+                if (!oldRepeatJson.IsNullOrEmpty() && TaskUtil.ModifiedPropertiesInList(originalTask, task))//这里还要增加个条件判断修改属性在不在范围内
                 {
                     //把循环任务都取出来
                     var repeatTasks = GetRepeatTasks(oldRepeatJson);
