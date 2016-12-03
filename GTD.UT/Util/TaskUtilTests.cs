@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTD.Util;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -230,6 +231,9 @@ namespace GTD.Util.Tests
             Assert.AreEqual(task2.Priority, result2.Priority);
 
         }
+
+
+
 
 
     }

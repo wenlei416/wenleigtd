@@ -39,48 +39,48 @@ namespace GTD.Util
 
         public static string CssForPriority(this Task task)
         {
-                switch (task.Priority)
-                {
-                    case Priority.高:
-                        return "high";
-                    case Priority.中:
-                        return "mid";
-                    case Priority.低:
-                        return "low";
-                    default:
-                        return "none";
-                }
+            switch (task.Priority)
+            {
+                case Priority.高:
+                    return "high";
+                case Priority.中:
+                    return "mid";
+                case Priority.低:
+                    return "low";
+                default:
+                    return "none";
+            }
         }
 
         private static int? RemainderTime(this Task task)
         {
-           
-                if (task.CloseDateTime != null)
-                {
-                    return (task.CloseDateTime - DateTime.Today).Value.Days;
-                }
-                return null;
+
+            if (task.CloseDateTime != null)
+            {
+                return (task.CloseDateTime - DateTime.Today).Value.Days;
+            }
+            return null;
         }
 
         public static string RemainderTimeString(this Task task)
         {
-           
-                if (task.RemainderTime() != null)
+
+            if (task.RemainderTime() != null)
+            {
+                if (task.RemainderTime() == 0)
                 {
-                    if (task.RemainderTime() == 0)
-                    {
-                        return "最后1天";
-                    }
-                    if (task.RemainderTime() < 0)
-                    {
-                        return "过期" + Math.Abs((int)task.RemainderTime()) + "天";
-                    }
-                    if (task.RemainderTime() > 0)
-                    {
-                        return "还剩" + task.RemainderTime() + "天";
-                    }
+                    return "最后1天";
                 }
-                return string.Empty;
+                if (task.RemainderTime() < 0)
+                {
+                    return "过期" + Math.Abs((int)task.RemainderTime()) + "天";
+                }
+                if (task.RemainderTime() > 0)
+                {
+                    return "还剩" + task.RemainderTime() + "天";
+                }
+            }
+            return string.Empty;
         }
 
         public static string RecurringString(this Task task)
@@ -246,12 +246,12 @@ namespace GTD.Util
         public static Task CloneTaskForRepeat(Task task, DateTime startDateTime)
         {
             var taskDuration = TaskDuration(task);
-            Task t = (Task) task.Clone();
+            Task t = (Task)task.Clone();
             //这里Clone出来的Task可能是有id的，后面直接拿有id的Task去写入db，不会有问题，会直接把id省略掉，重新自动生成id
             t.StartDateTime = startDateTime;
             //处理没有结束日期的任务
             t.CloseDateTime = task.CloseDateTime != null
-                ? (DateTime?) startDateTime.AddDays(taskDuration)
+                ? (DateTime?)startDateTime.AddDays(taskDuration)
                 : null;
             t.DateAttribute = SetDateAttribute(t.StartDateTime, t.DateAttribute, t.ProjectID);
             t.IsComplete = false;
@@ -291,17 +291,19 @@ namespace GTD.Util
                 else
                     return DateAttribute.日程;
             }
-            else if (projectid != null)
-            {
-                return DateAttribute.下一步行动;
-            }
-            else if (att == DateAttribute.将来也许
-                    || att == DateAttribute.等待
-                    || att == DateAttribute.收集箱)
-                return att;
             else
-                return DateAttribute.收集箱;
+            {
+                if (att == DateAttribute.将来也许
+                    || att == DateAttribute.等待
+                    || att == DateAttribute.下一步行动)
+                {
+                    return att;
+                }
+                else
+                {
+                    return projectid != null ? DateAttribute.下一步行动 : DateAttribute.收集箱;
+                }
+            }
         }
-
     }
 }

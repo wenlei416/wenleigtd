@@ -143,6 +143,7 @@
     <Compile Include="MockTech.cs" />
     <Compile Include="Util\RecurringDateTests.cs" />
     <Compile Include="Util\TaskUtilTests.cs" />
+    <Compile Include="Util\TaskUtilTestsSetDateAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GTD.Web\GTD.csproj">
