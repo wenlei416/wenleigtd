@@ -34,7 +34,7 @@
                     <div class="startat">
                         @if (item.StartDateTime != null)
                         {
-                        @item.StartDateTime.Value.ToShortDateString()
+                            @item.StartDateTime.Value.ToShortDateString()
                         }
                     </div>
 
@@ -43,16 +43,28 @@
                     <div class="context">
                         @if (item.Context != null)
                         {
-                        @:@@@item.Context.ContextName
-                    }
+                            @:@@@item.Context.ContextName
+                        }
                     </div>
 
                     <div class="project">
                         @if (item.Pro != null)
                         {
-                        @:#@item.Pro.ProjectName
-                    }
+                            @:#@item.Pro.ProjectName
+                        }
                     </div>
+                    <div class="subtaskcount">
+                        @if (item.SubTasks.Count != 0)
+                        {
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                            @item.SubTasks.Count
+                        }
+                    </div>
+                </div>
+            </li>
+            <li class="subtaskpanel" style="display: none">
+                <div>
+                    <p>子任务list</p>
                 </div>
             </li>
         }
@@ -74,6 +86,9 @@
         $(function() {
             $(".tasklist").sortable();
             $(".tasklist").disableSelection();
+            $(".subtaskcount").click(function () {
+                $(this).parent().parent().next().slideToggle("normal");
+            });
         });
     </script>
 }

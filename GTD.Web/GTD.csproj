@@ -454,7 +454,9 @@
     <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
     <Content Include="Views\Shared\_CreateTaskInLinPartialPage.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="fonts\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
