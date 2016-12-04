@@ -55,7 +55,7 @@ namespace GTD.Models
 
         public bool IsDeleted { get; set; }
 
-        [HiddenInput(DisplayValue = false)]
+        //[HiddenInput(DisplayValue = false)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = @"实际完成时间")]

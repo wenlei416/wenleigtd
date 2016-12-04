@@ -52,7 +52,16 @@
             @Html.EditorFor(model => model.CloseDateTime)
             @Html.ValidationMessageFor(model => model.CloseDateTime)
         </div>
+        @*----------完成日期----------*@
+        @if(@Model.IsComplete){
 
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CompleteDateTime)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CompleteDateTime)
+            @Html.ValidationMessageFor(model => model.CompleteDateTime)
+        </div>}
         @*----------属性----------*@
         <div class="editor-label">
             @Html.LabelFor(model => model.DateAttribute)
