@@ -136,12 +136,16 @@ namespace GTD.Util.Tests
                 CloseDateTime = new DateTime(2016, 11, 28),
                 RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'2','startday':'2016-11-26','endday':'2016-11-30','cyc':'2'}"
             };
-            var ts = TaskUtil.CreateCycTasks(task);
-            Assert.AreEqual(ts.Count, 2);
-            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 28));
-            Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 30));
-            Assert.AreEqual(ts[0].CloseDateTime, new DateTime(2016, 11, 29));
-            Assert.AreEqual(ts[1].CloseDateTime, new DateTime(2016, 12, 1));
+            using (ShimsContext.Create())
+            {
+                System.Fakes.ShimDateTime.NowGet =() => new DateTime(2016, 11, 27);
+                var ts = TaskUtil.CreateCycTasks(task);
+                Assert.AreEqual(ts.Count, 2);
+                Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 28));
+                Assert.AreEqual(ts[1].StartDateTime, new DateTime(2016, 11, 30));
+                Assert.AreEqual(ts[0].CloseDateTime, new DateTime(2016, 11, 29));
+                Assert.AreEqual(ts[1].CloseDateTime, new DateTime(2016, 12, 1)); 
+            }
         }
 
         [TestMethod]
@@ -154,10 +158,15 @@ namespace GTD.Util.Tests
                 StartDateTime = new DateTime(2016, 11, 27),
                 RepeatJson = @"{'id':'10','cyear':'0','cmonth':'0','cweek':'0','cday':'4','startday':'2016-11-26','endday':'2016-11-30','cyc':'4'}"
             };
-            var ts = TaskUtil.CreateCycTasks(task);
-            Assert.AreEqual(ts.Count, 1);
-            Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 30));
-            Assert.AreEqual(ts[0].CloseDateTime, null);
+            using (ShimsContext.Create())
+            {
+                System.Fakes.ShimDateTime.NowGet = () => new DateTime(2016, 11, 27);
+
+                var ts = TaskUtil.CreateCycTasks(task);
+                Assert.AreEqual(ts.Count, 1);
+                Assert.AreEqual(ts[0].StartDateTime, new DateTime(2016, 11, 30));
+                Assert.AreEqual(ts[0].CloseDateTime, null); 
+            }
         }
         #endregion
 

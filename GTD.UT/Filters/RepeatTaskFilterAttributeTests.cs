@@ -221,7 +221,7 @@ namespace GTD.Filters.Tests
             }
         }
 
-        [TestMethod()]
+        //[TestMethod()]
         public void OnActionExecutingTest()
         {
             IEnumerable<Task> exitsTasks = new List<Task>()

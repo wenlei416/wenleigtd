@@ -88,9 +88,12 @@ namespace GTD.Controllers
                 return HttpNotFound();
             }
             InitView(task);
+            //todo 日志入侵了业务，需要修改
+            LogHelper.WriteLog($"Get  : TaskId: {task.TaskId,-5} , StartDate: {task.StartDateTime,-20} , CloseDate: {task.CloseDateTime,-20}");
             return View(task);
         }
 
+        //[Log]
         // POST: /Task/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -98,8 +101,11 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
+                //todo 日志入侵了业务，需要修改
+                LogHelper.WriteLog($"Post : TaskId: {task.TaskId,-5} , StartDate: {task.StartDateTime,-20} , CloseDate: {task.CloseDateTime,-20}");
                 _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
+
             }
 
             InitView(task);

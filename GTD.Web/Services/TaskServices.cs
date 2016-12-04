@@ -321,7 +321,11 @@ namespace GTD.Services
             _taskRepository.Create(task);
         }
 
-        //获取循环任务
+        /// <summary>
+        /// 获取所有循环任务
+        /// </summary>
+        /// <param name="repeatJson"></param>
+        /// <returns></returns>
         private IEnumerable<Task> GetRepeatTasks(string repeatJson)
         {
             return GetInProgressTasks().Where(t => t.RepeatJson == repeatJson);
