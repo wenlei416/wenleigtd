@@ -17,7 +17,10 @@
 <h2 class="task-title">@Model.Task.Headline</h2>
 <ul class="detail">
     <li class="task-note" style="white-space: pre-line">@Model.Task.Description</li>
-    <li class="task-note" style="white-space: pre-line">@Model.Task.RecurringString()</li>
+    @if (@Model.Task.RecurringString() != "")
+    {
+        <li class="task-note" style="white-space: pre-line">@Model.Task.RecurringString()</li>
+    }
 
     <li class="subtask">
         <div style="line-height: 20px;height: 20px;margin-bottom: 10px;font-size: 20px; font-weight: 600">未完成子任务</div>
@@ -40,18 +43,21 @@
                 </li>
             }
         </ul>
-        <div class="add">预留增加子任务</div>
+        <div>
+            @{
+                Html.RenderPartial("_CreateSubTaskInLinePartialPage",
+                    new SubTask { TaskId = Model.Task.TaskId, Task = Model.Task, IsDeleted = false, IsComplete = false });
+            }
+        </div>
     </li>
     <li class="task-releation">
-        <div>@*前置任务：@(Model.Task.PreviousTask_Headline() ?? "无")*@</div>
         <div>前置任务：@(Model.PreviousTask != null ? Model.PreviousTask.Headline : "无")</div>
-        <div>后续任务：@(Model.NextTask!=null?Model.NextTask.Headline:"无")</div>
+        <div>后续任务：@(Model.NextTask != null ? Model.NextTask.Headline : "无")</div>
     </li>
     <li class="task-op">
-        <div>@Html.ActionLink("完成", "Complete", "Task", new { id = Model.Task.TaskId }, "")</div>
+        <div>@Html.ActionLink("完成", "Complete", "Task", new { id = Model.Task.TaskId },"")</div>
         <div>@Html.ActionLink("编辑", "Edit", new { id = Model.Task.TaskId }) </div>
         <div>@Html.ActionLink("返回列表", "ListTask", "Task", new { da = Model.Task.DateAttribute.Value, sortorder = "priority" }, "")</div>
-        <div>@Html.ActionLink("创建子任务", "Create", "SubTask", new { id = Model.Task.TaskId }, "")</div>
     </li>
     <li class="comments">
         <div style="line-height: 40px;height: 40px;font-size: 20px; font-weight: 600">备注</div>
@@ -69,17 +75,12 @@
             }
         </div>
     </li>
-
-
     <li class="pomodoros">
         <div>
             @{
-                Html.RenderPartial("PomodoroPartView", new Pomodoro { TaskId = Model.Task.TaskId ,Task = Model.Task});
+                Html.RenderPartial("PomodoroPartView", new Pomodoro { TaskId = Model.Task.TaskId, Task = Model.Task });
             }
         </div>
     </li>
 
 </ul>
-
-
-

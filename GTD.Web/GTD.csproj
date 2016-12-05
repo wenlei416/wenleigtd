@@ -452,7 +452,8 @@
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
     <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
-    <Content Include="Views\Shared\_CreateTaskInLinPartialPage.cshtml" />
+    <Content Include="Views\Shared\_CreateTaskInLinePartialPage.cshtml" />
+    <Content Include="Views\Shared\_CreateSubTaskInLinePartialPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fonts\" />
