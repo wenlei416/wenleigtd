@@ -20,14 +20,14 @@
 
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/jquery-ui-1.12.1.js"></script>
-    <script src="/Scripts/autocompleteTrigger/jquery-ui.autocompleteTrigger.js"></script>
+    <script src="/Scripts/autocompleteTrigger/jquery-ui.autocompleteTrigger3.js"></script>
     <script src="/Scripts/autocompleteTrigger/jquery.caret.js"></script>
     <script>
         $('#create_task_in_line')
             .autocompleteTrigger({
-                triggerStart: ' @',
+                triggerStart: '@',
                 triggerEnd: ' ',
-                source: [
+                sourceA: [
                     "Asp",
                     "BASIC",
                     "COBOL",
@@ -44,6 +44,21 @@
                     "Ruby",
                     "Scala",
                     "Scheme"
+                ],
+                sourceB : [
+                "BASIC",
+                "COBOL",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "Groovy",
+                "Java",
+                "JavaScript",
+                "Lisp",
+                "Perl",
+                "PHP",
+                "Python",
+                "Ruby"
                 ]
             });
     </script>
