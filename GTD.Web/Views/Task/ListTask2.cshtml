@@ -3,13 +3,19 @@
 
 
 @{
-    //ViewBag.Title = "Index";
+//ViewBag.Title = "Index";
 }
 
 <h2>@ViewBag.Title</h2>
 
 <p>
-    @Html.ActionLink("创建任务", "Create",new { da = ViewBag.da.ToString()})  @Html.ActionLink("批量创建任务","BatchCreate")
+    @Html.ActionLink("创建任务", "Create", new { da = ViewBag.da.ToString() })  @Html.ActionLink("批量创建任务", "BatchCreate")
+</p>
+<p>
+    @{
+        //Html.RenderPartial("_CreateTaskInLinePartialPage");
+        Html.RenderAction("CreateInLine");
+    }
 </p>
 @foreach (var p in Model.tl.Keys)
 {
@@ -82,8 +88,10 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryui")
+    <script src="~/Scripts/autocompleteTrigger/jquery.caret.js"></script>
+
     <script>
-        $(function() {
+        $(function () {
             $(".tasklist").sortable();
             $(".tasklist").disableSelection();
             $(".subtaskcount").click(function () {

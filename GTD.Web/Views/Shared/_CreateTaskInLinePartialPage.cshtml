@@ -1,0 +1,55 @@
+﻿
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.css" />
+@*这里要用个ajax的form*@
+@using (Html.BeginForm("CreateInLine", "Task"))
+{
+    <div>
+        <input id="create_task_in_line" class="form-control">
+        <input class="btn btn-default" style="width: 50px" type="submit" value="新增" />
+    </div>
+}
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+<script src="~/Scripts/autocompleteTrigger/jquery-ui.autocompleteTrigger3.js"></script>
+<script>
+        $('#create_task_in_line')
+            .autocompleteTrigger({
+                triggerStart: " @@",
+                triggerEnd: ' ',
+                sourceA: [
+                    "Asp",
+                    "BASIC",
+                    "COBOL",
+                    "ColdFusion",
+                    "Erlang",
+                    "Fortran",
+                    "Groovy",
+                    "Java",
+                    "JavaScript",
+                    "Lisp",
+                    "Perl",
+                    "PHP",
+                    "Python",
+                    "Ruby",
+                    "Scala",
+                    "Scheme",
+                    "@ViewBag.p"
+                ],
+                sourceB : [
+                "BASIC",
+                "COBOL",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "Groovy",
+                "Java",
+                "JavaScript",
+                "Lisp",
+                "Perl",
+                "PHP",
+                "Python",
+                "Ruby"
+                ]
+            });
+</script>

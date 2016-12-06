@@ -77,6 +77,30 @@ namespace GTD.Controllers
             return View(task);
         }
 
+        //Get: /Task/CreateInLin
+        [ChildActionOnly]
+        public PartialViewResult CreateInLine()
+        {
+            ViewBag.p = "a";
+            return PartialView("_CreateTaskInLinePartialPage");
+        }
+
+
+        // POST: /Task/CreateInLine
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateInLine(Task task)
+        {
+            if (ModelState.IsValid)
+            {
+                //复杂的处理逻辑，生成一个task
+                //_taskServices.AddTask(task);
+            }
+            return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
+        }
+
+
+
         // GET: /Task/Edit/5
         public ActionResult Edit(int id = 0)
         {

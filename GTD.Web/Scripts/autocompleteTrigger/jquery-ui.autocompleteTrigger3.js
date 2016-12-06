@@ -43,7 +43,7 @@
                         var lastTriggerPosition = text.substring(0, cursorPosition).lastIndexOf(trigger);
 
 
-                        var triggerStartSecond = "#";
+                        var triggerStartSecond = " #";
                         var lastTriggerStartSecondPosition = text.substring(0, cursorPosition).lastIndexOf(triggerStartSecond);
 
                         if (lastTriggerPosition >= 0 && lastTriggerStartSecondPosition < 0) {
@@ -168,7 +168,7 @@
 
             lastTriggerPosition = text.substring(0, cursorPosition).lastIndexOf(trigger);
             var lastTriggerEndPosition = text.substring(0, cursorPosition).lastIndexOf(triggerEnd);
-            var triggerSecond = "#";
+            var triggerSecond = " #";
             var lastTriggerStartSecondPosition = text.substring(0, cursorPosition).lastIndexOf(triggerSecond);
 
             var laetsource = acTrigger.options.sourceA;
