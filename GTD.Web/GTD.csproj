@@ -298,6 +298,7 @@
   <ItemGroup>
     <Content Include="App_Data\log.txt" />
     <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\listtask.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -456,6 +457,7 @@
     <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
     <Content Include="Views\Shared\_CreateTaskInLinePartialPage.cshtml" />
     <Content Include="Views\Shared\_CreateSubTaskInLinePartialPage.cshtml" />
+    <Content Include="Views\Task\ListTask.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fonts\" />

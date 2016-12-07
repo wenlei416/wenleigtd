@@ -1,18 +1,25 @@
-﻿@using GTDTest.Util
-@model IEnumerable<GTDTest.Models.Task>
+﻿@using GTD.Util
+@model GTD.ViewModels.TasklistVM
 
+<link rel="stylesheet" type="text/css" href="~/Content/listtask.css" />
+
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("创建任务", "Create", new { da = ViewBag.da.ToString() })  @Html.ActionLink("批量创建任务", "BatchCreate")
+</p>
+<p>
     @{
-    //ViewBag.Title = "Index";
+        //Html.RenderPartial("_CreateTaskInLinePartialPage");
+        Html.RenderAction("CreateInLine");
     }
-
-    <h2>@ViewBag.Title</h2>
-
-    <p>
-        @Html.ActionLink("创建任务", "Create")
-    </p>
-
+</p>
+@foreach (var p in Model.tl.Keys)
+{
+    <h3 class="sortgroup">@p</h3>
     <ul class="tasklist">
-        @foreach (var item in Model)
+        @foreach (var item in Model.tl[p].ToList())
         {
             <li>
                 <div class="pri @item.CssForPriority()"></div>
@@ -41,25 +48,58 @@
                         @if (item.Context != null)
                         {
                             @:@@@item.Context.ContextName
-                    }
+                }
                     </div>
 
-                    <div class="task">
+                    <div class="project">
                         @if (item.Pro != null)
                         {
                             @:#@item.Pro.ProjectName
-                    }
+                }
+                    </div>
+                    <div class="subtaskcount">
+                        @if (item.SubTasks.Count != 0)
+                        {
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                            @item.SubTasks.Count
+                        }
                     </div>
                 </div>
             </li>
+            <li class="subtaskpanel" style="display: none;height: auto">
+                @if (item.SubTasks.Count != 0)
+                {
+                    foreach (var s in item.SubTasks)
+                    {
+                        <div class="SubTaskTitle">@s.SubTaskName</div>
+                    }
+                }
+            </li>
         }
     </ul>
-    <div class="sort">
-        <ul>
-            <li>@Html.ActionLink("按优先级排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "priority" }, "")</li>
-            <li>@Html.ActionLink("按项目排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "project" }, "")</li>
-            <li>@Html.ActionLink("按开始日期排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "startat" }, "")</li>
-            <li>@Html.ActionLink("按结束日期排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "closeat" }, "")</li>
-            <li>@Html.ActionLink("按场景排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "context" }, "")</li>
-        </ul>
-    </div>
+}
+<div class="sort">
+    <ul>
+        <li>@Html.ActionLink("按优先级排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "priority" }, "")</li>
+        <li>@Html.ActionLink("按项目排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "project" }, "")</li>
+        <li>@Html.ActionLink("按开始日期排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "startat" }, "")</li>
+        <li>@Html.ActionLink("按结束日期排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "closeat" }, "")</li>
+        <li>@Html.ActionLink("按场景排序", "ListTask", "Task", new { da = ViewBag.da.ToString(), sortorder = "context" }, "")</li>
+    </ul>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryui")
+    <script src="~/Scripts/autocompleteTrigger/jquery.caret.js"></script>
+
+    <script>
+        $(function () {
+            $(".tasklist").sortable();
+            $(".tasklist").disableSelection();
+            $(".subtaskcount").click(function () {
+                $(this).parent().parent().next().slideToggle("normal");
+                $(".subtaskpanel").removeClass("ui-sortable-handle");
+            });
+        });
+    </script>
+}

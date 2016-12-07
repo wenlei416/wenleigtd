@@ -68,10 +68,14 @@
                     </div>
                 </div>
             </li>
-            <li class="subtaskpanel" style="display: none">
-                <div>
-                    <p>子任务list</p>
-                </div>
+            <li class="subtaskpanel" style="display: none;height: auto">
+                    @if (item.SubTasks.Count != 0)
+                    {
+                        foreach (var s in item.SubTasks)
+                        {
+                                <div class="SubTaskTitle">@s.SubTaskName</div>
+                        }
+                    }
             </li>
         }
     </ul>
@@ -96,6 +100,7 @@
             $(".tasklist").disableSelection();
             $(".subtaskcount").click(function () {
                 $(this).parent().parent().next().slideToggle("normal");
+                $(".subtaskpanel").removeClass("ui-sortable-handle");
             });
         });
     </script>
