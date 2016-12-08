@@ -1,42 +1,52 @@
-﻿
-@*<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />*@
-@*<link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.css" />*@
-@*这里要用个ajax的form*@
-@using (Html.BeginForm("CreateInLine", "Task"))
+﻿@using (Ajax.BeginForm("CreateInLine", "Task", new AjaxOptions()
 {
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "listtasks"
+}))
+{
+    //这里在view里面掺杂了很多逻辑，似乎不太好
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["sortOrder"] != null)
+    {
+        string sortOrder = HttpContext.Current.Request.RequestContext.RouteData.Values["sortOrder"].ToString();
+        @Html.HiddenFor(x => sortOrder)
+
+    }
+    string createTaskInLine = "";
+    string da = HttpContext.Current.Request.RequestContext.RouteData.Values["da"].ToString();
     <div>
-        <input id="create_task_in_line" class="form-control">
+        @Html.EditorFor(x => createTaskInLine, new { @class = "form-control" })
+        @Html.HiddenFor(x => da)
         <input class="btn btn-default" style="width: 50px" type="submit" value="新增" />
     </div>
 }
-@*<script src="~/Scripts/jquery-3.1.1.js"></script>*@
-@*<script src="~/Scripts/jquery-ui-1.12.1.js"></script>*@
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryui")
+
 <script src="~/Scripts/autocompleteTrigger/jquery-ui.autocompleteTrigger3.js"></script>
 <script>
-        $('#create_task_in_line')
-            .autocompleteTrigger({
-                triggerStart: " @@",
-                triggerEnd: ' ',
-                sourceA: [
-                    "Asp",
-                    "BASIC",
-                    "COBOL",
-                    "ColdFusion",
-                    "Erlang",
-                    "Fortran",
-                    "Groovy",
-                    "Java",
-                    "JavaScript",
-                    "Lisp",
-                    "Perl",
-                    "PHP",
-                    "Python",
-                    "Ruby",
-                    "Scala",
-                    "Scheme",
-                    "@ViewBag.p"
-                ],
-                sourceB : [
+    $('#createTaskInLine')
+        .autocompleteTrigger({
+            triggerStart: " @@",
+            triggerEnd: ' ',
+            sourceA: [
+                "Asp",
+                "BASIC",
+                "COBOL",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "Groovy",
+                "Java",
+                "JavaScript",
+                "Lisp",
+                "Perl",
+                "PHP",
+                "Python",
+                "Ruby",
+                "Scala",
+                "Scheme"
+            ],
+            sourceB: [
                 "BASIC",
                 "COBOL",
                 "ColdFusion",
@@ -50,6 +60,6 @@
                 "PHP",
                 "Python",
                 "Ruby"
-                ]
-            });
+            ]
+        });
 </script>

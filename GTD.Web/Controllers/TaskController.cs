@@ -3,6 +3,7 @@ using GTD.Services.Abstract;
 using GTD.Util;
 using GTD.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
@@ -81,21 +82,34 @@ namespace GTD.Controllers
         [ChildActionOnly]
         public PartialViewResult CreateInLine()
         {
-            ViewBag.p = "a";
+            //todo 这里应该是构造2个list，项目和场景，假设项目和场景没有重名
+            var projectList = from p in _projectServices.GetAllInprogressProjects() select p.ProjectName;
+            var contextList = from c in _contextServices.GetAllContexts() select c.ContextName;
+
+            ViewBag.projects = projectList;
+            ViewBag.contexts = contextList;
             return PartialView("_CreateTaskInLinePartialPage");
         }
 
 
         // POST: /Task/CreateInLine
         [HttpPost]
-        public PartialViewResult CreateInLine(Task task, string da = "收集箱", string sortOrder = "priority")
+        public PartialViewResult CreateInLine(string createTaskInLine, string da = "收集箱", string sortOrder = "priority")
         {
-            var t=new Task() {Headline = "ajax加人物"};
+            var t = new Task()
+            {
+                Headline = createTaskInLine,
+                StartDateTime = DateTime.Now.Date,
+                CloseDateTime = DateTime.Now.Date,
+                IsComplete = false,
+                IsDeleted = false,
+                SubTasks = new List<SubTask>()
+            };
+
             //复杂的处理逻辑，生成一个task
             _taskServices.AddTask(t);
-            //return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
-            var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
 
+            var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
             var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
             var viewmodel = new TasklistVM(workingtasks, sortOrder);
 
