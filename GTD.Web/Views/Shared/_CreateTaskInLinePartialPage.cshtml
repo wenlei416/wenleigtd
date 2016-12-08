@@ -1,23 +1,16 @@
 ﻿
-<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />*@
+@*<link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery-ui.css" />*@
 @*这里要用个ajax的form*@
-@{
-    var ajaxOpts = new AjaxOptions()
-    {
-        UpdateTargetId = "listtasks"
-    };
-}
-@using (Ajax.BeginForm("CreateInLine", ajaxOpts))
+@using (Html.BeginForm("CreateInLine", "Task"))
 {
     <div>
         <input id="create_task_in_line" class="form-control">
         <input class="btn btn-default" style="width: 50px" type="submit" value="新增" />
     </div>
 }
-@*@using (Ajax.BeginForm("GetTasks", ajaxOpts))*@
-<script src="~/Scripts/jquery-3.1.1.js"></script>
-<script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+@*<script src="~/Scripts/jquery-3.1.1.js"></script>*@
+@*<script src="~/Scripts/jquery-ui-1.12.1.js"></script>*@
 <script src="~/Scripts/autocompleteTrigger/jquery-ui.autocompleteTrigger3.js"></script>
 <script>
         $('#create_task_in_line')

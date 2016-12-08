@@ -109,7 +109,7 @@
         </div>
         <div class="editor-field">
             @Html.Editor("meta-input", new { htmlAttributes = new { @class = "meta-input", @readonly = "readonly" } })
-            @Html.HiddenFor(model=>model.RepeatJson, new { @class = "json-input" })
+            @Html.HiddenFor(model => model.RepeatJson, new { @class = "json-input" })
             <div class="clear-this btn  btn-default" style="display: none">清除</div>
         </div>
         <p>
@@ -122,11 +122,11 @@
 </div>
 
 
-    <div>
-        @{
-            Html.RenderPartial("_RepeatTaskPartialPage");
-        }
-    </div>
+<div>
+    @{
+        Html.RenderPartial("_RepeatTaskPartialPage");
+    }
+</div>
 
 
 
@@ -135,8 +135,10 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/moment")
     <script src="~/Scripts/CustomValidation.js"></script>
-    <link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
-        <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
+    @*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">*@
+    @Styles.Render("~/Content/datetimepicker")
+    @Scripts.Render("~/bundles/datetimepicker")
+    @*<script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
     <script>
         $(document)
             .ready(function () {
