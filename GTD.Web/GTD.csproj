@@ -456,6 +456,7 @@
     <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
     <Content Include="Views\Shared\_CreateTaskInLinePartialPage.cshtml" />
     <Content Include="Views\Shared\_CreateSubTaskInLinePartialPage.cshtml" />
+    <Content Include="Views\Task\_ListTasksPartialPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fonts\" />

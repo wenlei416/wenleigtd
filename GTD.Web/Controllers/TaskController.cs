@@ -77,7 +77,7 @@ namespace GTD.Controllers
             return View(task);
         }
 
-        //Get: /Task/CreateInLin
+        //Get: /Task/CreateInLine
         [ChildActionOnly]
         public PartialViewResult CreateInLine()
         {
@@ -88,15 +88,18 @@ namespace GTD.Controllers
 
         // POST: /Task/CreateInLine
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult CreateInLine(Task task)
+        public PartialViewResult CreateInLine(Task task, string da = "收集箱", string sortOrder = "priority")
         {
-            if (ModelState.IsValid)
-            {
-                //复杂的处理逻辑，生成一个task
-                //_taskServices.AddTask(task);
-            }
-            return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
+            var t=new Task() {Headline = "ajax加人物"};
+            //复杂的处理逻辑，生成一个task
+            _taskServices.AddTask(t);
+            //return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
+            var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
+
+            var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
+            var viewmodel = new TasklistVM(workingtasks, sortOrder);
+
+            return PartialView("_ListTasksPartialPage", viewmodel);
         }
 
 
@@ -190,9 +193,20 @@ namespace GTD.Controllers
             var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
 
             ViewBag.Title = da + "  （" + workingtasks.Count() + "）";
-            var viewmodel = new TasklistVM(workingtasks, sortOrder);
-            return View("ListTask2", viewmodel);
+            //var viewmodel = new TasklistVM(workingtasks, sortOrder);
+            return View("ListTask2");
         }
+
+        public PartialViewResult GetTasks(string da = "收集箱", string sortOrder = "priority")
+        {
+            var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
+
+            var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
+            var viewmodel = new TasklistVM(workingtasks, sortOrder);
+
+            return PartialView("_ListTasksPartialPage", viewmodel);
+        }
+
 
         /// <summary>
         /// 显示已经完成的任务列表
