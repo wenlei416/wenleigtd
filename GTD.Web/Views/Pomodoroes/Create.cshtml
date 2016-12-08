@@ -3,9 +3,10 @@
 @{
     ViewBag.Title = "Create";
 }
+@*<link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">*@
+@Styles.Render("~/Content/datetimepicker")
 
 <h2>Create</h2>
-
 
 @using (Html.BeginForm())
 {
@@ -73,9 +74,15 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.min.css">
-    <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
-    <script src="~/Scripts/moment.js"></script>
+
+
+    @*<script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>*@
+    @Scripts.Render("~/bundles/datetimepicker")
+
+    @*<script src="~/Scripts/moment.js"></script>*@
+    @Scripts.Render("~/bundles/moment")
+
+
     <script>
         $(document)
             .ready(function () {
