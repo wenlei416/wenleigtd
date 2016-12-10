@@ -20,10 +20,6 @@
             //应该是用这个extend参数中的几个函数，替代了原来autocomplete的几个函数
             this.element.autocomplete($.extend({
                 search: function () {
-                    /**
-                     * @description only make a request and suggest items if acTrigger.triggered is true
-                     */
-                    //http://www.w3school.com.cn/jquery/data_jquery_data.asp
                     var acTrigger =
                         $(this).data("autocompleteTrigger") || $(this).data("uiAutocompleteTrigger");
                     //console.log(acTrigger);

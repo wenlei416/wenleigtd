@@ -78,16 +78,19 @@ namespace GTD.Controllers
             return View(task);
         }
 
-        //Get: /Task/CreateInLine
+        /// <summary>
+        /// Get: /Task/CreateInLine
+        /// </summary>
+        /// <returns></returns>
         [ChildActionOnly]
         public PartialViewResult CreateInLine()
         {
-            //todo 这里应该是构造2个list，项目和场景，假设项目和场景没有重名
             var projectList = from p in _projectServices.GetAllInprogressProjects() select p.ProjectName;
             var contextList = from c in _contextServices.GetAllContexts() select c.ContextName;
 
-            ViewBag.projects = projectList;
-            ViewBag.contexts = contextList;
+            ViewBag.projects = projectList.ToList();
+
+            ViewBag.contexts = contextList.ToList();
             return PartialView("_CreateTaskInLinePartialPage");
         }
 
