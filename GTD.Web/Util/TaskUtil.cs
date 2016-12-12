@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.WebPages;
+using Castle.Core.Internal;
 using GTD.Models;
 using Microsoft.Ajax.Utilities;
 
@@ -304,6 +305,125 @@ namespace GTD.Util
                     return projectid != null ? DateAttribute.下一步行动 : DateAttribute.收集箱;
                 }
             }
+        }
+
+        /// <summary>
+        /// 在一行文本中找到task的名称、项目名、场景名、其他内容作为描述
+        /// 原则
+        /// task名称间可以有空格
+        /// 项目名称和场景名称中间没有空格
+        /// 假设项目名称和场景名称没有重复的
+        /// 当有多个项目名、场景名时，取第一个
+        /// </summary>
+        /// <param name="taskText"></param>
+        /// <returns>返回值是一个dic，里面是taskHeadlin，projectName，contextName，taskDescription
+        /// </returns>
+        public static Dictionary<string, string> GetTaskInfoFromText(string taskText)
+        {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            var input = taskText.Trim();
+
+            while (!input.IsNullOrEmpty())
+            {
+                var indexOfSpace = input.IndexOf(" ", StringComparison.Ordinal);
+                var indexOfAt = input.IndexOf("@", StringComparison.Ordinal);
+                var indexOfSharp = input.IndexOf("#", StringComparison.Ordinal);
+
+                if (indexOfSharp == 0)
+                {
+                    if (result.ContainsKey("projectName")) continue;
+
+                    string projectName;
+                    if (indexOfSpace > 0)
+                    {
+                        projectName = input.Substring(1, indexOfSpace - 1).Trim();
+                        input = input.Remove(0, indexOfSpace).Trim();
+                    }
+                    else
+                    {
+                        projectName = input;
+                        input = "";
+                    }
+                    result.Add("projectName", projectName);
+                    continue;
+                }
+
+                if (indexOfAt == 0)
+                {
+                    if (result.ContainsKey("contextName")) continue;
+
+                    string contextName;
+                    if (indexOfSpace > 0)
+                    {
+                        contextName = input.Substring(1, indexOfSpace - 1).Trim();
+                        input = input.Remove(0, indexOfSpace).Trim();
+                    }
+                    else
+                    {
+                        contextName = input;
+                        input = "";
+                    }
+
+                    result.Add("contextName", contextName);
+                    continue;
+                }
+                //其他情况以字母开头
+                if (!result.ContainsKey("taskName"))
+                {
+                    string taskName;
+                    if (indexOfAt > 0 || indexOfSharp > 0)
+                    {
+                        if (indexOfSharp < 0)
+                        {
+                            taskName = input.Substring(0, indexOfAt - 1).Trim();
+                            input = input.Remove(0, indexOfAt).Trim();
+                            
+                        }
+                        else if (indexOfAt < 0)
+                        {
+                            taskName = input.Substring(0, indexOfSharp - 1).Trim();
+                            input = input.Remove(0, indexOfSharp).Trim();
+                        }
+                        else
+                        {
+                            taskName =
+                                input.Substring(0, indexOfAt < indexOfSharp ? indexOfAt : indexOfSharp - 1).Trim();
+                            input = input.Remove(0, indexOfAt < indexOfSharp ? indexOfAt : indexOfSharp).Trim();
+                        }
+                    }
+                    else
+                    {
+                        taskName = input;
+                        input = "";
+                    }
+                    result.Add("taskName", taskName);
+                }
+                else
+                {
+                    string taskDescription;
+                    if (indexOfSpace > 0)
+                    {
+                        taskDescription = input.Substring(1, indexOfSpace - 1).Trim();
+                        input = input.Remove(0, indexOfSpace).Trim();
+                    }
+                    else
+                    {
+                        taskDescription = input;
+                        input = "";
+                    }
+                    if (result.ContainsKey("taskDescription"))
+                    {
+
+                        result["taskDescription"] += taskDescription;
+                    }
+                    else
+                    {
+                        result.Add("taskDescription", taskDescription);
+                    }
+                }
+            }
+            return result;
+
         }
     }
 }
