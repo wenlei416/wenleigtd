@@ -1,4 +1,5 @@
-﻿using GTD.Util;
+﻿using System;
+using GTD.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GTD.UT.Util
@@ -38,6 +39,41 @@ namespace GTD.UT.Util
             Assert.AreEqual(_taskName, result["taskName"]);
             Assert.AreEqual(false, result.ContainsKey("taskDescripiton"));
         }
+
+        //t + p + c + d + p + c + d
+        [TestMethod()]
+        public void GetTaskInfoFromText_Scense2()
+        {
+            //准备
+            string input = _taskName +
+                           " " + "#" + _projectName + " " + "@" + _contextName + " " + _taskDescripiton +
+                           " " + "#" + _projectName + " " + "@" + _contextName + " " + _taskDescripiton;
+            //动作
+            var result = TaskUtil.GetTaskInfoFromText(input);
+            //断言
+            Assert.AreEqual(_projectName, result["projectName"]);
+            Assert.AreEqual(_contextName, result["contextName"]);
+            Assert.AreEqual(_taskName, result["taskName"]);
+            Assert.AreEqual(_taskDescripiton+" "+ _taskDescripiton, result["taskDescription"]);
+        }
+
+        //@#前面没空格
+        [TestMethod()]
+        public void GetTaskInfoFromText_Scense3()
+        {
+            //准备
+            string input = _taskName +
+                           "#" + _taskDescripiton + " " + "@" + _contextName + " " + _taskDescripiton +
+                           " " + "#" + _projectName + "@" + _taskDescripiton + " " + _taskDescripiton;
+            //动作
+            var result = TaskUtil.GetTaskInfoFromText(input);
+            //断言
+            Assert.AreEqual(_projectName + "@" + _taskDescripiton, result["projectName"]);
+            Assert.AreEqual(_contextName, result["contextName"]);
+            Assert.AreEqual(_taskName +"#" + _taskDescripiton, result["taskName"]);
+            Assert.AreEqual(_taskDescripiton + " " + _taskDescripiton, result["taskDescription"]);
+        }
+
         //p + t + c + d
         //p + c 
         //p + t 
@@ -55,8 +91,6 @@ namespace GTD.UT.Util
         //t + p + d
         //t
 
-
-
         //c + p + t
         //c + t + p + d
         //c + p 
@@ -64,25 +98,6 @@ namespace GTD.UT.Util
         //c + d 不存在
         //c + d + p + t 不存在
         //c 不存在
-
-
-        //t + p + c + d + p + c + d
-        [TestMethod()]
-        public void GetTaskInfoFromText_Scense2()
-        {
-            //准备
-            string input = _taskName + " #" + _projectName + " " + "@" + _contextName + " " + _taskDescripiton +
-                           " #" + _projectName + " " + "@" + _contextName + _taskDescripiton;
-            //动作
-            var result = TaskUtil.GetTaskInfoFromText(input);
-            //断言
-            Assert.AreEqual(_projectName, result["projectName"]);
-            Assert.AreEqual(_contextName, result["contextName"]);
-            Assert.AreEqual(_taskName, result["taskName"]);
-            Assert.AreEqual(false, result.ContainsKey("taskDescripiton"));
-        }
-
-        //@#前面没空格
 
     }
 }

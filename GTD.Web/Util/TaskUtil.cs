@@ -327,11 +327,18 @@ namespace GTD.Util
             {
                 var indexOfSpace = input.IndexOf(" ", StringComparison.Ordinal);
                 var indexOfAt = input.IndexOf("@", StringComparison.Ordinal);
+                var indexOfAtWithSpace = input.IndexOf(" @", StringComparison.Ordinal);
                 var indexOfSharp = input.IndexOf("#", StringComparison.Ordinal);
+                var indexOfSharpWithSpace = input.IndexOf(" #", StringComparison.Ordinal);
 
                 if (indexOfSharp == 0)
                 {
-                    if (result.ContainsKey("projectName")) continue;
+                    Console.WriteLine(input);
+                    if (result.ContainsKey("projectName"))
+                    {
+                        input = indexOfSpace > 0 ? input.Remove(0, indexOfSpace).Trim() : "";
+                        continue;
+                    }
 
                     string projectName;
                     if (indexOfSpace > 0)
@@ -350,7 +357,12 @@ namespace GTD.Util
 
                 if (indexOfAt == 0)
                 {
-                    if (result.ContainsKey("contextName")) continue;
+                    Console.WriteLine( input);
+                    if (result.ContainsKey("contextName"))
+                    {
+                        input = indexOfSpace > 0 ? input.Remove(0, indexOfSpace).Trim() : "";
+                        continue;
+                    }
 
                     string contextName;
                     if (indexOfSpace > 0)
@@ -368,27 +380,28 @@ namespace GTD.Util
                     continue;
                 }
                 //其他情况以字母开头
+                Console.WriteLine(input);
                 if (!result.ContainsKey("taskName"))
                 {
                     string taskName;
-                    if (indexOfAt > 0 || indexOfSharp > 0)
+                    if (indexOfAtWithSpace > 0 || indexOfSharpWithSpace > 0)
                     {
-                        if (indexOfSharp < 0)
+                        if (indexOfSharpWithSpace < 0)
                         {
-                            taskName = input.Substring(0, indexOfAt - 1).Trim();
-                            input = input.Remove(0, indexOfAt).Trim();
+                            taskName = input.Substring(0, indexOfAtWithSpace).Trim();
+                            input = input.Remove(0, indexOfAtWithSpace).Trim();
                             
                         }
-                        else if (indexOfAt < 0)
+                        else if (indexOfAtWithSpace < 0)
                         {
-                            taskName = input.Substring(0, indexOfSharp - 1).Trim();
-                            input = input.Remove(0, indexOfSharp).Trim();
+                            taskName = input.Substring(0, indexOfSharpWithSpace).Trim();
+                            input = input.Remove(0, indexOfSharpWithSpace).Trim();
                         }
                         else
                         {
                             taskName =
-                                input.Substring(0, indexOfAt < indexOfSharp ? indexOfAt : indexOfSharp - 1).Trim();
-                            input = input.Remove(0, indexOfAt < indexOfSharp ? indexOfAt : indexOfSharp).Trim();
+                                input.Substring(0, indexOfAtWithSpace < indexOfSharpWithSpace ? indexOfAtWithSpace : indexOfSharpWithSpace).Trim();
+                            input = input.Remove(0, indexOfAtWithSpace < indexOfSharpWithSpace ? indexOfAtWithSpace : indexOfSharpWithSpace).Trim();
                         }
                     }
                     else
@@ -401,10 +414,25 @@ namespace GTD.Util
                 else
                 {
                     string taskDescription;
-                    if (indexOfSpace > 0)
+                    if (indexOfAtWithSpace > 0 || indexOfSharpWithSpace > 0)
                     {
-                        taskDescription = input.Substring(1, indexOfSpace - 1).Trim();
-                        input = input.Remove(0, indexOfSpace).Trim();
+                        if (indexOfSharpWithSpace < 0)
+                        {
+                            taskDescription = input.Substring(0, indexOfAtWithSpace).Trim();
+                            input = input.Remove(0, indexOfAtWithSpace).Trim();
+
+                        }
+                        else if (indexOfAtWithSpace < 0)
+                        {
+                            taskDescription = input.Substring(0, indexOfSharpWithSpace).Trim();
+                            input = input.Remove(0, indexOfSharpWithSpace).Trim();
+                        }
+                        else
+                        {
+                            taskDescription =
+                                input.Substring(0, indexOfAtWithSpace < indexOfSharpWithSpace ? indexOfAtWithSpace : indexOfSharpWithSpace).Trim();
+                            input = input.Remove(0, indexOfAtWithSpace < indexOfSharpWithSpace ? indexOfAtWithSpace : indexOfSharpWithSpace).Trim();
+                        }
                     }
                     else
                     {
@@ -414,7 +442,7 @@ namespace GTD.Util
                     if (result.ContainsKey("taskDescription"))
                     {
 
-                        result["taskDescription"] += taskDescription;
+                        result["taskDescription"] = result["taskDescription"] + " " + taskDescription;
                     }
                     else
                     {
