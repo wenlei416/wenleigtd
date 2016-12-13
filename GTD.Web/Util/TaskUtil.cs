@@ -348,7 +348,7 @@ namespace GTD.Util
                     }
                     else
                     {
-                        projectName = input;
+                        projectName = input.Substring(1, input.Length - 1); ;
                         input = "";
                     }
                     result.Add("projectName", projectName);
@@ -372,7 +372,7 @@ namespace GTD.Util
                     }
                     else
                     {
-                        contextName = input;
+                        contextName = input.Substring(1, input.Length - 1);
                         input = "";
                     }
 

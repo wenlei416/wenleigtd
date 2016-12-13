@@ -109,6 +109,9 @@ namespace GTD.Controllers
                 SubTasks = new List<SubTask>()
             };
 
+            var dic = TaskUtil.GetTaskInfoFromText(createTaskInLine);
+            //验证dic是否正确，是否可以构造出一个task，默认是今日待办，一天工作量
+
             //复杂的处理逻辑，生成一个task
             _taskServices.AddTask(t);
 
