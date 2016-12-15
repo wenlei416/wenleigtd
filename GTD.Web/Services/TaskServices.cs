@@ -14,11 +14,13 @@ namespace GTD.Services
     {
         private readonly ITaskRepository _taskRepository;
         private readonly IProjectServices _projectServices;
+        private readonly IContextServices _contextServices;
 
-        public TaskServices(ITaskRepository taskRepository, IProjectServices projectServices)
+        public TaskServices(ITaskRepository taskRepository, IProjectServices projectServices, IContextServices contextServices)
         {
             _taskRepository = taskRepository;
             _projectServices = projectServices;
+            _contextServices = contextServices;
         }
 
         //这个是用在单元测试中，是不是间接说明了TaskService不应该依赖其他Service？
@@ -329,6 +331,55 @@ namespace GTD.Services
         private IEnumerable<Task> GetRepeatTasks(string repeatJson)
         {
             return GetInProgressTasks().Where(t => t.RepeatJson == repeatJson);
+        }
+
+
+        //验证通过一行文本创建task，解析出来的文本是否正确
+        public Task ValidateTaskDicIsCorrect(Dictionary<string, string> taskDictionary)
+        {
+            Task result = new Task();
+
+            if (taskDictionary.IsNullOrEmpty()) return null;
+
+            if (taskDictionary.ContainsKey("taskName"))
+            {
+                result.Headline = taskDictionary["taskName"];
+            }
+            else
+            {
+                return null;
+            }
+
+            if (taskDictionary.ContainsKey("taskDescription"))
+            {
+                result.Description = taskDictionary["taskDescription"];
+            }
+
+            if (taskDictionary.ContainsKey("contextName"))
+            {
+                var contextId = _contextServices.IsExistByName(taskDictionary["contextName"]);
+                if (contextId != null)
+                {
+                    result.ContextID = contextId;
+                }
+
+            }
+
+            if (taskDictionary.ContainsKey("projectName"))
+            {
+                var projectId = _projectServices.IsExistByName(taskDictionary["projectName"]);
+                if (projectId != null)
+                {
+                    result.ProjectID = projectId;
+                }
+                else
+                {
+                    var pro = new Project {ProjectName = taskDictionary["projectName"]};
+                    result.ProjectID = _projectServices.CreateProjectReturnId(pro);
+                }
+            }
+
+            return result;
         }
     }
 }

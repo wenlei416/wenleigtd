@@ -357,7 +357,7 @@ namespace GTD.Util
 
                 if (indexOfAt == 0)
                 {
-                    Console.WriteLine( input);
+                    Console.WriteLine(input);
                     if (result.ContainsKey("contextName"))
                     {
                         input = indexOfSpace > 0 ? input.Remove(0, indexOfSpace).Trim() : "";
@@ -390,7 +390,7 @@ namespace GTD.Util
                         {
                             taskName = input.Substring(0, indexOfAtWithSpace).Trim();
                             input = input.Remove(0, indexOfAtWithSpace).Trim();
-                            
+
                         }
                         else if (indexOfAtWithSpace < 0)
                         {
@@ -453,5 +453,7 @@ namespace GTD.Util
             return result;
 
         }
+
+
     }
 }

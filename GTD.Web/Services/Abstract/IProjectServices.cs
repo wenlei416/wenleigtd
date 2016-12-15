@@ -16,6 +16,7 @@ namespace GTD.Services.Abstract
         void DeleteProjectByLogic(Project project);
         IEnumerable<Project> GetAllInprogressProjects();
         int? IsExistByName(string projectName);
+        int CreateProjectReturnId(Project project);
 
     }
 

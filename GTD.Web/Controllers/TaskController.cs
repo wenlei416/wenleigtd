@@ -78,7 +78,9 @@ namespace GTD.Controllers
             return View(task);
         }
 
+        #region 用一个文本框新建task
         /// <summary>
+        /// 用一个文本框新建task
         /// Get: /Task/CreateInLine
         /// </summary>
         /// <returns></returns>
@@ -94,8 +96,14 @@ namespace GTD.Controllers
             return PartialView("_CreateTaskInLinePartialPage");
         }
 
-
-        // POST: /Task/CreateInLine
+        /// <summary>
+        /// 用一个文本框新建task
+        /// POST: /Task/CreateInLine 
+        /// </summary>
+        /// <param name="createTaskInLine"></param>
+        /// <param name="da"></param>
+        /// <param name="sortOrder"></param>
+        /// <returns></returns>
         [HttpPost]
         public PartialViewResult CreateInLine(string createTaskInLine, string da = "收集箱", string sortOrder = "priority")
         {
@@ -109,8 +117,10 @@ namespace GTD.Controllers
                 SubTasks = new List<SubTask>()
             };
 
-            var dic = TaskUtil.GetTaskInfoFromText(createTaskInLine);
-            //验证dic是否正确，是否可以构造出一个task，默认是今日待办，一天工作量
+            //将文本分解出需要的任务信息，包括task.Headlin , task.Description , project.ProjectHeadline , context.ContextName
+            var taskDic = TaskUtil.GetTaskInfoFromText(createTaskInLine);
+            //验证taskDic是否是合格的任务，如果是就返回一个task，不是就返回null
+            //默认是今日待办，一天工作量
 
             //复杂的处理逻辑，生成一个task
             _taskServices.AddTask(t);
@@ -122,6 +132,7 @@ namespace GTD.Controllers
             return PartialView("_ListTasksPartialPage", viewmodel);
         }
 
+        #endregion
 
 
         // GET: /Task/Edit/5

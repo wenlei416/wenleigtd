@@ -48,6 +48,8 @@ namespace GTD.Services.Abstract
 
         void AddTaskFromFilter(Task task);
 
+        Task ValidateTaskDicIsCorrect(Dictionary<string, string> taskDictionary);
+
 
     }
 }
