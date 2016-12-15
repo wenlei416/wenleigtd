@@ -120,11 +120,10 @@ namespace GTD.Controllers
             //将文本分解出需要的任务信息，包括task.Headlin , task.Description , project.ProjectHeadline , context.ContextName
             var taskDic = TaskUtil.GetTaskInfoFromText(createTaskInLine);
             //验证taskDic是否是合格的任务，如果是就返回一个task，不是就返回null
-            //默认是今日待办，一天工作量
-
-            //复杂的处理逻辑，生成一个task
-            _taskServices.AddTask(t);
-
+            if (_taskServices.ValidateTaskDicIsCorrect(taskDic) != null)
+            {
+                _taskServices.AddTask(_taskServices.ValidateTaskDicIsCorrect(taskDic));
+            }
             var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
             var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
             var viewmodel = new TasklistVM(workingtasks, sortOrder);

@@ -31,6 +31,11 @@ namespace GTD.Services
         //    _projectServices = new ProjectServices();
         //}
 
+        /// <summary>
+        /// 根据现有信息，判断task的真实dateattribute
+        /// </summary>
+        /// <param name="dateAttribute"></param>
+        /// <returns></returns>
         public IEnumerable<Task> GetTasksWithRealDa(DateAttribute dateAttribute)
         {
             IEnumerable<Task> tasks;
@@ -196,13 +201,19 @@ namespace GTD.Services
             }
         }
 
-        //获取已经完成的任务，不包括被删除的
+        /// <summary>
+        /// 获取已经完成的任务，不包括被删除的
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Task> GetCompletedTasks()
         {
             return _taskRepository.GetAll().Include(t => t.Pro).Where(t => t.IsComplete && t.IsDeleted == false);
         }
 
-        //获取正在处理中的任务（没有完成也没有被删除的）
+        /// <summary>
+        /// 获取正在处理中的任务（没有完成也没有被删除的）
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Task> GetInProgressTasks()
         {
             return _taskRepository.GetAll().Include(t => t.Pro).Where(t => t.IsComplete == false && t.IsDeleted == false);
@@ -281,10 +292,10 @@ namespace GTD.Services
 
         /// <summary>
         /// 将批量输入的文本，拆分成多个task
+        /// </summary>
         /// 业务规则
         /// 每行一个task
         /// #引导项目，如果项目不存在，不新增。
-        /// </summary>
         /// <param name="taskText"></param>
         /// <returns></returns>
         public IEnumerable<Task> SplitTextToTasks(string taskText)
@@ -334,10 +345,23 @@ namespace GTD.Services
         }
 
 
-        //验证通过一行文本创建task，解析出来的文本是否正确
+        /// <summary>
+        /// 验证通过一行文本创建task，解析出来的文本是否正确，正确就返回一个task，错误返回null
+        /// </summary>
+        /// 正确与否的条件就是是否有headline，有headline就是正确的，不然就是错误的
+        /// 项目如果没有就新建，context如果没有就忽略
+        /// <param name="taskDictionary"></param>
+        /// <returns></returns>
         public Task ValidateTaskDicIsCorrect(Dictionary<string, string> taskDictionary)
         {
-            Task result = new Task();
+            Task result = new Task()
+            {
+                IsComplete = false,
+                IsDeleted = false,
+                StartDateTime = DateTime.Today,
+                CloseDateTime = DateTime.Today,
+                Priority = Priority.中
+            };
 
             if (taskDictionary.IsNullOrEmpty()) return null;
 
@@ -362,7 +386,6 @@ namespace GTD.Services
                 {
                     result.ContextID = contextId;
                 }
-
             }
 
             if (taskDictionary.ContainsKey("projectName"))

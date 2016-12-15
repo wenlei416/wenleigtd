@@ -296,7 +296,6 @@
     <Compile Include="ViewModels\TaskWeekly.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\log.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\listtask.css" />
     <Content Include="Content\themes\base\accordion.css" />
@@ -459,6 +458,7 @@
     <Content Include="Views\Task\_ListTasksPartialPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="fonts\" />
   </ItemGroup>
   <ItemGroup>
