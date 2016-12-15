@@ -1,0 +1,9 @@
+ERROR 2016-11-20 14:44:31,257 24342ms LogHelper              WriteLog           - abc
+INFO  2016-11-20 14:49:19,608 18747ms LogHelper              WriteLog           - GTD.Models.Task
+INFO  2016-11-20 15:07:02,603 LogHelper              WriteLog           - GTD.Models.Task
+INFO  2016-11-20 15:08:45,193 LogHelper        WriteLog   - GTD.Models.Task
+INFO  2016-11-22 15:53:52,385 LogHelper        WriteLog   - 测试第一个重复任务
+INFO  2016-11-22 15:56:42,587 LogHelper        WriteLog   - 创建第一个循环任务
+INFO  2016-11-22 15:59:49,555 LogHelper        WriteLog   - 第一个重复任务
+INFO  2016-11-22 17:59:02,605 LogHelper        WriteLog   - 第二次测试重复任务
+INFO  2016-11-22 18:06:40,304 LogHelper        WriteLog   - 第二次重复任务

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GTD.Models
 {
+    [Serializable]
     public class Goal
     {
         public int GoalId { get; set; }

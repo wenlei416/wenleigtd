@@ -1,0 +1,478 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>重复任务</title>
+    <link rel="stylesheet" type="text/css" href="/Content/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/datetimepicker/jquery.datetimepicker.min.css">
+    <style type="text/css">
+        .popup {
+            background-color: rgb(255, 255, 255);
+            border-color: rgb(136, 136, 136) rgb(136, 136, 136) rgb(136, 136, 136) rgb(136, 136, 136);
+            box-shadow: rgb(0, 0, 0) 0 1px 5px 0;
+            box-shadow: rgba(0, 0, 0, 0.4) 0 1px 5px 0;
+            color: rgb(136, 136, 136);
+            display: block;
+            margin: 0 0 5px 0;
+            padding: 16px 16px 8px 16px;
+            width: 530px;
+            height: 172px;
+            top: 40px;
+            left: 20px;
+            position: fixed;
+        }
+
+        .row {
+            vertical-align: middle;
+        }
+
+        .col-md-2 {
+            text-align: right;
+        }
+
+        .col-md-2, .col-md-5, .col-md-10 {
+            vertical-align: middle;
+            height: 38px;
+            line-height: 38px;
+        }
+
+        .time-box, .task-freq {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .selector, .task-freq-cyc {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .task-repeat-time-box, .radios {
+            padding-left: 0;
+        }
+
+        .text-box-left {
+            padding-right: 0;
+        }
+
+        .text-box-right {
+            padding-left: 4px;
+        }
+
+        #repeat_monthly_day, #repeat_monthly_date {
+            text-align: left;
+        }
+
+        .radios {
+            text-align: left;
+            padding-right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="meta-wrap container">
+        <div class="meta-inner row">
+            <div class="col-md-2 ">重复</div>
+            <div class="col-md-5">
+                <input class="form-control meta-input" value="" readonly="" type="text">
+                <input class="form-control json-input" value="" readonly="" type="text"><!--style="display: none;"-->
+            </div>
+            <div class="clear-this btn  btn-default" style="display: none">清除</div>
+        </div>
+        <div class="popup" style="display: none">
+            <div class="repeat-tab row">
+                <div class="col-md-2">模式：</div>
+                <div class="selector col-md-9">
+                    <select class="cyctype form-control">
+                        <option data-id="repeat_daily" value="daily">按天</option>
+                        <option data-id="repeat_weekly" value="weekly">按周</option>
+                        <option data-id="repeat_monthly" value="monthly">按月</option>
+                        <option data-id="repeat_yearly" value="yearly">按年</option>
+                    </select>
+                </div>
+            </div>
+            <div id="repeat_daily" class="clearfix repeat-section " style="display: block">
+                <div class="row">
+                    <div class="col-md-2">频率：</div>
+                    <div class="task-freq col-md-10">
+                        <div class="row">
+                            <div class="col-md-1 text-box-left">每</div>
+                            <div class="col-md-2 task-freq-cyc"><input id="task_tag_repeat_daily" class="form-control repeat-cycle" value="1"></div>
+                            <div class="col-md-3 text-box-right">
+                                天重复一次
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">区间：</div>
+                    <div class="task-repeat-time-box col-md-10">
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_start" id="repeat_time_start_daily" class="form-control  repeat_start_at datepicker" placeholder="开始时间">
+                        </div>
+                        <div class="col-md-1">到</div>
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_end" id="repeat_time_end_daily" class="repeat_end_at form-control datepicker" placeholder="结束时间">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="repeat_weekly" class="clearfix repeat-section" style="display: none">
+                <div class="row">
+                    <div class="col-md-2">频率：</div>
+                    <div class="task-freq col-md-10">
+                        <div class="row">
+                            <div class="col-md-1 text-box">每</div>
+                            <div class="col-md-2 task-freq-cyc"><input id="task_tag_repeat_weekly" class="form-control repeat-cycle" value="1"></div>
+                            <div class="col-md-3 text-box">
+                                周重复一次
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class=" col-md-2">重复日：</div>
+                    <div class="selector col-md-9">
+                        <select class="repeat-weekly-o form-control">
+                            <option value="1">周一</option>
+                            <option value="2">周二</option>
+                            <option value="3">周三</option>
+                            <option value="4">周四</option>
+                            <option value="5">周五</option>
+                            <option value="6">周六</option>
+                            <option value="0">周日</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">区间：</div>
+                    <div class="task-repeat-time-box col-md-10">
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_start" id="repeat_time_start_weekly" class="form-control  repeat_start_at datepicker" placeholder="开始时间">
+                        </div>
+                        <div class="col-md-1">到</div>
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_end" id="repeat_time_end_weekly" class="repeat_end_at form-control datepicker" placeholder="结束时间">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="repeat_monthly" class="clearfix repeat-section" style="display: none">
+                <div class="row">
+                    <div class="col-md-2">频率：</div>
+                    <div class="task-freq col-md-10">
+                        <div class="row">
+                            <div class="col-md-1 text-box">每</div>
+                            <div class="col-md-2 task-freq-cyc">
+                                <input id="task_tag_repeat_monthly" value="1" class=" repeat-cycle form-control">
+                            </div>
+                            <div class="col-md-4 text-box">个月重复一次</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">重复日：</div>
+                    <div class="repeat-on col-md-10">
+                        <div class="row">
+                            <div class="col-md-2 radios">
+                                <input type="radio" checked="" name="repeat_monthly_type" value="repeat_monthly_day">每逢
+                            </div>
+                            <div class="selector col-md-2">
+                                <select class="repeat-monthly-type  form-control">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                </select>
+                            </div>
+                            <div class=" col-md-1">号</div>
+                            <div class="col-md-1 radios">
+                                <input type="radio" name="repeat_monthly_type" value="repeat_monthly_date">
+                            </div>
+                            <div class="selector  col-md-3">
+                                <select class="repeat-monthly-o form-control">
+                                    <option value="1">第一个</option>
+                                    <option value="2">第二个</option>
+                                    <option value="3">第三个</option>
+                                    <option value="4">第四个</option>
+                                    <option value="5">最后一个</option>
+                                </select>
+                            </div>
+                            <div class="selector col-md-2">
+                                <select class="repeat-monthly-w  form-control">
+                                    <option value="1">周一</option>
+                                    <option value="2">周二</option>
+                                    <option value="3">周三</option>
+                                    <option value="4">周四</option>
+                                    <option value="5">周五</option>
+                                    <option value="6">周六</option>
+                                    <option value="0">周日</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">区间：</div>
+                    <div class="task-repeat-time-box col-md-10">
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_start" id="repeat_time_start_monthly" class="form-control  repeat_start_at datepicker" placeholder="开始时间">
+                        </div>
+                        <div class="col-md-1">到</div>
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_end" id="repeat_time_end_monthly" class="repeat_end_at form-control datepicker" placeholder="结束时间">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="repeat_yearly" class="clearfix repeat-section" style="display: none">
+                <div class="row">
+                    <div class="col-md-2">频率：</div>
+                    <div class="task-freq col-md-10">
+                        <div class="row">
+                            <div class="col-md-1 text-box">每</div>
+                            <div class="col-md-2 task-freq-cyc"><input id="task_tag_repeat_yearly" class="form-control repeat-cycle" value="1"></div>
+                            <div class="col-md-3 text-box">
+                                年重复一次
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">区间：</div>
+                    <div class="task-repeat-time-box col-md-10">
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_start" id="repeat_time_start_yearly" class="form-control  repeat_start_at datepicker" placeholder="开始时间">
+                        </div>
+                        <div class="col-md-1">到</div>
+                        <div class="col-md-4 time-box">
+                            <input type="text" name="repeat_time_end" id="repeat_time_end_yearly" class="repeat_end_at form-control datepicker" placeholder="结束时间">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="repeat-ok btn  btn-default" type="button">确定</div>
+        </div>
+    </div>
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/datetimepicker/jquery.datetimepicker.full.js"></script>
+    <script src="/Scripts/moment.js"></script>
+
+    <script>
+        $(document)
+            .ready(function () {
+                var showpopup = function (val) {
+                    $('#repeat_weekly').hide();
+                    $('#repeat_daily').hide();
+                    $('#repeat_monthly').hide();
+                    $('#repeat_yearly').hide();
+                    switch (val) {
+                        case "daily":
+                            $('.popup').height(148);
+                            $('#repeat_daily').show().css('display', 'block');//每次都需要改位置和大小，以适应不同的选项
+                            break;
+                        case "weekly":
+                            $('.popup').height(186);
+                            $('#repeat_weekly').show().css('display', 'block');
+                            break;
+                        case "monthly":
+                            $('.popup').height(186);
+                            $('#repeat_monthly').show().css('display', 'block');
+                            break;
+                        case "yearly":
+                            $('.popup').height(148);
+                            $('#repeat_yearly').show().css('display', 'block');
+                            break;
+                        default:
+                    };
+
+                };
+
+                var dayinyear = function (date) {
+                    var diff;
+                    if (moment(date).format('m') === 2 && moment(date).format('D') === 29) {
+                        diff = 366;
+                    } else {
+                        var end = moment('2001/' + moment(date).format('M') + '/' + moment(date).format('D'));
+                        var start = moment('2001/1/1');
+                        diff = end.diff(start, 'days') + 1;
+
+                    }
+                    return diff;
+                };
+
+                // ReSharper disable NativeTypePrototypeExtending
+                String.prototype.format = String.prototype.f = function () {
+                    // ReSharper restore NativeTypePrototypeExtending
+                    var s = this,
+                        i = arguments.length;
+
+                    while (i--) {
+                        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+                    }
+                    return s;
+                };
+
+                var numinmonth = function (repeattype, t, o, w) {
+                    var result;
+                    switch (repeattype) {
+                        case 'repeat_monthly_day':
+                            result = t;
+                            break;
+                        case 'repeat_monthly_date':
+                            result = o * 10 + w;
+                            break;
+                        default:
+                    }
+                    return result;
+                }
+
+                var textinmonth = function (repeattype, t, o, w) {
+                    var result;
+                    switch (repeattype) {
+                        case 'repeat_monthly_day':
+                            result = t;
+                            break;
+                        case 'repeat_monthly_date':
+                            result = '第' + o + '周星期' + w;
+                            break;
+                        default:
+                    }
+                    return result;
+                }
+
+                //{'cyear':'0','cmonth':'0','cweek':'0','cday':'1','startday':'2016-10-1','endday':'2016-10-5','cyc':'100'}
+                var createresult = function () {
+                    var cyctype = $('.cyctype').children('option:selected').val();
+                    var result = new Array();
+                    switch (cyctype) {
+                        case 'daily':
+                            result[1] = "每{0}天重复".f($("#task_tag_repeat_" + cyctype).val());
+                            result[2] = {
+                                'cday': $("#task_tag_repeat_daily").val(),
+                                'cweek': 0,
+                                'cmonth': 0,
+                                'cyear': 0,
+                                'startday': $("#repeat_time_start_" + cyctype).val(),
+                                'endday': $("#repeat_time_end_" + cyctype).val(),
+                                'cyc': $("#task_tag_repeat_" + cyctype).val()
+                            };
+                            break;
+                        case 'weekly':
+                            result[1] = "每{0}周的{1}重复".f($("#task_tag_repeat_" + cyctype).val(), $('.repeat-weekly-o').children('option:selected').text());
+                            result[2] = {
+                                'cday': 0,
+                                'cweek': $("#task_tag_repeat_" + cyctype).val(),
+                                'cmonth': 0,
+                                'cyear': 0,
+                                'startday': $("#repeat_time_start_" + cyctype).val(),
+                                'endday': $("#repeat_time_end_" + cyctype).val(),
+                                'cyc': $('.repeat-weekly-o').children('option:selected').val()
+                            };
+                            break;
+
+                        case 'monthly':
+                            result[1] = "每{0}个月的{1}重复".f($("#task_tag_repeat_" + cyctype).val(),
+                                textinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
+                                    $('.repeat-monthly-type').children('option:selected').val(),
+                                    $('.repeat-monthly-o').children('option:selected').val(),
+                                    $('.repeat-monthly-w').children('option:selected').val()));
+                            result[2] = {
+                                'cday': 0,
+                                'cweek': 0,
+                                'cmonth': $("#task_tag_repeat_" + cyctype).val(),
+                                'cyear': 0,
+                                'startday': $("#repeat_time_start_" + cyctype).val(),
+                                'endday': $("#repeat_time_end_" + cyctype).val(),
+                                'cyc': numinmonth($('input:radio[name="repeat_monthly_type"]:checked').val(),
+                                    $('.repeat-monthly-type').children('option:selected').val(),
+                                    $('.repeat-monthly-o').children('option:selected').val(),
+                                    $('.repeat-monthly-w').children('option:selected').val())
+                            };
+                            break;
+
+                        case 'yearly':
+                            result[1] = "每{0}年{1}重复".f($("#task_tag_repeat_" + cyctype).val(), moment($("#repeat_time_start_" + cyctype).val()).format('M月D日'));
+                            result[2] = {
+                                'cday': 0,
+                                'cweek': 0,
+                                'cmonth': 0,
+                                'cyear': $("#task_tag_repeat_" + cyctype).val(),
+                                'startday': $("#repeat_time_start_" + cyctype).val(),
+                                'endday': $("#repeat_time_end_" + cyctype).val(),
+                                'cyc': dayinyear(moment($("#repeat_time_start_" + cyctype).val()))
+                            };
+                            break;
+
+                        default:
+                    }
+                    return result;
+                }
+
+                $('.meta-input')
+                    .click(function () {
+                        var top = $('.meta-input').offset().top + 35;
+                        if (top > $(window).height() - 186)
+                            top = $('.meta-input').offset().top - 185;
+                        $('.popup')
+                            .toggle()
+                            .css("left", $('.meta-input').offset().left + 3)
+                            .css("top",top );
+                        console.log("window" + $(window).height());
+
+                        //console.log("top:"+$('.popup').offset().top);
+                        //console.log("left:" + $('.popup').offset().left);
+                        //console.log("top:" + $('.popup').position().top);
+                        //console.log("left:" + $('.popup').position().left);
+                    });
+                $('.repeat-ok')
+                    .click(function () {
+                        $('.popup').toggle();
+                        $('.meta-input').val(createresult()[1]);//根据内容拼展示文字，没选完整的直接清除
+                        $('.json-input').val(JSON.stringify(createresult()[2]));//根据内容拼json字符串，并用这个字符串来绑定，没选完整的直接清除
+                        $('.clear-this').toggle();//这里还需要清除所有输入的内容
+                    });
+                $('.clear-this')
+                    .click(function () {
+                        $('.meta-input').val("");
+                        $('.json-input').val("");
+                        $('.clear-this').toggle();
+                    });
+                $('.cyctype')
+                    .change(function () {
+                        showpopup($(this).children('option:selected').val());
+                    });
+
+                $.datetimepicker.setLocale('zh');
+                $('.datepicker').datetimepicker({ timepicker: false, format: 'Y/m/d' });
+            });
+
+    </script>
+</body>
+</html>

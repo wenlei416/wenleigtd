@@ -14,5 +14,6 @@ namespace GTD.Services.Abstract
          IEnumerable<Context> GetAllContexts();
          void UpdateContext(Context context);
          void DeleteContext(Context context);
+        int? IsExistByName(string contextName);
     }
 }

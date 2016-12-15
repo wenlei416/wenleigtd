@@ -40,5 +40,11 @@ namespace GTD.Services
             _contextRepository.Delete(context);
 
         }
+
+        public int? IsExistByName(string contextName)
+        {
+            var con = _contextRepository.Get(c => c.ContextName == contextName);
+            return con == null ? (int?)null : _contextRepository.Get(c => c.ContextName == contextName).ContextId;
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace GTD.Controllers
         {
             //db.Pomodoroes.Include(p => p.Task);
             //var pomodoroes = _pomodoroRepository.GetAll().Include(p => p.Task);
-            var pomodoroes = _pomodoroServices.GetAllPomodoroes();
+            var pomodoroes = _pomodoroServices.GetAllPomodoroes().OrderByDescending(p=>p.StarDateTime);
             return View(pomodoroes.ToList());
         }
 

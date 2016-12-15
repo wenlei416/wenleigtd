@@ -52,23 +52,31 @@ namespace GTD.Controllers
             return View();
         }
 
-        //
         // POST: /SubTask/Create
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(SubTask subtask)
         {
             if (ModelState.IsValid)
             {
-                //db.SubTasks.Add(subtask);
-                //db.SaveChanges();
                 _subTaskServices.CreateSubTask(subtask);
                 return RedirectToAction("Index");
             }
 
             ViewBag.TaskId = new SelectList(_taskServices.GetAll(), "TaskId", "Headline", subtask.TaskId);
             return View(subtask);
+        }
+
+        // POST: /SubTask/CreateInLine
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateInLine(SubTask subtask)
+        {
+            if (ModelState.IsValid)
+            {
+                _subTaskServices.CreateSubTask(subtask);
+            }
+            return RedirectToAction("Details", "Task", new { id = subtask.TaskId });
         }
 
         //

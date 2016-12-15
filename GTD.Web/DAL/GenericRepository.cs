@@ -9,7 +9,7 @@ namespace GTD.DAL
 {
     public class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private GTDContext Context { get; set; }
+        protected GTDContext Context { get; set; }
 
         public GenericRepository(): this(new GTDContext())
         {

@@ -1,0 +1,35 @@
+﻿@using (Ajax.BeginForm("CreateInLine", "Task", new AjaxOptions()
+{
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "listtasks"
+}))
+{
+    //这里在view里面掺杂了很多逻辑，似乎不太好
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["sortOrder"] != null)
+    {
+        string sortOrder = HttpContext.Current.Request.RequestContext.RouteData.Values["sortOrder"].ToString();
+        @Html.HiddenFor(x => sortOrder)
+
+    }
+    string createTaskInLine = "";
+    string da = HttpContext.Current.Request.RequestContext.RouteData.Values["da"].ToString();
+    <div>
+        @Html.EditorFor(x => createTaskInLine, new { @class = "form-control" })
+        @Html.HiddenFor(x => da)
+        <input class="btn btn-default" style="width: 50px" type="submit" value="新增" />
+    </div>
+}
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryui")
+
+<script src="~/Scripts/autocompleteTrigger/jquery-ui.autocompleteTrigger3.js"></script>
+<script>
+
+    $('#createTaskInLine')
+        .autocompleteTrigger({
+            triggerStart: " @@",
+            triggerEnd: ' ',
+            sourceA: @Html.Raw(Json.Encode(ViewBag.projects)),
+            sourceB: @Html.Raw(Json.Encode(ViewBag.contexts)),
+        });
+</script>

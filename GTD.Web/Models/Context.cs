@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace GTD.Models
 {
+    [Serializable]
     public class Context
     {
         [HiddenInput(DisplayValue = false)]

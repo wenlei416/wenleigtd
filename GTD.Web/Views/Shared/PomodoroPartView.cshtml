@@ -9,7 +9,7 @@
 <button id="startWorkButton" class="btn btn-primary">开始工作</button>
 <button id="startRestButton" class="btn btn-warning">开始休息</button>
 <button id="stopButton" class="btn btn-danger">停止</button>
-<table class="table" style="width: 566px;">
+<table class="table" style="width: 566px;" id="pomodorotable">
     <tr>
         @*<th>
                 @Html.DisplayNameFor(model => model.Task.Headline)
@@ -46,14 +46,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.EnDateTime)
             </td>
-
-
         </tr>
     }
-
 </table>
 
-<script src="~/Scripts/layer/layer.js" type="text/javascript"></script>
+@Scripts.Render("~/bundles/layer")
+@*<script src="~/Scripts/layer/layer.js" type="text/javascript"></script>*@
+
 <script>
     $(document).ready(function () {
         var isTiming = false,
@@ -82,7 +81,6 @@
 
                     clearTimeout(timer);
                     //展示右下角的提示框
-                    //todo 改成chrome的提示
                     layer.open({
                         type: 1,
                         title: false,
@@ -111,7 +109,18 @@
                         dataType: 'text',
                         success: function (data) {
                             console.log(data);
-                            //这里需要把新增的pomodoro写到页面上
+                            var working = isWorking ? "工作" : "休息";
+                            var completed = isCompleted ? "是" : "否";
+                            var tr = "<tr><td>" +
+                                working +
+                                "</td><td>" +
+                                completed +
+                                "</td><td>" +
+                                timeStamp2String(startTime).slice(0,-3) +
+                                "</td><td>" +
+                                timeStamp2String(stopTime).slice(0,-3) +
+                                "</td></tr>";
+                            $("#pomodorotable").append(tr);
                         },
                         error: function () {
                             console.log("lost");
@@ -186,8 +195,19 @@
                     async: true,
                     dataType: 'text',
                     success: function (data) {
+                        var working = isWorking ? "工作" : "休息";
+                        var completed = isCompleted ? "是" : "否";
+                        var tr = "<tr><td>" +
+                            working +
+                            "</td><td>" +
+                            completed +
+                            "</td><td>" +
+                            timeStamp2String(startTime).slice(0,-3) +
+                            "</td><td>" +
+                            timeStamp2String(stopTime).slice(0,-3) +
+                            "</td></tr>";
+                        $("#pomodorotable").append(tr);
                         console.log(data);
-                        //这里需要把新增的pomodoro写到页面上
                     },
                     error: function () {
                         console.log("lost");

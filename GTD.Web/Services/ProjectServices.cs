@@ -65,5 +65,10 @@ namespace GTD.Services
             var pro = _projectrepository.Get(p => p.ProjectName == projectName);
             return pro == null ? (int?) null : _projectrepository.Get(p => p.ProjectName == projectName).ProjectId;
         }
+
+        public int CreateProjectReturnId(Project project)
+        {
+            return _projectrepository.CreateWithId(project);
+        }
     }
 }

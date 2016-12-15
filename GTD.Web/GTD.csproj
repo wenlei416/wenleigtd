@@ -80,6 +80,14 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="LinFu.DynamicProxy, Version=1.0.4.16035, Culture=neutral, PublicKeyToken=62a6874124340d6e, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinFu.DynamicProxy.OfficialRelease.1.0.5\lib\net\LinFu.DynamicProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm">
       <HintPath>..\packages\Microsoft.Data.Edm.5.6.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
@@ -95,8 +103,8 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.OAuth.3.2.3\lib\net45\Microsoft.Web.WebPages.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq, Version=4.5.23.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.5.23\lib\net45\Moq.dll</HintPath>
+    <Reference Include="Moq, Version=4.5.28.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.5.28\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -104,6 +112,14 @@
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Interception, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Interception.3.2.0.0\lib\net45-full\Ninject.Extensions.Interception.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Interception.LinFu, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Interception.Linfu.3.2.0.0\lib\net45-full\Ninject.Extensions.Interception.LinFu.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ninject.Web.Common, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
@@ -217,11 +233,16 @@
     <Compile Include="DAL\ProjectRepository.cs" />
     <Compile Include="DAL\SubTaskRepository.cs" />
     <Compile Include="DAL\TaskRepository.cs" />
+    <Compile Include="Filters\RepeatTaskFilterAttribute.cs" />
     <Compile Include="Filters\TaskCount.cs" />
     <Compile Include="Infrastructure\NinjectControllerFactory.cs" />
     <Compile Include="Migrations\201611041430552_addPomodoro.cs" />
     <Compile Include="Migrations\201611041430552_addPomodoro.Designer.cs">
       <DependentUpon>201611041430552_addPomodoro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611200732321_addTaskPropertyRepeatJson.cs" />
+    <Compile Include="Migrations\201611200732321_addTaskPropertyRepeatJson.Designer.cs">
+      <DependentUpon>201611200732321_addTaskPropertyRepeatJson.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Pomodoro.cs" />
@@ -239,8 +260,14 @@
     <Compile Include="Services\ProjectServices.cs" />
     <Compile Include="Services\SubTaskServices.cs" />
     <Compile Include="Services\TaskServices.cs" />
+    <Compile Include="Util\DateGreaterThanAttribute.cs" />
+    <Compile Include="Util\LogAttribute.cs" />
+    <Compile Include="Util\LogHelper.cs" />
+    <Compile Include="Util\LogInterceptor.cs" />
     <Compile Include="Util\OutlookAppointment.cs" />
     <Compile Include="Util\DropDownListHelp.cs" />
+    <Compile Include="Util\RecurringDate.cs" />
+    <Compile Include="Util\SessionHelper.cs" />
     <Compile Include="Util\TaskUtil.cs" />
     <Compile Include="ViewModels\ProjectVM\ProjectDeatilVM.cs" />
     <Compile Include="ViewModels\TaskDetailVM.cs" />
@@ -270,6 +297,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\listtask.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -311,12 +339,25 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="CreateTaskInLine.html" />
     <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <None Include="Properties\PublishProfiles\iis.pubxml" />
     <None Include="Properties\PublishProfiles\本地.pubxml" />
     <None Include="Properties\PublishProfiles\本地iis.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\autocompleteTrigger\jquery-ui.autocompleteTrigger3.js" />
+    <Content Include="Scripts\autocompleteTrigger\jquery-ui.autocompleteTrigger.js" />
+    <Content Include="Scripts\autocompleteTrigger\jquery.caret.js" />
+    <Content Include="Scripts\CustomValidation.js" />
+    <Content Include="Scripts\datetimepicker\jquery.datetimepicker.full.js" />
+    <Content Include="Scripts\datetimepicker\jquery.datetimepicker.full.min.js" />
+    <Content Include="Scripts\datetimepicker\jquery.datetimepicker.min.css" />
+    <Content Include="Scripts\datetimepicker\jquery.datetimepicker.min.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
@@ -342,6 +383,11 @@
     <Content Include="Scripts\layer\skin\default\loading-2.gif" />
     <Content Include="Scripts\layer\skin\layer.css" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\moment-with-locales.js" />
+    <Content Include="Scripts\moment-with-locales.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="rep.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -410,9 +456,10 @@
     <Content Include="Views\Pomodoroes\Edit.cshtml" />
     <Content Include="Views\Pomodoroes\Index.cshtml" />
     <Content Include="Views\Shared\PomodoroPartView.cshtml" />
-    <None Include="Web.Home-Dev.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
+    <Content Include="Views\Shared\_RepeatTaskPartialPage.cshtml" />
+    <Content Include="Views\Shared\_CreateTaskInLinePartialPage.cshtml" />
+    <Content Include="Views\Shared\_CreateSubTaskInLinePartialPage.cshtml" />
+    <Content Include="Views\Task\_ListTasksPartialPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -445,6 +492,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201611041430552_addPomodoro.resx">
       <DependentUpon>201611041430552_addPomodoro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611200732321_addTaskPropertyRepeatJson.resx">
+      <DependentUpon>201611200732321_addTaskPropertyRepeatJson.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

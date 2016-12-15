@@ -1,15 +1,14 @@
-﻿using System;
+﻿using GTD.Models;
+using GTD.Services.Abstract;
+using GTD.Util;
+using GTD.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.WebPages;
-using GTD.DAL;
-using GTD.DAL.Abstract;
-using GTD.Models;
-using GTD.Services;
-using GTD.Services.Abstract;
-using GTD.Util;
-using GTD.ViewModels;
+using GTD.Filters;
 
 namespace GTD.Controllers
 {
@@ -21,23 +20,13 @@ namespace GTD.Controllers
 
         public TaskController(ITaskServices taskServices, IProjectServices projectServices, IContextServices contextServices)
         {
-            this._taskServices = taskServices;
+            _taskServices = taskServices;
             _projectServices = projectServices;
             _contextServices = contextServices;
-
-
-            //很多页面都需要这些dropdownlist，与其在各个页面分别构造，干脆在整个构造函数中一次搞定
-            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices);
-            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName");
-
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
-            ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
-            ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(taskServices);
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(taskServices);
         }
 
         // GET: /Task/
+        //[RepeatTaskFilter]
         public ActionResult Index()
         {
             return RedirectToAction("ListTask", new { da = DateAttribute.今日待办.ToString() });
@@ -59,14 +48,15 @@ namespace GTD.Controllers
                 InprogressSubTasks = task.SubTasks.Where(s => s.IsComplete == false).OrderByDescending(s => s.SubTaskId),
                 NextTask = _taskServices.GetNextTaskByTaskId(id),
                 PreviousTask = _taskServices.GetPreviousTaskByTaskId(id)
-                
             };
             return View(viewmodel);
         }
 
         // GET: /Task/Create
-        public ActionResult Create()
+        public ActionResult Create(string da)
         {
+            ViewBag.dataAttr = da;
+            InitView();
             return View();
         }
 
@@ -77,15 +67,62 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (task.StartDateTime != null && task.CloseDateTime == null)
+                {
+                    task.CloseDateTime = task.StartDateTime;
+                }
                 _taskServices.AddTask(task);
-                //task.DateAttribute = SetDateAttribute(task.StartDateTime, task.DateAttribute, task.ProjectID);
-                //_taskRepository.InsertTask(task);
-                //_taskRepository.Save();
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
             }
-
+            InitView(task);
             return View(task);
         }
+
+        #region 用一个文本框新建task
+        /// <summary>
+        /// 用一个文本框新建task
+        /// Get: /Task/CreateInLine
+        /// </summary>
+        /// <returns></returns>
+        [ChildActionOnly]
+        public PartialViewResult CreateInLine()
+        {
+            var projectList = from p in _projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName) select p.ProjectName;
+            var contextList = from c in _contextServices.GetAllContexts() select c.ContextName;
+
+            ViewBag.projects = projectList.ToList();
+
+            ViewBag.contexts = contextList.ToList();
+            return PartialView("_CreateTaskInLinePartialPage");
+        }
+
+        /// <summary>
+        /// 用一个文本框新建task
+        /// POST: /Task/CreateInLine 
+        /// </summary>
+        /// <param name="createTaskInLine"></param>
+        /// <param name="da"></param>
+        /// <param name="sortOrder"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public PartialViewResult CreateInLine(string createTaskInLine, string da = "收集箱", string sortOrder = "priority")
+        {
+            //将文本分解出需要的任务信息，包括task.Headlin , task.Description , project.ProjectHeadline , context.ContextName
+            var taskDic = TaskUtil.GetTaskInfoFromText(createTaskInLine);
+            //验证taskDic是否是合格的任务，如果是就返回一个task，不是就返回null
+            if (_taskServices.ValidateTaskDicIsCorrect(taskDic) != null)
+            {
+                _taskServices.AddTask(_taskServices.ValidateTaskDicIsCorrect(taskDic));
+            }
+            var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
+            var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
+            var viewmodel = new TasklistVM(workingtasks, sortOrder);
+
+            return PartialView("_ListTasksPartialPage", viewmodel);
+        }
+
+        #endregion
+
 
         // GET: /Task/Edit/5
         public ActionResult Edit(int id = 0)
@@ -97,20 +134,13 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
-            //ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects(), "ProjectID", "ProjectName", task.Pro );
-
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
-                task.Context != null ? task.Context.ContextId : new int());
-            ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
-            ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.PreviousTask_TaskId ?? new int());
-
-
+            InitView(task);
+            //todo 日志入侵了业务，需要修改
+            LogHelper.WriteLog($"Get  : TaskId: {task.TaskId,-5} , StartDate: {task.StartDateTime,-20} , CloseDate: {task.CloseDateTime,-20}");
             return View(task);
         }
 
+        //[Log]
         // POST: /Task/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -118,18 +148,14 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                //todo 日志入侵了业务，需要修改
+                LogHelper.WriteLog($"Post : TaskId: {task.TaskId,-5} , StartDate: {task.StartDateTime,-20} , CloseDate: {task.CloseDateTime,-20}");
                 _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
-            }
-            ViewBag.ProjectID = DropDownListHelp.PopulateProjectsDropDownList(_projectServices, task.Pro != null ? task.Pro.ProjectId : new int());
-            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
-                task.Context != null ? task.Context.ContextId : new int());
-            ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority != null ? task.Priority.Value.ToString() : "无");
-            ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute != null ? task.DateAttribute.Value.ToString() : "无");
-            ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
-            ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.PreviousTask_TaskId ?? new int());
 
+            }
+
+            InitView(task);
             return View(task);
         }
 
@@ -157,7 +183,6 @@ namespace GTD.Controllers
             return RedirectToAction("ListTask", new { da = tempda.ToString() });
         }
 
-
         // GET: /Task/Complete/5
         public ActionResult Complete(int id)
         {
@@ -172,6 +197,7 @@ namespace GTD.Controllers
         }
 
         // GET: /Task/ListTask/da/sortOrder
+        [RepeatTaskFilter]
         public ActionResult ListTask(string da = "收集箱", string sortOrder = "priority")
         {
             var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
@@ -180,19 +206,33 @@ namespace GTD.Controllers
             ViewBag.countSJX = 1;
 
             //重新把需要的task选择出来
+            /*
+             * todo 这里面有操作数据库的活动，在每次列表的时候都会执行，效率其实很差，完全没有必要。
+             * 其实每天执行1次即可,如果不放心，每次session过期执行一次即可
+            */
             var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
 
             ViewBag.Title = da + "  （" + workingtasks.Count() + "）";
+            //var viewmodel = new TasklistVM(workingtasks, sortOrder);
+            return View("ListTask2");
+        }
+
+        public PartialViewResult GetTasks(string da = "收集箱", string sortOrder = "priority")
+        {
+            var dateAttribute = (DateAttribute)Enum.Parse(typeof(DateAttribute), da, true);
+
+            var workingtasks = _taskServices.GetTasksWithRealDa(dateAttribute).OrderByDescending(i => i.TaskId).ToList();
             var viewmodel = new TasklistVM(workingtasks, sortOrder);
-            return View("ListTask2", viewmodel);
+
+            return PartialView("_ListTasksPartialPage", viewmodel);
         }
 
 
         /// <summary>
         /// 显示已经完成的任务列表
+        /// Get: /Task/CompletedTask
         /// </summary>
         /// <returns></returns>
-        // Get: /Task/CompletedTask
         public ActionResult CompletedTask()
         {
             var tasks = _taskServices.GetAll().Where(i => i.IsComplete && i.IsDeleted == false).OrderByDescending(i => i.TaskId);
@@ -201,7 +241,11 @@ namespace GTD.Controllers
             return View("CompletedTaskList", viewmodel);
         }
 
-        //Get: /Task/DeletedTask
+        /// <summary>
+        /// 显示已经删除的任务列表
+        /// Get: /Task/DeletedTask
+        /// </summary>
+        /// <returns></returns>
         public ActionResult DeletedTask()
         {
             ViewBag.Title = "已删除任务";
@@ -209,9 +253,9 @@ namespace GTD.Controllers
             return View("DeletedTaskList", tasks.ToList());
         }
 
-        //Get: /Task/ListTaskofWeek
         /// <summary>
-        /// 展示每周待办任务和完成任务，方便写周报
+        /// 显示每周待办任务和完成任务，方便写周报
+        /// Get: /Task/ListTaskofWeek
         /// </summary>
         /// <param name="datestring"></param>
         /// <returns></returns>
@@ -236,17 +280,26 @@ namespace GTD.Controllers
                                       orderby t.CompleteDateTime descending
                                       select t
 
-                //taskRepository.GetTasks().Where(t=>t.IsComplete==true &)
-
+                                      //taskRepository.GetTasks().Where(t=>t.IsComplete==true &)
             };
             return View(viewmodel);
         }
 
+        /// <summary>
+        /// 批量新增页面
+        /// Get: /Task/BatchCreate
+        /// </summary>
+        /// <returns></returns>
         public ActionResult BatchCreate()
         {
             return View();
         }
 
+        /// <summary>
+        /// 批量新增页面
+        /// Post: /Task/BatchCreate
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult BatchCreate(string taskTexts)
         {
@@ -263,6 +316,35 @@ namespace GTD.Controllers
                 _taskServices.AddTask(t);
             }
             return RedirectToAction("ListTask", new { da = "收集箱" });
+        }
+
+        private void InitView()
+        {
+            ViewBag.NextTask_TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskID", "Headline");
+            ViewBag.PreviousTask_TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskID", "Headline");
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName),
+                "ProjectID", "ProjectName");
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices);
+            ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList();
+            ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList();
+
+        }
+
+        private void InitView(Task task)
+        {
+            ViewBag.ProjectID = new SelectList(_projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName),
+                "ProjectID", "ProjectName", task.Pro?.ProjectId ?? new int());
+            ViewBag.ContextId = DropDownListHelp.PopulateContextsDropDownList(_contextServices,
+                task.Context?.ContextId ?? new int());
+            ViewBag.Priority = DropDownListHelp.PopulatePrioritysDropDownList(task.Priority?.ToString() ?? "无");
+            ViewBag.DateAttribute = DropDownListHelp.PopulateDateAttributeDropDownList(task.DateAttribute?.ToString() ?? "无");
+            ViewBag.NextTask_TaskId = new SelectList(_taskServices.GetInProgressTasks().Where(t => t.TaskId != task.TaskId),
+                "TaskID", "Headline", task.NextTask_TaskId ?? new int());
+            ViewBag.PreviousTask_TaskId = new SelectList(_taskServices.GetInProgressTasks().Where(t => t.TaskId != task.TaskId),
+                "TaskID", "Headline", task.PreviousTask_TaskId ?? new int());
+            //ViewBag.PreviousTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.PreviousTask_TaskId ?? new int());
+            //ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
+
         }
     }
 }

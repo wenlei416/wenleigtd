@@ -27,7 +27,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.vssscc
 $tf*/
-.vs
+.vs/
 GTD.Web/Web.config
 GTD.Web/Web.Debug.config
 GTD.Web/Web.Release.config

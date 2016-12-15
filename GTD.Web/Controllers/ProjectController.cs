@@ -122,12 +122,14 @@ namespace GTD.Controllers
         {
             Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
             var tasks = project.Tasks.Where(t => t.IsComplete == false);
+            _projectServices.DeleteProjectByLogic(project);
+            //todo 这里有bug，如果项目关联的有未完成的task，这里实际无法删除成功
+
             foreach (var t in tasks)
             {
                 t.ProjectID = null;
                 _taskServices.UpdateTask(t);
             }
-            _projectServices.DeleteProjectByLogic(project);
             return RedirectToAction("Index");
         }
 
