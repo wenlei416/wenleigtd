@@ -87,7 +87,7 @@ namespace GTD.Controllers
         [ChildActionOnly]
         public PartialViewResult CreateInLine()
         {
-            var projectList = from p in _projectServices.GetAllInprogressProjects() select p.ProjectName;
+            var projectList = from p in _projectServices.GetAllInprogressProjects().OrderBy(p => p.ProjectName) select p.ProjectName;
             var contextList = from c in _contextServices.GetAllContexts() select c.ContextName;
 
             ViewBag.projects = projectList.ToList();
@@ -107,16 +107,6 @@ namespace GTD.Controllers
         [HttpPost]
         public PartialViewResult CreateInLine(string createTaskInLine, string da = "收集箱", string sortOrder = "priority")
         {
-            var t = new Task()
-            {
-                Headline = createTaskInLine,
-                StartDateTime = DateTime.Now.Date,
-                CloseDateTime = DateTime.Now.Date,
-                IsComplete = false,
-                IsDeleted = false,
-                SubTasks = new List<SubTask>()
-            };
-
             //将文本分解出需要的任务信息，包括task.Headlin , task.Description , project.ProjectHeadline , context.ContextName
             var taskDic = TaskUtil.GetTaskInfoFromText(createTaskInLine);
             //验证taskDic是否是合格的任务，如果是就返回一个task，不是就返回null
