@@ -4,6 +4,7 @@ using GTD.Services.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using Castle.Core.Internal;
 using GTD.Util;
@@ -397,12 +398,64 @@ namespace GTD.Services
                 }
                 else
                 {
-                    var pro = new Project {ProjectName = taskDictionary["projectName"]};
+                    var pro = new Project { ProjectName = taskDictionary["projectName"] };
                     result.ProjectID = _projectServices.CreateProjectReturnId(pro);
                 }
             }
 
             return result;
         }
+
+        /// <summary>
+        /// modify的过程中，获取修改前的task
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public Task GetOriginalTask(Task task)
+        {
+            return _taskRepository.GetOriginal(task);
+        }
+
+        /// <summary>
+        /// 修改task的开始日期、结束日期、完成日期时，生成一条文本
+        /// 用于插入commit
+        /// </summary>
+        /// 记录内容
+        /// **2011-01-01 修改taskid：XX 开始日期 从2011-01-01 调整到 2011-01-02 修改开始日期时记录
+        /// **2011-01-01 修改taskid：XX 开始日期 从 调整到 2011-01-02 修改开始日期时记录
+        /// **2011-01-01 修改taskid：XX 结束日期 从2011-01-01 调整到 2011-01-02 修改完成日期时记录
+        /// **2011-01-01 修改taskid：XX 结束日期 从 调整到 2011-01-02 修改完成日期时记录
+        /// **2011-01-01 修改taskid：XX 计划完成： 从2011-01-01 实际完成: 2011-01-02 
+        /// <param name="action"></param>
+        /// <param name="task"></param>
+        /// <param name="orginalTask"></param>
+        /// <returns></returns>
+        public string CreteCommentText(string action, Task task, Task orginalTask = null)
+        {
+            string result = "";
+
+            switch (action.ToLower())
+            {
+                case "delete":
+                    result = "** " + DateTime.Now.ToString("yyyy/MM/dd hh:mm", CultureInfo.InvariantCulture) +
+                             " 删除taskId: " + task.TaskId;
+
+                    break;
+
+                case "modify":
+
+                    break;
+                case "complete":
+                    var close = task.CloseDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
+                    result = "** " + DateTime.Now.ToString("yyyy/MM/dd hh:mm", CultureInfo.InvariantCulture) +
+                             " 修改taskId: " + task.TaskId +
+                             " 计划完成：" + close +
+                             " 实际完成: " + DateTime.Today.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
+                    break;
+            }
+
+            return result;
+        }
+
     }
 }

@@ -3,11 +3,11 @@ using GTD.Services.Abstract;
 using GTD.Util;
 using GTD.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.WebPages;
+using Castle.Core.Internal;
 using GTD.Filters;
 
 namespace GTD.Controllers
@@ -17,12 +17,14 @@ namespace GTD.Controllers
         private readonly ITaskServices _taskServices;
         private readonly IProjectServices _projectServices;
         private readonly IContextServices _contextServices;
+        private readonly ICommentServices _commentServices;
 
-        public TaskController(ITaskServices taskServices, IProjectServices projectServices, IContextServices contextServices)
+        public TaskController(ITaskServices taskServices, IProjectServices projectServices, IContextServices contextServices, ICommentServices commentServices)
         {
             _taskServices = taskServices;
             _projectServices = projectServices;
             _contextServices = contextServices;
+            _commentServices = commentServices;
         }
 
         // GET: /Task/
@@ -168,22 +170,54 @@ namespace GTD.Controllers
                 return HttpNotFound();
             }
             var tempda = task.DateAttribute;
+            var commentText = _taskServices.CreteCommentText("delete", task).Trim();
+            if (!commentText.IsNullOrEmpty())
+            {
+                var c = new Comment()
+                {
+                    Description = commentText,
+                    TaskId = id
+                };
+                _commentServices.CreateComment(c);
+            }
             _taskServices.DeleteTask(task.TaskId);
             return RedirectToAction("ListTask", new { da = tempda.ToString() });
         }
 
-        // POST: /Task/Delete/5
+        /// <summary>
+        /// POST: /Task/Delete/5
+        /// 这个方法似乎永远都用不到了
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             Task task = _taskServices.GetTaskById(id);
             var tempda = task.DateAttribute;
+            var commentText = _taskServices.CreteCommentText("delete", task).Trim();
+            if (!commentText.IsNullOrEmpty())
+            {
+                var c = new Comment()
+                {
+                    Description = commentText,
+                    TaskId = id
+                };
+                _commentServices.CreateComment(c);
+            }
+
+
             _taskServices.DeleteTask(task.TaskId);
             return RedirectToAction("ListTask", new { da = tempda.ToString() });
         }
 
-        // GET: /Task/Complete/5
+        /// <summary>
+        /// 把任务设为已完成状态
+        /// GET: /Task/Complete/5
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Complete(int id)
         {
             var sort = ViewBag.SortOrder;
@@ -192,7 +226,19 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
+            var commentText = _taskServices.CreteCommentText("complete", task).Trim();
+            if (!commentText.IsNullOrEmpty())
+            {
+                var c = new Comment()
+                {
+                    Description = commentText,
+                    TaskId = id
+                };
+                _commentServices.CreateComment(c);
+            }
+
             _taskServices.CompleteTask(task);
+
             return RedirectToAction("ListTask", new { da = task.DateAttribute, sortOrder = sort });
         }
 
@@ -285,6 +331,7 @@ namespace GTD.Controllers
             return View(viewmodel);
         }
 
+        #region 批量新增页面
         /// <summary>
         /// 批量新增页面
         /// Get: /Task/BatchCreate
@@ -318,6 +365,9 @@ namespace GTD.Controllers
             return RedirectToAction("ListTask", new { da = "收集箱" });
         }
 
+        #endregion
+
+        #region  初始化页面中的各个部分
         private void InitView()
         {
             ViewBag.NextTask_TaskId = new SelectList(_taskServices.GetInProgressTasks(), "TaskID", "Headline");
@@ -346,5 +396,6 @@ namespace GTD.Controllers
             //ViewBag.NextTask_TaskId = DropDownListHelp.PopulateTaskDropDownList(_taskServices, task.NextTask_TaskId ?? new int());
 
         }
+        #endregion
     }
 }
