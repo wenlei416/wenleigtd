@@ -442,14 +442,38 @@ namespace GTD.Services
 
                     break;
 
-                case "modify":
+                case "edit":
+                    if (orginalTask == null || task == null)
+                    {
+                        break;
+                    }
+                    if (orginalTask.StartDateTime != task.StartDateTime)
+                    {
+                        var start = task.StartDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
+                        var original = orginalTask.StartDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
 
+                        result += "** " + DateTime.Now.ToString("yyyy/MM/dd hh:mm", CultureInfo.InvariantCulture) +
+                                  " 修改taskId: " + task.TaskId +
+                                  " 开始日期从: " + start +
+                                  " 调整到:" + original + "\n\r";
+                    }
+                    if (orginalTask.CloseDateTime != task.CloseDateTime)
+                    {
+                        var close = task.CloseDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
+                        var original = orginalTask.CloseDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
+
+                        result += "** " + DateTime.Now.ToString("yyyy/MM/dd hh:mm", CultureInfo.InvariantCulture) +
+                                  " 修改taskId: " + task.TaskId +
+                                  " 结束日期从: " + close +
+                                  " 调整到:" + original + "\n\r";
+                    }
                     break;
+
                 case "complete":
-                    var close = task.CloseDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
+                    var copmlete = task.CloseDateTime?.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture) ?? "无";
                     result = "** " + DateTime.Now.ToString("yyyy/MM/dd hh:mm", CultureInfo.InvariantCulture) +
                              " 修改taskId: " + task.TaskId +
-                             " 计划完成：" + close +
+                             " 计划完成：" + copmlete +
                              " 实际完成: " + DateTime.Today.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
                     break;
             }

@@ -51,5 +51,6 @@ namespace GTD.Services.Abstract
         Task ValidateTaskDicIsCorrect(Dictionary<string, string> taskDictionary);
 
         string CreteCommentText(string action, Task task, Task orginalTask = null);
+        Task GetOriginalTask(Task task);
     }
 }

@@ -150,8 +150,18 @@ namespace GTD.Controllers
         {
             if (ModelState.IsValid)
             {
-                //todo 日志入侵了业务，需要修改
-                LogHelper.WriteLog($"Post : TaskId: {task.TaskId,-5} , StartDate: {task.StartDateTime,-20} , CloseDate: {task.CloseDateTime,-20}");
+
+                var commentText = _taskServices.CreteCommentText("edit", task,_taskServices.GetOriginalTask(task)).Trim();
+                if (!commentText.IsNullOrEmpty())
+                {
+                    var c = new Comment()
+                    {
+                        Description = commentText,
+                        TaskId = task.TaskId
+                    };
+                    _commentServices.CreateComment(c);
+                }
+
                 _taskServices.UpdateTask(task);
                 return RedirectToAction("ListTask", new { da = task.DateAttribute.ToString() });
 
