@@ -1,7 +1,8 @@
 ﻿@using (Ajax.BeginForm("CreateInLine", "Task", new AjaxOptions()
 {
     InsertionMode = InsertionMode.Replace,
-    UpdateTargetId = "listtasks"
+    UpdateTargetId = "listtasks",
+    OnSuccess="onSuccess"
 }))
 {
     //这里在view里面掺杂了很多逻辑，似乎不太好
@@ -29,7 +30,10 @@
         .autocompleteTrigger({
             triggerStart: " @@",
             triggerEnd: ' ',
-            sourceA: @Html.Raw(Json.Encode(ViewBag.projects)),
-            sourceB: @Html.Raw(Json.Encode(ViewBag.contexts)),
+            sourceA: @Html.Raw(Json.Encode(ViewBag.contexts)),
+            sourceB: @Html.Raw(Json.Encode(ViewBag.projects)),
         });
+    function onSuccess() {
+        $('#createTaskInLine').val('');
+    }
 </script>

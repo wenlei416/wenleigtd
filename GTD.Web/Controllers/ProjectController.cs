@@ -10,7 +10,7 @@ namespace GTD.Controllers
 {
     public class ProjectController : Controller
     {
-        private readonly ITaskServices _taskServices ;
+        private readonly ITaskServices _taskServices;
         private readonly IProjectServices _projectServices;
 
         //public ProjectController(ITaskServices taskServices)
@@ -19,7 +19,7 @@ namespace GTD.Controllers
         //    this._taskServices = taskServices;
         //}
 
-        public ProjectController(ITaskServices taskServices,IProjectServices projectServices)
+        public ProjectController(ITaskServices taskServices, IProjectServices projectServices)
         {
             this._projectServices = projectServices;
             this._taskServices = taskServices;
@@ -121,15 +121,12 @@ namespace GTD.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Project project = _projectServices.GetProjectById(id);//_db.Projects.Find(id);
-            var tasks = project.Tasks.Where(t => t.IsComplete == false);
             _projectServices.DeleteProjectByLogic(project);
             //todo 这里有bug，如果项目关联的有未完成的task，这里实际无法删除成功
 
-            foreach (var t in tasks)
-            {
-                t.ProjectID = null;
-                _taskServices.UpdateTask(t);
-            }
+            var tasks = _taskServices.GetAll().Where(t => t.ProjectID == id && t.IsComplete == false);
+            _taskServices.BreakRelationTaskandProject(tasks);
+
             return RedirectToAction("Index");
         }
 
@@ -148,8 +145,8 @@ namespace GTD.Controllers
             //如果没有就改变状态返回值
             Project project = _projectServices.GetProjectById(id);
 
-            var allTaskCompleted = project.Tasks.Where(t=>t.IsDeleted==false).All(t => t.IsComplete == true);
-            
+            var allTaskCompleted = project.Tasks.Where(t => t.IsDeleted == false).All(t => t.IsComplete == true);
+
             if (allTaskCompleted)
             {
                 project.IsComplete = !project.IsComplete;

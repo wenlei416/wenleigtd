@@ -481,5 +481,15 @@ namespace GTD.Services
             return result;
         }
 
+        //批量断开任务和项目之间的关系
+        //用在删除项目的时候
+        public void BreakRelationTaskandProject(IEnumerable<Task> tasks)
+        {
+            foreach (var task in tasks)
+            {
+                task.ProjectID = null;
+            }
+            _taskRepository.BatchUpdateTask(tasks);
+        }
     }
 }

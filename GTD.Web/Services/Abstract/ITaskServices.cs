@@ -52,5 +52,7 @@ namespace GTD.Services.Abstract
 
         string CreteCommentText(string action, Task task, Task orginalTask = null);
         Task GetOriginalTask(Task task);
+
+        void BreakRelationTaskandProject(IEnumerable<Task> tasks);
     }
 }
