@@ -244,6 +244,10 @@
     <Compile Include="Migrations\201611200732321_addTaskPropertyRepeatJson.Designer.cs">
       <DependentUpon>201611200732321_addTaskPropertyRepeatJson.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708200057572_addGoalwithProject.cs" />
+    <Compile Include="Migrations\201708200057572_addGoalwithProject.Designer.cs">
+      <DependentUpon>201708200057572_addGoalwithProject.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Pomodoro.cs" />
     <Compile Include="Services\Abstract\ICommentServices.cs" />
@@ -493,6 +497,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201611200732321_addTaskPropertyRepeatJson.resx">
       <DependentUpon>201611200732321_addTaskPropertyRepeatJson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708200057572_addGoalwithProject.resx">
+      <DependentUpon>201708200057572_addGoalwithProject.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

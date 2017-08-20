@@ -17,6 +17,7 @@ namespace GTD.Models
 
         public virtual ICollection<Task> Tasks { get; set; }
 
+        public int? GoalId { get; set; }
         public virtual Goal Goal { get; set; }
         public bool IsComplete { get; set; }
         public bool IsDeleted { get; set; }

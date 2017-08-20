@@ -12,6 +12,7 @@ namespace GTD.Controllers
     {
         private readonly ITaskServices _taskServices;
         private readonly IProjectServices _projectServices;
+        private readonly IGoalServices _goalServices;
 
         //public ProjectController(ITaskServices taskServices)
         //{
@@ -19,10 +20,11 @@ namespace GTD.Controllers
         //    this._taskServices = taskServices;
         //}
 
-        public ProjectController(ITaskServices taskServices, IProjectServices projectServices)
+        public ProjectController(ITaskServices taskServices, IProjectServices projectServices,IGoalServices goalServices)
         {
             this._projectServices = projectServices;
             this._taskServices = taskServices;
+            this._goalServices = goalServices;
         }
 
         // GET: /Project/
@@ -58,6 +60,7 @@ namespace GTD.Controllers
         // GET: /Project/Create
         public ActionResult Create()
         {
+            ViewBag.GoalId = new SelectList(_goalServices.GetAllGoals().OrderBy(g=>g.GoalId),"GoalID", "GoalName");
             return View();
         }
 
