@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
-using GTD.DAL;
 using GTD.Models;
-using GTD.Services;
 using GTD.Services.Abstract;
 using GTD.ViewModels.ProjectVM;
 
@@ -88,6 +86,8 @@ namespace GTD.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.GoalId = new SelectList(_goalServices.GetAllGoals().OrderBy(g => g.GoalId), "GoalID", "GoalName", project.Goal?.GoalId ?? new int());
+
             return View(project);
         }
 

@@ -22,7 +22,14 @@
             @Html.EditorFor(model => model.ProjectName)
             @Html.ValidationMessageFor(model => model.ProjectName)
         </div>
-
+        @*----------目标----------*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Goal)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("GoalId", null, "无", new { @class = "dropdownlist" })
+            @Html.ValidationMessageFor(model => model.Goal)
+        </div>
         <p>
             <input type="submit" value="Save" />
         </p>
